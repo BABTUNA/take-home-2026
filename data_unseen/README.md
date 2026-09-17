@@ -32,6 +32,23 @@ Second batch (all fetched 2026-09-17):
 - thomann.html: https://www.thomann.de/gb/boss_rc_600_loop_station.htm
 - tower.html: https://tower.jp/item/1127700
 
+Third batch (all fetched 2026-09-17):
+- andertons.html: https://www.andertons.co.uk/fender-player-ii-stratocaster-electric-guitar-lavender-haze/
+- barnesnoble.html: https://www.barnesandnoble.com/w/a-guardian-and-a-thief-megha-majumdar/1147348021?ean=9798217008025
+- benjaminmoore.html: https://www.benjaminmoore.com/en-us/product/aura-interior-paint-matte-1-gallon/N522
+- burpee.html: https://www.burpee.com/products/squash-summer-zucchini-limelight-hybrid-prod001638
+- canyon.html: https://www.canyon.com/en-us/road-bikes/endurance-bikes/endurace/cf/endurace-cf-7-di2/4421.html
+- dossier.html: https://dossier.co/products/ambery-vanilla
+- goodr.html: https://goodr.com/products/bean-there-run-that
+- gouletpens.html: https://www.gouletpens.com/products/lamy-al-star-fountain-pen-pine-special-edition
+- madein.html: https://madeincookware.com/products/carbon-steel-frying-pan
+- miniaturemarket.html: https://www.miniaturemarket.com/azul-duel-nmg60160en.html
+- peakdesign.html: https://www.peakdesign.com/products/everyday-backpack
+- ruggable.html: https://ruggable.com/products/delphina-navy-blue-rug
+- tenniswarehouse.html: https://www.tennis-warehouse.com/Babolat_Pure_Drive_2025/descpageRCBAB-BPD25R.html
+- uppababy.html: https://uppababy.com/strollers/full-size/kona/
+- wildone.html: https://www.wildone.com/products/cat-harness-leash-collar-kit
+
 All data in the HTML files was obtained by CURLing the above URLs (desktop Chrome User-Agent, redirects followed).
 
 Note: vitamix.html is a deliberate hard case. It is a 22KB client-rendered shell whose DOM has no product markup, but it still carries a JSON-LD Product block with name, sku, and offers. norrona.html is similar: a 67KB semi-shell whose only product data is a JSON-LD block. dji.html was fetched with --compressed (the server returns gzip regardless of Accept-Encoding).
