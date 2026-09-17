@@ -16,6 +16,22 @@ URLs (all fetched 2026-09-17):
 - thorne.html: https://www.thorne.com/products/dp/creatine
 - vitamix.html: https://www.vitamix.com/us/en_us/shop/vx1
 
+Second batch (all fetched 2026-09-17):
+- aerosoft.html: https://www.aerosoft.com/en/shop/flight/microsoft-flight-simulator/msfs-2020/msfs-aircraft/3303/aerosoft-aircraft-crj-v2
+- bjornborg.html: https://www.bjornborg.com/se/borg-short-shorts-10000573-bl017/
+- casper.html: https://casper.com/products/bestselling-bundle
+- coalandcanary.html: https://www.coalandcanary.com/product-page/fresh-air-polar-bears-the-canada-candle
+- dji.html: https://store.dji.com/product/dji-mini-4-pro
+- jarsofdust.html: https://jarsofdust.com/shop/4-piece-ceramic-pasta-bowl-set
+- movado.html: https://www.movado.com/shop-watches/centurion-chronograph-0608074.html
+- myamericanmarket.html: https://www.myamericanmarket.com/en/m-ms-almond-big
+- norrona.html: https://www.norrona.com/en-GB/products/falketind/falketind-gore-tex-jacket-men/
+- paulsmith.html: https://www.paulsmith.com/us/men-s-tailored-fit-white-cotton-artist-stripe-cuff-shirt
+- puma.html: https://us.puma.com/us/en/pd/suede-classic-sneakers/399781
+- reebok.html: https://www.reebok.com/products/reebok-shaqnosis-low-shoes-muted-mauve-playful-pink-dream-purple-146229
+- thomann.html: https://www.thomann.de/gb/boss_rc_600_loop_station.htm
+- tower.html: https://tower.jp/item/1127700
+
 All data in the HTML files was obtained by CURLing the above URLs (desktop Chrome User-Agent, redirects followed).
 
-Note: vitamix.html is a deliberate hard case. It is a 22KB client-rendered shell whose DOM has no product markup, but it still carries a JSON-LD Product block with name, sku, and offers.
+Note: vitamix.html is a deliberate hard case. It is a 22KB client-rendered shell whose DOM has no product markup, but it still carries a JSON-LD Product block with name, sku, and offers. norrona.html is similar: a 67KB semi-shell whose only product data is a JSON-LD block. dji.html was fetched with --compressed (the server returns gzip regardless of Accept-Encoding).
