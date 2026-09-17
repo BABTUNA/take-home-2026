@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Any
 from pathlib import Path
 from pydantic import BaseModel, field_validator
@@ -30,7 +31,31 @@ class Price(BaseModel):
     # If a product is on sale, this is the original price
     compare_at_price: float | None = None
 
-# This is the final product schema that you need to output. 
+class Selection(BaseModel):
+    # One axis choice, e.g. name="Size", value="UK 7". Modeled as name/value
+    # pairs rather than a dict because structured-output schemas can't express
+    # open dict keys.
+    name: str
+    value: str
+
+class Option(BaseModel):
+    # An axis the page offers (Size, Color, Fit) and the values it lists.
+    # Kept separate from Variant: a page can show axes without ever tying
+    # them together into purchasable combinations.
+    name: str
+    values: list[str]
+
+class Variant(BaseModel):
+    # One purchasable configuration the page actually asserts. We never
+    # cartesian-product the option axes; a variant exists only if the page
+    # ties these selections to a sku/price/stock signal.
+    selections: list[Selection]
+    sku: str | None = None
+    price: float | None = None
+    available: bool | None = None
+    image_urls: list[str] = []
+
+# This is the final product schema that you need to output.
 # You may add additional models as needed.
 class Product(BaseModel):
     name: str
@@ -42,4 +67,85 @@ class Product(BaseModel):
     category: Category
     brand: str
     colors: list[str]
-    variants: list[Any] # TODO (@dev): Define variant model
+    # The axes offered on the page. Additive field (defaults to empty) so the
+    # schema stays compatible with the original.
+    options: list[Option] = []
+    variants: list[Variant]
+
+
+# ---------------------------------------------------------------------------
+# LLM-facing draft schema. The model works with media indices (IMG_3 -> 3)
+# instead of URLs, so a hallucinated URL is unrepresentable. Indices are
+# resolved against the distilled media table after the call.
+# ---------------------------------------------------------------------------
+
+class DraftVariant(BaseModel):
+    selections: list[Selection]
+    sku: str | None = None
+    price: float | None = None
+    available: bool | None = None
+    image_ids: list[int] = []
+
+class Draft(BaseModel):
+    name: str
+    price: float
+    currency: str
+    compare_at_price: float | None = None
+    description: str
+    key_features: list[str]
+    image_ids: list[int]
+    video_id: int | None = None
+    # Free-text guess ("cordless drills"); resolved to a real taxonomy path
+    # in a separate step.
+    candidate_category: str
+    brand: str
+    colors: list[str]
+    options: list[Option] = []
+    variants: list[DraftVariant] = []
+
+
+# ---------------------------------------------------------------------------
+# Internal pipeline shapes (not LLM-facing, so plain dataclasses).
+# ---------------------------------------------------------------------------
+
+@dataclass
+class JsonBlob:
+    # A parsed JSON object found in a script tag, with the commerce-keyword
+    # score that got it kept.
+    source: str
+    score: float
+    data: Any
+
+@dataclass
+class ScriptText:
+    # Raw text of a script that would not parse as JSON but scored high on
+    # product keywords (e.g. Next.js Flight payloads).
+    score: float
+    text: str
+
+@dataclass
+class MediaCandidate:
+    url: str
+    kind: str  # "image" | "video"
+    origin: str  # channel that found it: "json_ld" | "meta" | "blob" | "dom"
+    width: int | None = None
+
+@dataclass
+class Evidence:
+    json_ld: list[Any] = field(default_factory=list)
+    meta: dict[str, str] = field(default_factory=dict)
+    title: str | None = None
+    canonical_url: str | None = None
+    h1: str | None = None
+    json_blobs: list[JsonBlob] = field(default_factory=list)
+    script_texts: list[ScriptText] = field(default_factory=list)
+    visible_text: str = ""
+    media: list[MediaCandidate] = field(default_factory=list)
+
+@dataclass
+class PromptContext:
+    # What the extraction model actually sees, plus the media table needed to
+    # resolve its index-based answers.
+    text: str
+    media: list[MediaCandidate]
+    identity_tokens: set[str] = field(default_factory=set)
