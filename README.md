@@ -17,6 +17,8 @@ The category field must exactly match 1 of 5,596 Google taxonomy paths. Resoluti
 | **union + 3-flash picker (shipped)** | **48/50** | 5/5 | 1 | $0.00153 | 1.6s |
 | LLM tree walk (no retrieval) | 35/50 | 4/5 | 3.4 (sequential) | ~$0.0004 | ~4s |
 
+Latency note: the per-page differences between configs are entirely the API pick call. Embedding retrieval adds ~10ms per page (query embedding, included in the union rows above) plus two one-time startup costs that production amortizes: the fastembed model load (a second or two per process) and embedding the 5,596 taxonomy paths (~30s once ever, then loaded from the `.cache/` file).
+
 What the numbers decomposed: every miss of the initial config was a retrieval miss (the right answer never made the lexical shortlist: "Barrel Jeans" shares no tokens with "Pants", "Chronograph" none with "Watches"), while flash-lite's residual errors were judgment (it filed a Gore-Tex jacket under Rain Suits with the right answer on the list). Union retrieval (stemmed lexical top-100 unioned with local bge-small embedding top-50, embeddings cached, ~10ms/page) fixes the first; the stronger picker on its small ~3K-token prompt fixes the second for ~$0.0012/page extra. Majority voting a weak model is strictly worse: it converges on the model's consistent mistakes at 3x the calls. The tree walk (pick a child per level, no shortlist) is cheap but commits early and strands products at shallow levels.
 
 The two remaining misses: a seed packet filed under fresh vegetables, and Peak Design's Everyday Backpack as "Camera Bags & Cases" (arguably correct; it is marketed as a camera backpack). The assignment-5 column is why the unseen corpus exists: every config aces the 5 graded pages, and the differences only show on unseen sites.
