@@ -142,7 +142,12 @@ Expected draft for the drill:
 
 `variants: []` is correct: the blob's options array is empty, and a single-configuration product has no variants. Empty beats invented.
 
-**Failure path:** pydantic or provenance failure -> one retry with the error appended -> escalate to the stronger model -> fail loudly with the reason. No silent partial success.
+**Failure path.** After every draft, `_provenance_problems()` fact-checks the model in plain Python: each claimed price must literally appear in the context (checked as `128`, `128.00`, `128,00`, `12800`), each image_id must be a real index, and picking zero images when candidates exist is rejected too. Failures drive a cascade. Say a boots page shows "Now $119.99, was $150" with images IMG_0..IMG_5:
+
+1. **Cheap model, first try** returns `{"price": 149.99, "image_ids": [0, 2, 9]}`. Rejected: `price 149.99 does not appear anywhere in the page evidence; image_ids [9] out of range (0..5)`.
+2. **Same cheap model, errors appended** ("Produce a corrected answer. Do not change fields that were valid."). Told exactly what's wrong, it rereads the evidence, finds 119.99, drops the phantom index. Most failures die here for the cost of one extra cheap call.
+3. **Stronger model, fresh try**, paid for only on the pages that defeated the cheap one twice. The expensive model is an exception handler, not the default.
+4. Still failing: raise with the page name and reason. A missing product is visible and debuggable; a product with an invented price in a customer-facing catalog is silent poison. Fail loud, never fabricate.
 
 ## Stage 4: Categorize
 
