@@ -1,6 +1,6 @@
 # Backend implementation
 
-(Current as of the taxonomy upgrade; the original design snapshot is in BACKEND_IMPLEMENTATION_OLD.md.)
+(Current as of the taxonomy upgrade; the original design snapshot is in BACKEND_IMPLEMENTATION_OLD.md (same folder).)
 
 ## Goal and how it works
 

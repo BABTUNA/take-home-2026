@@ -44,7 +44,7 @@ cd frontend && npx vitest run        # variant-resolution unit tests
 
 ## How it works
 
-Four stages per page (full walkthrough with real data in [BACKEND.md](BACKEND.md), function-level trace in [BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md)):
+Four stages per page (full walkthrough with real data in [BACKEND.md](docs/BACKEND.md), function-level trace in [BACKEND_IMPLEMENTATION.md](docs/BACKEND_IMPLEMENTATION.md)):
 
 1. **Harvest**: five generic channels: JSON-LD, meta tags, embedded JSON blobs (found by shape, never by name), raw script text, visible text with aria-label/alt/title inlined. Media collected with provenance.
 2. **Distill**: identity anchoring drops other products' data; blobs are pruned (framework noise out, related products summarized, record lists rendered as compact tables); media deduped by asset and ranked by relevance to the page's own hero; per-section budgets.
@@ -108,7 +108,7 @@ What the numbers decomposed: every miss of the initial config was a retrieval mi
 
 ## Repo map
 
-Working documents kept as process evidence: [PLAN.md](PLAN.md) (initial plan), [BACKEND.md](BACKEND.md) (design walkthrough with real data), [BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md) / [SERVER_IMPLEMENTATION.md](SERVER_IMPLEMENTATION.md) / [FRONTEND_IMPLEMENTATION.md](FRONTEND_IMPLEMENTATION.md) (function-level specs kept in sync with the code), [EVAL_IMPLEMENTATION.md](EVAL_IMPLEMENTATION.md), [ROADMAP.md](ROADMAP.md).
+Working documents kept as process evidence: [PLAN.md](docs/PLAN.md) (initial plan), [BACKEND.md](docs/BACKEND.md) (design walkthrough with real data), [BACKEND_IMPLEMENTATION.md](docs/BACKEND_IMPLEMENTATION.md) / [SERVER_IMPLEMENTATION.md](docs/SERVER_IMPLEMENTATION.md) / [FRONTEND_IMPLEMENTATION.md](docs/FRONTEND_IMPLEMENTATION.md) (function-level specs kept in sync with the code), [EVAL_IMPLEMENTATION.md](docs/EVAL_IMPLEMENTATION.md), [ROADMAP.md](docs/ROADMAP.md).
 
 ## System design
 
