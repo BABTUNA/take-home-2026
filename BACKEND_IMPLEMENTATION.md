@@ -34,9 +34,11 @@ main()                                          run_extract.py
       ├─ distill(evidence) -> PromptContext     distill.py
       │  ├─ _identity_tokens()                  # h1 + og:title + title tokens
       │  ├─ _filter_json_ld()                   # Product blocks matching identity + breadcrumbs
-      │  ├─ _prune()                            # noise keys out (incl. warehouses), summary
-      │  │                                      # mode for related-product subtrees, URLs
-      │  │                                      # stubbed to .../tail, empty strings dropped
+      │  ├─ _prune()                            # noise keys out (camelCase-normalized so
+      │  │                                      # consentPolicy etc. match), summary mode for
+      │  │                                      # related-product subtrees, URLs stubbed to
+      │  │                                      # .../tail, embedded js/html strings -> [code],
+      │  │                                      # empty strings dropped
       │  ├─ _resolve_media()
       │  │  ├─ _asset_key()                     # FULL normalized path: transform segments
       │  │  │                                   # (, : =) out, sizes/hashes/rendition words out
@@ -46,7 +48,12 @@ main()                                          run_extract.py
       │  │                                      # unselected blob-only media dropped when the
       │  │                                      # page marks a selected product
       │  └─ render sections                     # per-section budgets; _fit_blobs() waterfalls
-      │                                         # the blob budget best-blob-first
+      │                                         # the blob budget best-blob-first and
+      │                                         # _tabulate() renders lists of same-shaped
+      │                                         # records as header+rows (~2-3x more records
+      │                                         # per budget); media table carries provenance
+      │                                         # tags ([selected product] / [related items
+      │                                         # rail] / [page hero] / [product data])
       ├─ _draft_with_retries(ctx) -> Draft      pipeline.py
       │  ├─ extract_draft(ctx, model)           extract.py    # 13-rule sectioned prompt
       │  │  └─ ai.responses(text_format=Draft)  ai.py
@@ -73,7 +80,7 @@ main()                                          run_extract.py
 | `harvest.py` | HTML in, `Evidence` out. Five channels + media collection with provenance |
 | `distill.py` | `Evidence` in, `PromptContext` out. Identity, pruning, media identity/ranking/exclusions, budget waterfall |
 | `extract.py` | The 13-rule extraction prompt (sectioned: ground rules / price / text / media / variants / category hint), the call, draft-to-Product assembly |
-| `taxonomy.py` | Union retrieval + index pick + validation; config justified by the bench in its docstring |
+| `taxonomy.py` | Union retrieval + index pick + validation; config justified by the bench in its docstring; `PICK_MODEL` and `TAXONOMY_RETRIEVAL=lexical\|union` env overrides |
 | `pipeline.py` | Orchestration: retries, escalation, provenance gating, breadcrumb hint |
 | `ai.py` | Provided OpenRouter wrapper with cost logging (unchanged) |
 | `run_extract.py` | Batch CLI: `data/`, `--unseen`, or explicit paths; `OUTPUT_DIR`/`EXTRACT_MODEL` env overrides |
@@ -146,7 +153,8 @@ The invariant across all four shapes: every URL, price, and label in a later str
 
 ## Measured state
 
-- Graded pages (eval/score.py): 0.97 overall, 3 of 5 at 1.00; no-LLM baseline 0.44.
-- Category bench (50 pages): shipped config 48/50; old lexical + flash-lite 44/50.
+- Graded pages (eval/score.py): 0.976 overall, 3 of 5 at 1.00; no-LLM baseline 0.44. The two imperfect cells are documented judgment limits (llbean's 83 sku combos have no statically joinable labels; multi-colorway image boundaries).
+- Extraction model sweep (same pipeline): gemini-3-flash 0.976, gpt-5-mini 0.905, flash-lite 0.884. The premium model earns its cost on variant scoping and colorway judgment; flash-lite remains the budget config via `EXTRACT_MODEL`.
+- Category bench (50 pages, README table): shipped union + 3-flash picker 48/50 at $0.0015/page; old lexical + flash-lite 44/50.
 - Corpus: 50/50 pages extract (5 graded + 45 unseen across ~15 platforms, 7 currencies, 3 languages).
-- Cost: ~$0.003/page flash-lite config, ~$0.02/page gemini-3-flash config, + ~$0.002 category pick.
+- Cost: ~$0.003/page flash-lite config, ~$0.02/page gemini-3-flash config on the heaviest pages, + ~$0.002 category pick.
