@@ -7,6 +7,14 @@
   },
   "description": "Designed for life on the move, the Kona delivers the versatility parents expect from an everyday stroller in a lighter, more nimble footprint. A lightning-fast one-hand fold in either seat direction and a slim frame make transitions effortless, from subway stairs to sidewalk strolls. Kona is ready from birth and built to keep up without compromise. Because when life moves fast, your stroller should too.",
   "key_features": [
+    "Min age: 0",
+    "Max weight: 50 lbs",
+    "Max height: 40\"",
+    "Frame & seat: 22 lbs",
+    "Frame only: 14.1 lbs",
+    "Unfolded: 33.6\" L x 21\" W x 38\" H",
+    "Folded w/ seat: 13.4\" L x 21\" W x 25.8\" H",
+    "Basket capacity: 30 lbs",
     "Lay flat recline thoughtfully designed for newborn comfort",
     "One-hand seat recline with 4 positions, including a fully upright seat",
     "Extended seat back for extra comfort as your child grows",
@@ -25,7 +33,8 @@
     "Convenient zipper pocket for quick access to your phone or other essentials",
     "Premium washable fabrics and full-grain, REACH-compliant leather details",
     "Included bumper bar pivots with one hand for easy loading and unloading",
-    "GREENGUARD® Gold Certified for healthier air quality and low chemical emissions"
+    "GREENGUARD® Gold Certified for healthier air quality and low chemical emissions",
+    "3-Year Warranty"
   ],
   "image_urls": [
     "https://back.uppababy.com/media/13/99/de/1785508184/2201-KNA-NA-JMS_1.webp?ts=1785508184",
@@ -45,6 +54,10 @@
   },
   "brand": "UPPAbaby",
   "colors": [
+    "Meadow Green",
+    "Black",
+    "Sandstone Mélange",
+    "Graphite",
     "James",
     "Ada",
     "Evelyn",
@@ -52,7 +65,7 @@
   ],
   "options": [
     {
-      "name": "Fashion",
+      "name": "Color",
       "values": [
         "James",
         "Ada",
@@ -65,7 +78,7 @@
     {
       "selections": [
         {
-          "name": "Fashion",
+          "name": "Color",
           "value": "James"
         }
       ],
@@ -79,7 +92,7 @@
     {
       "selections": [
         {
-          "name": "Fashion",
+          "name": "Color",
           "value": "Ada"
         }
       ],
@@ -93,7 +106,7 @@
     {
       "selections": [
         {
-          "name": "Fashion",
+          "name": "Color",
           "value": "Evelyn"
         }
       ],
@@ -107,7 +120,7 @@
     {
       "selections": [
         {
-          "name": "Fashion",
+          "name": "Color",
           "value": "Rowan"
         }
       ],

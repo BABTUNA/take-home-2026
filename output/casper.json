@@ -9,15 +9,13 @@
   "key_features": [
     "Choose between The One and Cloud One mattresses",
     "Easy-to-assemble support with the Foundation",
-    "Waterproof Mattress Protector to keep your Casper good as new",
-    "Responsive all-foam design with continuous support (The One)",
-    "Thicker layers of premium comfort foams (Cloud One)",
-    "Three layers of supportive foam relieve the day's pressure"
+    "Waterproof Mattress Protector included",
+    "Three layers of supportive foam relieve the day's pressure (The One)",
+    "Thicker layers of premium comfort foams (Cloud One)"
   ],
   "image_urls": [
     "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png",
     "https://casper.com/cdn/shop/files/Cloud-One-PDP-Hero-without-Consumer-Reports-rounded-corners.png",
-    "https://casper.com/cdn/shop/files/The-One-PDP-hero-without-Consumer-Reports-rounded-corners.png",
     "https://casper.com/cdn/shop/files/The-One-PDP-hero-with-Consumer-Reports.jpg",
     "https://casper.com/cdn/shop/files/Waterproof-Mattress-Protector-PDP-Hero.jpg",
     "https://casper.com/cdn/shop/files/Foundation-PDP-Hero.jpg",
@@ -195,114 +193,6 @@
       ],
       "sku": "52943000797550",
       "price": 1149.0,
-      "available": true,
-      "image_urls": [
-        "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Mattress",
-          "value": "Cloud One"
-        },
-        {
-          "name": "Size",
-          "value": "Twin XL"
-        }
-      ],
-      "sku": "52943000830318",
-      "price": 1224.0,
-      "available": true,
-      "image_urls": [
-        "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Mattress",
-          "value": "Cloud One"
-        },
-        {
-          "name": "Size",
-          "value": "Full"
-        }
-      ],
-      "sku": "52943000863086",
-      "price": 1344.0,
-      "available": true,
-      "image_urls": [
-        "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Mattress",
-          "value": "Cloud One"
-        },
-        {
-          "name": "Size",
-          "value": "Queen"
-        }
-      ],
-      "sku": "52943000895854",
-      "price": 1381.5,
-      "available": true,
-      "image_urls": [
-        "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Mattress",
-          "value": "Cloud One"
-        },
-        {
-          "name": "Size",
-          "value": "King"
-        }
-      ],
-      "sku": "52943000928622",
-      "price": 1820.25,
-      "available": true,
-      "image_urls": [
-        "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Mattress",
-          "value": "Cloud One"
-        },
-        {
-          "name": "Size",
-          "value": "California King"
-        }
-      ],
-      "sku": "52943000961390",
-      "price": 1820.25,
-      "available": true,
-      "image_urls": [
-        "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Mattress",
-          "value": "Cloud One"
-        },
-        {
-          "name": "Size",
-          "value": "Split King"
-        }
-      ],
-      "sku": "52943000994158",
-      "price": 2448.0,
       "available": true,
       "image_urls": [
         "https://casper.com/cdn/shop/files/Best-Selling-Bundle-PDP-Hero-The-One.png"

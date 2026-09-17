@@ -17,18 +17,14 @@
     "Seat belt and no smoking lights",
     "Optional Pilot and Copilot avatars",
     "Separately opening forward and center cargo doors on CRJ 900 and 1000",
-    "Revised flight model is based on Microsoft Flight Simulator's new aerodynamic model",
+    "Revised flight model based on Microsoft Flight Simulator's new aerodynamic model",
     "Flight Management System and Rockwell Collins Proline 4 Avionics",
     "Head-up Guidance System",
-    "Refuel/Defuel Panel in the cockpit",
     "Weather Radar",
     "Terrain Radar",
-    "Detailed performance calculations based on actual weight and balance",
-    "Checklists for all flight situations",
-    "Navigraph Airport Charts display with pinned charts functionality",
-    "Simbrief flight plan import",
-    "Landing Distance Calculator",
-    "Immersive Wwise soundset"
+    "Electronic Flight Bag with Simbrief and Navigraph integration",
+    "Immersive Wwise soundset",
+    "Extensive GSX Pro support"
   ],
   "image_urls": [
     "https://www.aerosoft.com/media/image/38/99/00/Aerosoft-Aircraft-CRJ-V2Y18gOCMWO6ZKi.jpg",
@@ -59,7 +55,7 @@
   ],
   "video_url": null,
   "category": {
-    "name": "Software > Video Game Software"
+    "name": "Software"
   },
   "brand": "Aerosoft",
   "colors": [],

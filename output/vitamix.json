@@ -15,13 +15,14 @@
     "Powerful Motor",
     "Stainless-Steel Blades",
     "5-Year Limited Warranty",
-    "Series: VX Series",
+    "Compatible with All 48 and 64 oz. Vitamix Containers and Personal Cup Adapter",
     "Dimensions: 9.5\" L x 7.8\" W x 19.6\" H",
     "HP: 2.2 HP",
     "Electrical Ratings: 120V, 1440W",
     "Capacity: 64 oz",
     "Product Weight: 12.6 lb",
-    "Cord: 3.5 ft"
+    "Cord: 3.5 ft",
+    "Use: Household"
   ],
   "image_urls": [
     "https://www.vitamix.com/us/en_us/products/media_b261fb161aff7aa5b12b4e3c7186c5358968d0a5.jpg"
@@ -36,10 +37,9 @@
   ],
   "options": [
     {
-      "name": "Warranty",
+      "name": "Color",
       "values": [
-        "Limited Warranty, 5 yrs",
-        "Extended Warranty, add 3 yrs"
+        "Black"
       ]
     }
   ],
@@ -47,26 +47,12 @@
     {
       "selections": [
         {
-          "name": "Warranty",
-          "value": "Limited Warranty, 5 yrs"
+          "name": "Color",
+          "value": "Black"
         }
       ],
       "sku": "075804-04",
       "price": 379.95,
-      "available": true,
-      "image_urls": [
-        "https://www.vitamix.com/us/en_us/products/media_b261fb161aff7aa5b12b4e3c7186c5358968d0a5.jpg"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Warranty",
-          "value": "Extended Warranty, add 3 yrs"
-        }
-      ],
-      "sku": "001314",
-      "price": 404.95,
       "available": true,
       "image_urls": [
         "https://www.vitamix.com/us/en_us/products/media_b261fb161aff7aa5b12b4e3c7186c5358968d0a5.jpg"

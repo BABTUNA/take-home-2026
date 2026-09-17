@@ -1,5 +1,5 @@
 {
-  "name": "Male falketind Gore-Tex Jacket M's",
+  "name": "falketind Gore-Tex Jacket M's",
   "price": {
     "price": 599.0,
     "currency": "USD",
@@ -14,9 +14,10 @@
     "asymmetric cuffs with Velcro adjustment",
     "3-layer 30D ePE GORE-TEX®",
     "recycled nylon face and backer",
-    "28,000mm waterproofness",
-    "RET Less than 13 breathability",
-    "Total windproofness"
+    "waterproofness (28,000mm)",
+    "breathability (RET Less than 13)",
+    "total windproofness",
+    "Weight: 356g"
   ],
   "image_urls": [
     "https://res-2.cloudinary.com/norrona/image/upload/b_rgb:fcfcfc,c_pad,d_imgmissing.jpg,f_auto,fl_progressive.lossy,h_288,q_auto,w_210/v1/Auto/1834-24-5564-packshot-f.jpg"
@@ -76,14 +77,30 @@
       "selections": [
         {
           "name": "Color",
-          "value": "Caviar Black"
+          "value": "Indigo Night"
         },
         {
           "name": "Size",
           "value": "M"
         }
       ],
-      "sku": "1834-24 7718 M",
+      "sku": "1834-24 2295 M",
+      "price": 599.0,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Color",
+          "value": "Caviar Black"
+        },
+        {
+          "name": "Size",
+          "value": "S"
+        }
+      ],
+      "sku": "1834-24 7718 S",
       "price": 599.0,
       "available": true,
       "image_urls": []

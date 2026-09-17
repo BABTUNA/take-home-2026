@@ -76,6 +76,10 @@ def _number_on_page(value: float, text: str) -> bool:
              f"{int(round(value * 100))}"}
     if value == int(value):
         forms.add(str(int(value)))
+    if value >= 1000:
+        # thousands separators: 3799 renders as 3,799 (us) or 3.799 (eu)
+        us = f"{value:,.2f}"
+        forms.update({us, us[:-3], us[:-3].replace(",", ".")})
     return any(f in text for f in forms)
 
 

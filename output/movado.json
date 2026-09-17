@@ -5,7 +5,7 @@
     "currency": "USD",
     "compare_at_price": null
   },
-  "description": "The Centurion marks a new dimension in our enduring pursuit of harmony: geometry, clarity, integrity of materials.<br /><br />Crafted with a Swiss made chronograph movement. <br /><br />Designed with an octagonal PVD case, bezel and integrated H-link bracelet. Swiss Super-LumiNova® markers. Textured matte dial. Bracelet engraved with Movado M Chevron logo, inspired by our archives.",
+  "description": "The Centurion marks a new dimension in our enduring pursuit of harmony: geometry, clarity, integrity of materials. Crafted with a Swiss made chronograph movement. Designed with an octagonal PVD case, bezel and integrated H-link bracelet. Swiss Super-LumiNova® markers. Textured matte dial. Bracelet engraved with Movado M Chevron logo, inspired by our archives.",
   "key_features": [
     "Dial: slate bue with index",
     "Case Diameter: 40",
@@ -34,6 +34,19 @@
   "colors": [
     "grey/blue"
   ],
-  "options": [],
+  "options": [
+    {
+      "name": "Color",
+      "values": [
+        "grey/blue"
+      ]
+    },
+    {
+      "name": "Size",
+      "values": [
+        "40"
+      ]
+    }
+  ],
   "variants": []
 }

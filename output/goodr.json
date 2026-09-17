@@ -7,22 +7,20 @@
   },
   "description": "Have you Bean There, Run That?! Now you can, with these Chicago-inspired shades. Featuring a geometric pattern in the city's flag colors and burnt orange lenses. Perfect for marathon miles, or just admiring your reflection at The Bean!!!",
   "key_features": [
-    "NO SLIP",
-    "NO BOUNCE",
-    "POLARIZED",
-    "UV400",
     "100% UVA & UVB protection",
-    "STANDARD LENSES",
     "Scratch-resistant & built to survive your chaos",
-    "REFLECTIVE LENSES",
     "Mirrored lenses reduce bright light & hide your peepers",
-    "PREMIUM POLYMER",
-    "Lightweight frames built for all-day comfort & everyday adventures"
+    "Lightweight frames built for all-day comfort & everyday adventures",
+    "Polarized",
+    "No Slip",
+    "No Bounce"
   ],
   "image_urls": [
+    "https://goodr.com/cdn/shop/files/1_RunCityChicago_SideTransparent_1200x600_crop_center.png?v=1788983204",
+    "https://goodr.com/cdn/shop/files/1_RunCityChicago_SideTransparent_1024x1024.png?v=1788983204",
     "https://goodr.com/cdn/shop/files/1_RunCityChicago_SideTransparent.png?v=1788983204",
-    "https://goodr.com/cdn/shop/files/2_RunCityChicago_Lifestyle.jpg?v=1788983204",
     "https://goodr.com/cdn/shop/files/3_RunCityChicago_FrontTransparent.png?v=1788983204",
+    "https://goodr.com/cdn/shop/files/2_RunCityChicago_Lifestyle.jpg?v=1788983204",
     "https://goodr.com/cdn/shop/files/4_RunCityChicago_Packaging.jpg?v=1788983204",
     "https://goodr.com/cdn/shop/files/5_RunCityChicago_Featured.jpg?v=1788983204"
   ],
@@ -32,7 +30,7 @@
   },
   "brand": "goodr sunglasses",
   "colors": [
-    "blue"
+    "translucent blue"
   ],
   "options": [
     {
@@ -55,7 +53,13 @@
       "sku": "G01093-OG-01",
       "price": 35.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://goodr.com/cdn/shop/files/1_RunCityChicago_SideTransparent_1024x1024.png?v=1788983204",
+        "https://goodr.com/cdn/shop/files/3_RunCityChicago_FrontTransparent.png?v=1788983204",
+        "https://goodr.com/cdn/shop/files/2_RunCityChicago_Lifestyle.jpg?v=1788983204",
+        "https://goodr.com/cdn/shop/files/4_RunCityChicago_Packaging.jpg?v=1788983204",
+        "https://goodr.com/cdn/shop/files/5_RunCityChicago_Featured.jpg?v=1788983204"
+      ]
     }
   ]
 }

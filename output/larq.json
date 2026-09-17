@@ -12,7 +12,12 @@
     "Electropolished 18/8 stainless steel (BPA free)",
     "Rechargeable lithium-polymer battery",
     "MicroUSB connector",
-    "Proprietary powder coating"
+    "Proprietary powder coating",
+    "PureVis™ technology eliminates up to 99.999% of Salmonella and 99.99% of E. coli",
+    "Nano Zero filtration improves taste and removes chlorine, pharmaceuticals and PFOA/PFOS",
+    "Hydration tracking with LARQ companion app",
+    "Detachable handle",
+    "USB-C charging port"
   ],
   "image_urls": [
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1770984506/BWOB068A_600857559/BWOB068A_600857559.png?_i=AA",
@@ -29,7 +34,8 @@
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071919/BWOB068A-53/BWOB068A-53.png?_i=AA",
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071954/BWOB068A-2/BWOB068A-2.png?_i=AA",
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071928/BWOB068A-5/BWOB068A-5.png?_i=AA",
-    "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071916/BWOB068A/BWOB068A.png?_i=AA"
+    "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071916/BWOB068A/BWOB068A.png?_i=AA",
+    "https://res.cloudinary.com/larq/image/upload/q_auto/w_900/v1714750463/SKU/SPA/v3/BWOB068A.jpg"
   ],
   "video_url": "https://res.cloudinary.com/larq/video/upload/f_auto/v1777442398/assets/spa/v3/products/video/LARQ_Bottle_PureVis_2_mbb/LARQ_MBBxPV2_m-opt.mp4",
   "category": {
@@ -74,12 +80,12 @@
     {
       "selections": [
         {
-          "name": "Color",
-          "value": "Obsidian Black"
-        },
-        {
           "name": "Size",
           "value": "23 oz"
+        },
+        {
+          "name": "Color",
+          "value": "Obsidian Black"
         }
       ],
       "sku": "BWOB068A",

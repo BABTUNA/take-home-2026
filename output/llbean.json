@@ -21,24 +21,19 @@
     "Imported."
   ],
   "image_urls": [
-    "https://cdni.llbean.net/is/image/wim/224626_36814_41",
-    "https://cdni.llbean.net/is/image/wim/224626_38221_41",
     "https://cdni.llbean.net/is/image/wim/224626_1176_41",
     "https://cdni.llbean.net/is/image/wim/224626_1207_41",
-    "https://cdni.llbean.net/is/image/wim/224626_292_41",
     "https://cdni.llbean.net/is/image/wim/224626_464_41",
-    "https://cdni.llbean.net/is/image/wim/224626_55_41",
     "https://cdni.llbean.net/is/image/wim/224626_1_41",
+    "https://cdni.llbean.net/is/image/wim/224626_38221_41",
+    "https://cdni.llbean.net/is/image/wim/224626_36814_41",
+    "https://cdni.llbean.net/is/image/wim/224626_292_41",
+    "https://cdni.llbean.net/is/image/wim/224626_55_41",
     "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
     "https://cdni.llbean.net/is/image/wim/224626_0_45",
     "https://cdni.llbean.net/is/image/wim/224626_0_46",
     "https://cdni.llbean.net/is/image/wim/224626_0_47",
-    "https://cdni.llbean.net/is/image/wim/224626_0_48",
-    "https://cdni.llbean.net/is/image/wim/224626_1176_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
-    "https://cdni.llbean.net/is/image/wim/224626_1176_45?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
-    "https://cdni.llbean.net/is/image/wim/224626_1176_46?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
-    "https://cdni.llbean.net/is/image/wim/224626_1176_47?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
-    "https://cdni.llbean.net/is/image/wim/224626_1176_48?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44"
+    "https://cdni.llbean.net/is/image/wim/224626_0_48"
   ],
   "video_url": null,
   "category": {
@@ -63,15 +58,10 @@
         "Charcoal Heather",
         "Delta Blue",
         "Gray Heather",
+        "Lake",
         "Navy Blue",
         "Soft Spruce",
         "White"
-      ]
-    },
-    {
-      "name": "Sale Color",
-      "values": [
-        "Lake"
       ]
     },
     {
@@ -98,7 +88,7 @@
       "selections": [
         {
           "name": "Color",
-          "value": "Delta Blue"
+          "value": "Charcoal Heather"
         },
         {
           "name": "Item",
@@ -109,11 +99,11 @@
           "value": "Small"
         }
       ],
-      "sku": "0ATH201002",
+      "sku": "0ATH290002",
       "price": 29.95,
       "available": true,
       "image_urls": [
-        "https://cdni.llbean.net/is/image/wim/224626_36814_41",
+        "https://cdni.llbean.net/is/image/wim/224626_1176_41",
         "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
         "https://cdni.llbean.net/is/image/wim/224626_0_45",
         "https://cdni.llbean.net/is/image/wim/224626_0_46",
@@ -124,7 +114,7 @@
     {
       "selections": [
         {
-          "name": "Sale Color",
+          "name": "Color",
           "value": "Lake"
         },
         {
@@ -133,10 +123,10 @@
         },
         {
           "name": "Size",
-          "value": "Small"
+          "value": "Medium"
         }
       ],
-      "sku": "1000264614",
+      "sku": "1000264615",
       "price": 24.99,
       "available": true,
       "image_urls": [
@@ -160,19 +150,19 @@
         },
         {
           "name": "Size",
-          "value": "Medium"
+          "value": "Large"
         }
       ],
-      "sku": "0ATG410004",
+      "sku": "0ATG410006",
       "price": 29.95,
       "available": true,
       "image_urls": [
         "https://cdni.llbean.net/is/image/wim/224626_1_41",
-        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Large25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Large25Retina.png 2x",
-        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Small25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Small25Retina.png 2x",
-        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Medium25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Medium25Retina.png 2x",
-        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_XSmall25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_XSmall25Retina.png 2x",
-        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Large25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Large25Retina.png 2x"
+        "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
+        "https://cdni.llbean.net/is/image/wim/224626_0_45",
+        "https://cdni.llbean.net/is/image/wim/224626_0_46",
+        "https://cdni.llbean.net/is/image/wim/224626_0_47",
+        "https://cdni.llbean.net/is/image/wim/224626_0_48"
       ]
     }
   ]

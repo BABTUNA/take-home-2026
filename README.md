@@ -1,12 +1,80 @@
-## Channel3 Take Home Assignment
+# Channel3 Take Home
 
-Refer to the "Take-Home Engineering Assignment" for setup instructions.
+Site-agnostic product extraction: raw PDP HTML from any store in, a validated `Product` out, plus a storefront UI on top of the extracted catalog. No site-specific logic anywhere; the pipeline was built against the 5 assignment pages and then tested on 45 more pages fetched from other stores (`data_unseen/`) across ~15 platforms, 7 currencies, and 3 languages.
 
-(Full README with run instructions, cost table, and system design coming with the final submission; sections below are filled in as the work lands.)
+The core idea: **code does the finding, the model does the choosing.** Deterministic Python harvests and verifies every candidate fact from the page; a cheap LLM only interprets and selects (media by index, prices only if literally present); validators make bad output impossible to emit.
+
+## Running it
+
+Setup (needs the OpenRouter key in `.env` as `OPEN_ROUTER_API_KEY=...`):
+
+```bash
+uv sync
+```
+
+Extract the 5 assignment pages (writes `output/*.json`, logs per-call cost):
+
+```bash
+uv run python run_extract.py
+```
+
+Add `--unseen` for all 50 pages, or pass explicit paths. Env knobs: `EXTRACT_MODEL` (default flash-lite; the committed outputs used `google/gemini-3-flash-preview`), `PICK_MODEL`, `TAXONOMY_RETRIEVAL=union|lexical`, `OUTPUT_DIR`.
+
+Server + frontend (two terminals):
+
+```bash
+uv run uvicorn server:app --port 8000
+```
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Then open http://localhost:5173. The catalog has an All (50) / Assignment (5) filter; clicking a product opens its PDP, where the variant picker resolves selections to a concrete sku/price/availability.
+
+Evaluation:
+
+```bash
+uv run python eval/score.py          # per-field scoreboard vs hand-written ground truth
+uv run python eval/baseline.py       # no-LLM floor, then: eval/score.py --baseline
+uv run python eval/reachability.py   # does ground truth survive distillation?
+uv run python eval/taxonomy_bench.py --recall   # category retrieval benchmark
+cd frontend && npx vitest run        # variant-resolution unit tests
+```
+
+## How it works
+
+Four stages per page (full walkthrough with real data in [BACKEND.md](BACKEND.md), function-level trace in [BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md)):
+
+1. **Harvest**: five generic channels: JSON-LD, meta tags, embedded JSON blobs (found by shape, never by name), raw script text, visible text with aria-label/alt/title inlined. Media collected with provenance.
+2. **Distill**: identity anchoring drops other products' data; blobs are pruned (framework noise out, related products summarized, record lists rendered as compact tables); media deduped by asset and ranked by relevance to the page's own hero; per-section budgets.
+3. **Extract**: one structured-output call. The model picks images by `IMG_n` index (hallucinated URLs are unrepresentable) and its prices must literally appear in the evidence. Validation failures drive repair retry, model escalation, then loud failure.
+4. **Categorize**: union retrieval (stemmed lexical + local embeddings) shortlists Google's 5,596-path taxonomy, the model picks by number, pydantic guarantees the result exists. No silent fallback.
+
+## Results
+
+Per-field scoring against hand-written ground truth for the 5 assignment pages (`eval/ground_truth/`, every value carries a note on where it came from):
+
+| | name | price | desc | features | images | video | category | colors | variants | overall |
+|---|---|---|---|---|---|---|---|---|---|---|
+| pipeline | 1.00 | 1.00 | 1.00 | 1.00 | 0.88 | 1.00 | 1.00 | 1.00 | 0.89 | **0.976** |
+| no-LLM baseline | 0.80 | 0.45 | 0.85 | 0.20 | 0.28 | 0.80 | 0.00 | 0.20 | 0.40 | 0.442 |
+
+The delta is the measured value of the blob/DOM channels plus the model. All 50 corpus pages extract successfully.
+
+Extraction model sweep (same pipeline, same ground truth):
+
+| extraction model | score | ~cost/page |
+|---|---|---|
+| google/gemini-3-flash-preview (used for committed outputs) | 0.976 | $0.015-0.023 |
+| openai/gpt-5-mini | 0.905 | ~$0.01 |
+| google/gemini-2.5-flash-lite | 0.884 | ~$0.003 |
+
+The premium model earns its cost specifically on variant scoping and colorway judgment; flash-lite is the documented budget config via `EXTRACT_MODEL`.
 
 ## Category resolution benchmark
 
-The category field must exactly match 1 of 5,596 Google taxonomy paths. Resolution is two steps: retrieve a candidate shortlist, then an LLM picks one by index (validated to exist). Both steps were benchmarked on 50 pages (the 5 assignment pages plus 45 pages fetched from other stores, `data_unseen/`) against hand-judged accepted categories (`eval/expected_categories.json`; multiple accepted paths where the taxonomy is genuinely ambiguous). Cost and latency measured over 5 representative pages; run it yourself with `uv run python eval/taxonomy_bench.py`.
+The category field must exactly match 1 of 5,596 Google taxonomy paths. Resolution is two steps: retrieve a candidate shortlist, then an LLM picks one by index (validated to exist). Both steps were benchmarked on all 50 pages against hand-judged accepted categories (`eval/expected_categories.json`; multiple accepted paths where the taxonomy is genuinely ambiguous). Cost and latency measured over 5 representative pages.
 
 | config | all 50 pages | assignment 5 only | calls/page | cost/page | latency/page |
 |---|---|---|---|---|---|
@@ -19,6 +87,29 @@ The category field must exactly match 1 of 5,596 Google taxonomy paths. Resoluti
 
 Latency note: the per-page differences between configs are entirely the API pick call. Embedding retrieval adds ~10ms per page (query embedding, included in the union rows above) plus two one-time startup costs that production amortizes: the fastembed model load (a second or two per process) and embedding the 5,596 taxonomy paths (~30s once ever, then loaded from the `.cache/` file).
 
-What the numbers decomposed: every miss of the initial config was a retrieval miss (the right answer never made the lexical shortlist: "Barrel Jeans" shares no tokens with "Pants", "Chronograph" none with "Watches"), while flash-lite's residual errors were judgment (it filed a Gore-Tex jacket under Rain Suits with the right answer on the list). Union retrieval (stemmed lexical top-100 unioned with local bge-small embedding top-50, embeddings cached, ~10ms/page) fixes the first; the stronger picker on its small ~3K-token prompt fixes the second for ~$0.0012/page extra. Majority voting a weak model is strictly worse: it converges on the model's consistent mistakes at 3x the calls. The tree walk (pick a child per level, no shortlist) is cheap but commits early and strands products at shallow levels.
+What the numbers decomposed: every miss of the initial config was a retrieval miss (the right answer never made the lexical shortlist: "Barrel Jeans" shares no tokens with "Pants", "Chronograph" none with "Watches"), while flash-lite's residual errors were judgment (it filed a Gore-Tex jacket under Rain Suits with the right answer on the list). Union retrieval fixes the first; the stronger picker on its small ~3K-token prompt fixes the second for ~$0.0012/page extra. Majority voting a weak model is strictly worse: it converges on the model's consistent mistakes at 3x the calls. The assignment-5 column is why the unseen corpus exists: every config aces the 5 graded pages, and the differences only show on unseen sites.
 
-The two remaining misses: a seed packet filed under fresh vegetables, and Peak Design's Everyday Backpack as "Camera Bags & Cases" (arguably correct; it is marketed as a camera backpack). The assignment-5 column is why the unseen corpus exists: every config aces the 5 graded pages, and the differences only show on unseen sites.
+## Design choices
+
+- **Media by index, never by URL.** The model answers `image_ids: [0, 1, 4]` against a numbered candidate table; a hallucinated URL is structurally impossible, and prices are provenance-gated the same way (a number the page never showed fails the draft).
+- **The eval harness is part of the backend, not an afterthought.** Ground truth with per-value evidence notes, a no-LLM baseline as the measured floor, and a reachability check that separates "the distiller lost it" from "the model missed it". Every distill bug found during development was caught by the harness, none by eyeballing outputs.
+- **Variants are compositional and honest.** Option axes are stored separately from variant combinations; a variant exists only where the page ties a concrete combination to a sku/price/stock signal, and availability is null without an explicit signal. A page showing 8 colors and 6 sizes without linking them yields two axes, not 48 invented combos.
+- **Two calls per page, cheap by default, escalation on failure.** Distillation (300-2300KB of HTML down to ~40-60KB of evidence) is what makes the cheap call viable; the reachability check is what makes aggressive distillation safe.
+- **No site-specific anything.** Blobs are found by commerce-key density, noise is removed by framework vocabulary, media is ranked by the page's own hero image, and no prompt contains an example drawn from the assignment data.
+
+## Known limits
+
+- Pages that tie variants through opaque sku records without label joins (L.L.Bean's 83 combos) get conservative variant enumeration; the harness scores it honestly at 0.52 rather than inventing joins.
+- Image-set boundaries on multi-colorway pages are judgment calls (llbean 0.75, nike 0.67 image F1); the evidence notes document the calls made.
+- Client-rendered shells genuinely lack data in raw HTML; the pipeline emits a partial product from whatever JSON-LD/meta survives (see `data_unseen/vitamix.html`, a 22KB shell) rather than hallucinating completeness.
+- Bot walls, not extraction, are the real-world coverage ceiling: ~20 major retailers refused the corpus fetches outright.
+- Google's taxonomy itself has gaps (no category for a camera drone); no retrieval strategy fixes a missing answer.
+- Deterministic fast path (skip the LLM when JSON-LD alone covers the schema) is designed but deliberately deferred: the baseline shows deterministic-only quality drops exactly where extraction is cheapest to get right.
+
+## Repo map
+
+Working documents kept as process evidence: [PLAN.md](PLAN.md) (initial plan), [BACKEND.md](BACKEND.md) (design walkthrough with real data), [BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md) / [SERVER_IMPLEMENTATION.md](SERVER_IMPLEMENTATION.md) / [FRONTEND_IMPLEMENTATION.md](FRONTEND_IMPLEMENTATION.md) (function-level specs kept in sync with the code), [EVAL_IMPLEMENTATION.md](EVAL_IMPLEMENTATION.md), [ROADMAP.md](ROADMAP.md).
+
+## System design
+
+*(to be written)*

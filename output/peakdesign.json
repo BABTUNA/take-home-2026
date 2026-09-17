@@ -5,10 +5,13 @@
     "currency": "USD",
     "compare_at_price": null
   },
-  "description": "An iconic, award-winning pack for everyday and photo carry, the all-new Everyday Backpack is built around access, organization, expansion, and protection. Unique MagLatch hardware provides lightning fast top access, with dual side access via two weatherproof UltraZips.",
+  "description": "An iconic, award-winning pack for everyday and photo carry, the newly revamped Everyday Backpack is built around access, organization, expansion, and protection. Unique MagLatch hardware provides lightning fast top access, with dual side access via two weatherproof UltraZips. Inside, 3 configurable FlexFold dividers keep gear organized, protected, and not bunched at the bottom of your bag. Dedicated sleeves for up to 15” laptop (or 16\" MacBook Pro), tablet, or documents, plus a variety of internal slip pockets for small items.",
   "key_features": [
-    "Unique MagLatch hardware provides lightning fast top access",
-    "Dual side access via two weatherproof UltraZips"
+    "MagLatch hardware provides lightning fast top access",
+    "Dual side access via two weatherproof UltraZips",
+    "3 configurable FlexFold dividers",
+    "Dedicated sleeves for up to 15” laptop (or 16\" MacBook Pro), tablet, or documents",
+    "PFAS-free"
   ],
   "image_urls": [
     "https://cdn.shopify.com/s/files/1/2986/1172/files/everyday-backpack-black-20-1.jpg",
@@ -54,7 +57,7 @@
   ],
   "video_url": null,
   "category": {
-    "name": "Luggage & Bags > Backpacks"
+    "name": "Cameras & Optics > Camera & Optic Accessories > Camera Parts & Accessories > Camera Bags & Cases"
   },
   "brand": "Peak Design",
   "colors": [
@@ -107,6 +110,230 @@
       "image_urls": [
         "https://cdn.shopify.com/s/files/1/2986/1172/files/everyday-backpack-black-20-1.jpg"
       ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Charcoal"
+        }
+      ],
+      "sku": "BEDB-20-CH-3",
+      "price": 279.95,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/everyday-backpack-charcoal-20-1.jpg?v=1762275583"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Ocean"
+        }
+      ],
+      "sku": "BEDB-20-DS-3",
+      "price": 279.95,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/Everyday-Backpack-20L-Ocean-1218.jpg?v=1753395149"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Kelp"
+        }
+      ],
+      "sku": "BEDB-20-KP-3",
+      "price": 279.95,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/Everyday-Backpack-20L-Kelp-1225.jpg?v=1753393545"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Midnight"
+        }
+      ],
+      "sku": "BEDB-20-MN-3",
+      "price": 279.95,
+      "available": false,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/everyday-backpack-midnight-20-1.jpg?v=1762275585"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Coyote X-Pac™"
+        }
+      ],
+      "sku": "BEDB-20-CY-3",
+      "price": 279.95,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/Everyday-Backpack-20L-Coyote-8114_824c8c85-cbfa-41fd-a07d-338052db3cc5.jpg?v=1762275585"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Ash"
+        }
+      ],
+      "sku": "BEDB-20-AS-3",
+      "price": 279.95,
+      "available": false,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/everyday-backpack-ash-20-1.jpg?v=1762275582"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "20L"
+        },
+        {
+          "name": "Color",
+          "value": "Eclipse"
+        }
+      ],
+      "sku": "BEDB-20-EP-3",
+      "price": 279.95,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/Everyday-Backpack-20L-Eclipse-1213.jpg?v=1753395675"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "30L"
+        },
+        {
+          "name": "Color",
+          "value": "Black"
+        }
+      ],
+      "sku": "BEDB-30-BK-3",
+      "price": 299.95,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/2986/1172/files/everyday-backpack-black-30-1.jpg?v=1762275582"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "30L"
+        },
+        {
+          "name": "Color",
+          "value": "Charcoal"
+        }
+      ],
+      "sku": "BEDB-30-CH-3",
+      "price": 299.95,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "30L"
+        },
+        {
+          "name": "Color",
+          "value": "Coyote X-Pac™"
+        }
+      ],
+      "sku": "BEDB-30-CY-3",
+      "price": 299.95,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "30L"
+        },
+        {
+          "name": "Color",
+          "value": "Midnight"
+        }
+      ],
+      "sku": "BEDB-30-MN-3",
+      "price": 299.95,
+      "available": false,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "30L"
+        },
+        {
+          "name": "Color",
+          "value": "Kelp"
+        }
+      ],
+      "sku": "BEDB-30-KP-3",
+      "price": 299.95,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "30L"
+        },
+        {
+          "name": "Color",
+          "value": "Ocean"
+        }
+      ],
+      "sku": "BEDB-30-DS-3",
+      "price": 299.95,
+      "available": true,
+      "image_urls": []
     }
   ]
 }

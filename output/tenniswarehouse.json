@@ -5,10 +5,9 @@
     "currency": "USD",
     "compare_at_price": null
   },
-  "description": "Babolat Pure Drive 2025 Racquet. Tension range 46 to 55 pounds, optimum 51 pounds. One of the best racquets for power and spin.",
+  "description": "Babolat Pure Drive 2025 Racquet. Tension range 46 to 55 pounds, optimum 51 pounds.",
   "key_features": [
-    "Tension range 46 to 55 pounds",
-    "Optimum tension 51 pounds"
+    "Tension range 46 to 55 pounds, optimum 51 pounds."
   ],
   "image_urls": [
     "https://img.tennis-warehouse.com/watermark/rs.php?path=BPD25R-1.jpg&nw=1486"
@@ -25,7 +24,7 @@
       "values": [
         "4 1/8\" (#1)",
         "4 1/4\" (#2)",
-        "4 1/8\" (#3)",
+        "4 3/8\" (#3)",
         "4 1/2\" (#4)"
       ]
     }
@@ -38,7 +37,7 @@
           "value": "4 1/8\" (#1)"
         }
       ],
-      "sku": "BPD25R-1",
+      "sku": "Babolat Pure Drive 2025 Racquet 4 1/8\" (#1)",
       "price": 299.0,
       "available": true,
       "image_urls": [
@@ -52,7 +51,7 @@
           "value": "4 1/4\" (#2)"
         }
       ],
-      "sku": "BPD25R-2",
+      "sku": "Babolat Pure Drive 2025 Racquet 4 1/4\" (#2)",
       "price": 299.0,
       "available": true,
       "image_urls": [
@@ -66,7 +65,7 @@
           "value": "4 3/8\" (#3)"
         }
       ],
-      "sku": "BPD25R-3",
+      "sku": "Babolat Pure Drive 2025 Racquet 4 3/8\" (#3)",
       "price": 299.0,
       "available": true,
       "image_urls": [
@@ -80,7 +79,7 @@
           "value": "4 1/2\" (#4)"
         }
       ],
-      "sku": "BPD25R-4",
+      "sku": "Babolat Pure Drive 2025 Racquet 4 1/2\" (#4)",
       "price": 299.0,
       "available": true,
       "image_urls": [

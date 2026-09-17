@@ -8,11 +8,10 @@
   "description": "Promote enhanced muscle performance and strength with creatine monohydrate. Great for more than just athletes – it also supports cellular energy production and cognitive function to help you perform at your best.* NSF Certified for Sport®",
   "key_features": [
     "High-quality creatine for lean muscle mass, endurance, cellular energy, and brain function*",
-    "5g Creatine Monohydrate per serving",
+    "Creatine Monohydrate 5g",
     "NSF Certified for Sport®",
-    "Supports muscle strength, power, and exercise performance*",
-    "Supports cellular energy production*",
-    "Supports cognitive and neuromuscular health*"
+    "Supports cellular energy production and cognitive function",
+    "Micronized form for easy mixing and absorption"
   ],
   "image_urls": [
     "https://d1vo8zfysxy97v.cloudfront.net/media/product/sf903__ve8382489c6ce9fb7f28cdddef00e6f1ece146591.png",
@@ -32,7 +31,7 @@
   "colors": [],
   "options": [
     {
-      "name": "Servings",
+      "name": "Size",
       "values": [
         "90 Scoop(s)",
         "180 Scoop(s)"
@@ -43,7 +42,7 @@
     {
       "selections": [
         {
-          "name": "Servings",
+          "name": "Size",
           "value": "90 Scoop(s)"
         }
       ],

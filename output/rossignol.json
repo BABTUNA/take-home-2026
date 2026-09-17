@@ -10,17 +10,17 @@
     "CORE: POPLAR WOOD CORE",
     "CONSTRUCTION: RECTANGULAR FULL SIDEWALL",
     "SIDECUTS TECHNOLOGY: EXTENDED SIDECUT",
-    "Radius 10.0",
-    "Tail Dimensions 120.0",
-    "Tip Dimensions 132.0",
-    "Waist Dimensions 84.0",
     "REINFORCEMENT 1: TITANAL BEAM",
-    "Technology V-A-S",
+    "V-A-S",
+    "RECTANGULAR FULL SIDEWALL",
     "PREMIUM HARDTOP",
-    "LCT Line Control Technology",
+    "LCT",
     "AIR TIP",
     "SINTERED HD BASE",
-    "TIP & TAIL ROCKER"
+    "TIP & TAIL ROCKER",
+    "EXTENDED SIDECUT",
+    "TITANAL BEAM",
+    "POPLAR WOOD CORE"
   ],
   "image_urls": [
     "https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwded2e24e/images/large/RAOFV05000_72DPI_01_v00.jpg",
@@ -39,12 +39,6 @@
     "000"
   ],
   "options": [
-    {
-      "name": "Color",
-      "values": [
-        "000"
-      ]
-    },
     {
       "name": "Size",
       "values": [
@@ -70,6 +64,10 @@
         {
           "name": "Size",
           "value": "146"
+        },
+        {
+          "name": "Binding",
+          "value": "No bindings"
         }
       ],
       "sku": "RAOFV05000146",
@@ -82,6 +80,10 @@
         {
           "name": "Size",
           "value": "152"
+        },
+        {
+          "name": "Binding",
+          "value": "No bindings"
         }
       ],
       "sku": "RAOFV05000152",
@@ -94,6 +96,10 @@
         {
           "name": "Size",
           "value": "160"
+        },
+        {
+          "name": "Binding",
+          "value": "No bindings"
         }
       ],
       "sku": "RAOFV05000160",
@@ -106,6 +112,10 @@
         {
           "name": "Size",
           "value": "168"
+        },
+        {
+          "name": "Binding",
+          "value": "No bindings"
         }
       ],
       "sku": "RAOFV05000168",
@@ -118,6 +128,10 @@
         {
           "name": "Size",
           "value": "176"
+        },
+        {
+          "name": "Binding",
+          "value": "No bindings"
         }
       ],
       "sku": "RAOFV05000176",
@@ -130,6 +144,10 @@
         {
           "name": "Size",
           "value": "184"
+        },
+        {
+          "name": "Binding",
+          "value": "No bindings"
         }
       ],
       "sku": "RAOFV05000184",

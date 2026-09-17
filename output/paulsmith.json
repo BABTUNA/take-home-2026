@@ -58,9 +58,7 @@
       "sku": "M1R-800P3-L00050-15",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -72,9 +70,7 @@
       "sku": "M1R-800P3-L00050-15.5",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -86,9 +82,7 @@
       "sku": "M1R-800P3-L00050-16",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -100,9 +94,7 @@
       "sku": "M1R-800P3-L00050-16.5",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -114,9 +106,7 @@
       "sku": "M1R-800P3-L00050-17",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -128,9 +118,7 @@
       "sku": "M1R-800P3-L00050-17.5",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -142,9 +130,7 @@
       "sku": "M1R-800P3-L00050-18",
       "price": 335.0,
       "available": true,
-      "image_urls": [
-        "https://assets.paulsmith.com/paul-smith-products/f_auto,q_auto,w_1200,c_scale/v1714741465/MODEL/ECOM/M1R/M1R-800P3-L00050-01/M1R-800P3-L00050-01_3.jpg"
-      ]
+      "image_urls": []
     }
   ]
 }

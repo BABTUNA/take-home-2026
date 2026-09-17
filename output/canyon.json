@@ -3,7 +3,7 @@
   "price": {
     "price": 3599.0,
     "currency": "USD",
-    "compare_at_price": null
+    "compare_at_price": 3799.0
   },
   "description": "Versatile carbon all-road endurance bike. 38 mm tyre clearance. VCLS Technology: iconic comfort seatpost. Shimano 105 Di2 electronic groupset. DT Swiss Endurance LN aluminum wheels.",
   "key_features": [
@@ -13,7 +13,10 @@
     "Shimano 105 Di2 electronic groupset",
     "DT Swiss Endurance LN aluminum wheels",
     "Material: Carbon (CF)",
-    "Weight: 18.96 lbs"
+    "Weight: 18.96 lbs",
+    "Shimano 105 Di2 12-speed electronic drivetrain",
+    "Canyon FK0154 CF Disc Carbon Fork",
+    "Continental Grand Prix TR 32 mm tires"
   ],
   "image_urls": [
     "https://dma.canyon.com/image/upload/w_945,h_495,c_fit/f_auto/q_auto/v1777355662/2027_FULL_endurace_cf-7-di2_4421_R129_P01_oopfry",
@@ -32,7 +35,7 @@
   ],
   "video_url": null,
   "category": {
-    "name": "Sporting Goods > Outdoor Recreation > Cycling > Bicycle Parts > Bicycle Wheels"
+    "name": "Sporting Goods > Outdoor Recreation > Cycling > Bicycles"
   },
   "brand": "Canyon",
   "colors": [
@@ -64,6 +67,10 @@
     {
       "selections": [
         {
+          "name": "Color",
+          "value": "Stealth"
+        },
+        {
           "name": "Size",
           "value": "2XS"
         }
@@ -77,6 +84,10 @@
     },
     {
       "selections": [
+        {
+          "name": "Color",
+          "value": "Stealth"
+        },
         {
           "name": "Size",
           "value": "XS"
@@ -92,6 +103,10 @@
     {
       "selections": [
         {
+          "name": "Color",
+          "value": "Stealth"
+        },
+        {
           "name": "Size",
           "value": "S"
         }
@@ -105,6 +120,10 @@
     },
     {
       "selections": [
+        {
+          "name": "Color",
+          "value": "Stealth"
+        },
         {
           "name": "Size",
           "value": "M"
@@ -120,6 +139,10 @@
     {
       "selections": [
         {
+          "name": "Color",
+          "value": "Stealth"
+        },
+        {
           "name": "Size",
           "value": "L"
         }
@@ -134,6 +157,10 @@
     {
       "selections": [
         {
+          "name": "Color",
+          "value": "Stealth"
+        },
+        {
           "name": "Size",
           "value": "XL"
         }
@@ -147,6 +174,10 @@
     },
     {
       "selections": [
+        {
+          "name": "Color",
+          "value": "Stealth"
+        },
         {
           "name": "Size",
           "value": "2XL"

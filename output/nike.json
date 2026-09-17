@@ -37,8 +37,8 @@
   },
   "brand": "Nike",
   "colors": [
-    "Phantom/College Grey/Team Red/Black",
     "White/Pure Platinum/Team Red/Obsidian",
+    "Phantom/College Grey/Team Red/Black",
     "Black/Black",
     "Black/White",
     "Flax/Gum Light Brown/Black/Wheat",
@@ -47,19 +47,6 @@
     "White/White"
   ],
   "options": [
-    {
-      "name": "Color",
-      "values": [
-        "Phantom/College Grey/Team Red/Black",
-        "White/Pure Platinum/Team Red/Obsidian",
-        "Black/Black",
-        "Black/White",
-        "Flax/Gum Light Brown/Black/Wheat",
-        "White/Black",
-        "Wolf Grey/Black/Wolf Grey",
-        "White/White"
-      ]
-    },
     {
       "name": "Size",
       "values": [
@@ -94,9 +81,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -108,9 +93,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -122,9 +105,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -136,9 +117,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -150,9 +129,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -164,9 +141,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -178,9 +153,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -192,9 +165,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -206,9 +177,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -220,9 +189,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -234,9 +201,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -248,9 +213,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -262,9 +225,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -276,9 +237,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -290,9 +249,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -304,9 +261,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
@@ -318,9 +273,7 @@
       "sku": "IO2077-030",
       "price": 76.99,
       "available": true,
-      "image_urls": [
-        "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png"
-      ]
+      "image_urls": []
     }
   ]
 }

@@ -5,18 +5,18 @@
     "currency": "USD",
     "compare_at_price": 139.0
   },
-  "description": "Extra soft, extra absorbent, and extra delicious, our Waffle Robes add texture to your routine. This style’s lightweight and unique honeycomb weave traps and soaks up water fast, for quick and efficient drying, and is innovatively designed to reduce shrinkage and maintain its shape after wash and wear. Made from 100% long-staple Turkish cotton, and pre-washed for softness and an extra plush feel. Lightweight, and Kimono-styled for extra comfort. ",
+  "description": "Extra soft, extra absorbent, and extra delicious, our Waffle Robes add texture to your routine. This style’s lightweight and unique honeycomb weave traps and soaks up water fast, for quick and efficient drying, and is innovatively designed to reduce shrinkage and maintain its shape after wash and wear.",
   "key_features": [
-    "All-new, exclusive design that reduces shrinkage",
-    "100% long-staple Turkish cotton",
-    "290 GSM",
-    "Lightweight and unique honeycomb weave",
-    "Pre-washed for softness",
-    "Kimono-styled",
-    "OEKO-TEX® STANDARD 100 Certified"
+    "100% Turkish Cotton for lasting comfort and 290 GSM",
+    "Lightweight",
+    "Absorbent",
+    "Textured",
+    "OEKO-TEX® STANDARD 100 Certified",
+    "Exclusive weave maintains shape with minimal shrinkage"
   ],
   "image_urls": [
     "https://www.brooklinen.com/cdn/shop/files/BKL_26-03_Bath_Robe_Waffle_Daylight_Flat_1x_PDP_WOgrey_1_d6696196-f62b-4922-9deb-0a8c6edb9c34.jpg?v=1789150159",
+    "https:////www.brooklinen.com/cdn/shop/files/BKL_26-03_Bath_Robe_Waffle_Daylight_Flat_1x_PDP_WOgrey_1_d6696196-f62b-4922-9deb-0a8c6edb9c34.jpg",
     "https://www.brooklinen.com/cdn/shop/files/BKL_26-03_Bath_Robe_Waffle_VivaTwoTone_Flatlay_1x_PDP_WOgrey_ebdb4859-cfa6-44af-a823-f8eb99f2ebce.jpg?v=1789150159",
     "https://www.brooklinen.com/cdn/shop/files/BKL_25-03_Bath_Waffle_Robe_Abyss_Flat_1x_WOgrey_52fcc329-29d3-4997-be59-1af95e4a31ff.jpg?v=1775677099",
     "https://www.brooklinen.com/cdn/shop/files/BKL_25-03_Bath_Waffle_Robe_Aloe_Flat_1x_WOgrey_e5f1af49-12a6-4e20-a11d-bce7689777bf.jpg?v=1785427981",
@@ -64,7 +64,18 @@
     "Viva Two Tone",
     "Wild Moss Two Tone",
     "Daylight",
-    "Aloe"
+    "Aloe",
+    "Azul Check",
+    "Botanical Green",
+    "White",
+    "Slate",
+    "Pale Lilac",
+    "Pebble",
+    "Storm",
+    "Sunshine",
+    "Abyss",
+    "Plum",
+    "Orchid Check"
   ],
   "options": [
     {
