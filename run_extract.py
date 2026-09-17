@@ -7,15 +7,15 @@ Usage:
 """
 
 import asyncio
-import json
 import logging
+import os
 import sys
 import time
 from pathlib import Path
 
 from pipeline import extract_product
 
-OUTPUT_DIR = Path("output")
+OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", "output"))
 
 
 async def run_one(path: Path) -> tuple[str, bool, float]:

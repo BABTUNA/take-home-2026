@@ -221,7 +221,7 @@ def _extract_visible_text(soup: BeautifulSoup) -> str:
 def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
     seen: dict[str, MediaCandidate] = {}
 
-    def add(url: str, kind: str, origin: str, width: int | None = None):
+    def add(url: str, kind: str, origin: str, width: int | None = None, path_hint: str = ""):
         url = url.strip()
         if not url.startswith(("http://", "https://", "//")):
             return
@@ -231,8 +231,17 @@ def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
         if "1x1" in url or url.lower().endswith(".svg") or _NOISE_URL.search(url):
             return
         existing = seen.get(url)
-        if existing is None or (width or 0) > (existing.width or 0):
-            seen[url] = MediaCandidate(url=url, kind=kind, origin=origin, width=width)
+        if existing is not None:
+            # Same URL sighted again: keep the best width and accumulate the
+            # key paths (an asset can appear under both a product-group path
+            # and a selectedProduct path, and ranking needs to see both).
+            if path_hint and path_hint not in existing.path_hint:
+                existing.path_hint = f"{existing.path_hint} {path_hint}".strip()
+            if (width or 0) > (existing.width or 0):
+                existing.width = width
+        else:
+            seen[url] = MediaCandidate(url=url, kind=kind, origin=origin, width=width,
+                                       path_hint=path_hint)
         # For sized renditions (?w=320 style) also offer the bare asset URL,
         # which CDNs serve at original resolution. It joins the same dedupe
         # group and wins only if nothing else is cleaner.
@@ -265,23 +274,24 @@ def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
     if "og:video" in ev.meta:
         add(ev.meta["og:video"], "video", "meta")
 
-    # URLs inside JSON-LD and blobs: walk every string value.
-    def walk_for_urls(node, origin, depth=0):
+    # URLs inside JSON-LD and blobs: walk every string value, remembering the
+    # key path so ranking can tell a product gallery from a related-items rail.
+    def walk_for_urls(node, origin, path="", depth=0):
         # State blobs nest deep (Next.js pageProps chains sit ~10 levels down),
         # so the cap is generous; the per-list cap is what bounds the walk.
         if depth > 25:
             return
         if isinstance(node, str) and node.startswith(("http", "//")):
             if _VIDEO_EXT.search(node):
-                add(node, "video", origin)
+                add(node, "video", origin, path_hint=path)
             elif _IMAGE_EXT.search(node) or _IMAGE_PATH_HINT.search(node):
-                add(node, "image", origin)
+                add(node, "image", origin, path_hint=path)
         elif isinstance(node, dict):
-            for v in node.values():
-                walk_for_urls(v, origin, depth + 1)
+            for k, v in node.items():
+                walk_for_urls(v, origin, f"{path}.{k}"[-120:], depth + 1)
         elif isinstance(node, list):
             for item in node[:200]:
-                walk_for_urls(item, origin, depth + 1)
+                walk_for_urls(item, origin, path, depth + 1)
 
     for block in ev.json_ld:
         walk_for_urls(block, "json_ld")

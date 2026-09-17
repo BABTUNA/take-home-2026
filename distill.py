@@ -19,7 +19,7 @@ from models import Evidence, MediaCandidate, PromptContext
 _BUDGETS = {
     "json_ld": 20_000,
     "meta": 2_000,
-    "blobs": 35_000,
+    "blobs": 45_000,
     "scripts": 8_000,
     "text": 10_000,
 }
@@ -40,8 +40,7 @@ def distill(ev: Evidence) -> PromptContext:
         ("IDENTITY", _render_identity(ev)),
         ("JSON-LD", _fit(json.dumps(json_ld, ensure_ascii=False, default=str), _BUDGETS["json_ld"])),
         ("META", _fit("\n".join(f"{k}: {v}" for k, v in ev.meta.items()), _BUDGETS["meta"])),
-        ("EMBEDDED JSON", _fit("\n".join(json.dumps(b, ensure_ascii=False, default=str) for b in blobs if b),
-                               _BUDGETS["blobs"])),
+        ("EMBEDDED JSON", _fit_blobs(blobs, _BUDGETS["blobs"])),
         ("SCRIPT TEXT", _fit("\n".join(s.text for s in ev.script_texts[:2]), _BUDGETS["scripts"])),
         ("VISIBLE TEXT", _fit(ev.visible_text, _BUDGETS["text"])),
         ("MEDIA CANDIDATES", _render_media(media)),
@@ -102,11 +101,17 @@ def _ld_nodes(block) -> list[dict]:
 _NOISE_KEY = re.compile(
     r"(?:^|_)(?:nav|menu|footer|header|i18n|translation|messages|locale|dictionary"
     r"|analytics|tracking|gtm|experiment|featureflag|abtest|consent|cookie"
-    r"|router|routes|routing|webpack|chunks|assets|styles)(?:$|_)", re.I)
+    r"|router|routes|routing|webpack|chunks|assets|styles|warehouses?)(?:$|_)", re.I)
 
 
-def _prune(node, identity: set[str], depth: int = 0):
-    """Keep subtrees that carry commerce keys or mention the page identity."""
+def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
+    """Keep subtrees that carry commerce keys or mention the page identity.
+
+    Under a related/recommended-products key, `summary` mode kicks in: sibling
+    products only matter for their identity (name, color, price, URL), so
+    their nested media/variant/stock structures are dropped instead of
+    letting one rail eat the whole blob budget.
+    """
     if depth > 25:
         return None
     if isinstance(node, dict):
@@ -115,14 +120,28 @@ def _prune(node, identity: set[str], depth: int = 0):
             kl = str(k).lower()
             if _NOISE_KEY.search(kl.replace("-", "_")):
                 continue
-            pruned = _prune(v, identity, depth + 1)
-            if pruned is not None and pruned != {} and pruned != []:
+            child_summary = summary or bool(_OTHER_PRODUCT_PATH.search(kl))
+            if summary and isinstance(v, (dict, list)) and depth > 0:
+                # In summary mode keep scalars only, one level of nesting.
+                if not (isinstance(v, list) and all(not isinstance(i, (dict, list)) for i in v)):
+                    continue
+            pruned = _prune(v, identity, depth + 1, child_summary)
+            # Empty strings and empty containers carry no evidence; False and
+            # 0 do (available: false, stock: 0), so those stay.
+            if pruned is not None and pruned != {} and pruned != [] and pruned != "":
                 out[k] = pruned
         return out or None
     if isinstance(node, list):
-        out = [p for item in node[:100] if (p := _prune(item, identity, depth + 1)) is not None]
+        limit = 30 if summary else 100
+        out = [p for item in node[:limit]
+               if (p := _prune(item, identity, depth + 1, summary)) is not None]
         return out or None
     if isinstance(node, str):
+        # URLs inside blobs are the biggest token sink, and the media table
+        # already carries them in full. Keep just the tail as an identifier
+        # so labels stay joinable to media entries.
+        if node.startswith(("http://", "https://", "//")) and len(node) > 60:
+            return ".../" + node.split("?")[0].rstrip("/").rsplit("/", 1)[-1][-48:]
         # Long opaque strings (base64, inlined CSS/JS) are token sinks.
         if len(node) > 500:
             return node[:500] + "…"
@@ -159,13 +178,38 @@ def _collect_keys(node, out: set, depth: int) -> None:
 _SIZE_SEGMENT = re.compile(r"/\d{2,4}x\d{0,4}/|_\d{2,4}x\d{0,4}(?=\.)|w_\d+|h_\d+")
 
 
+_RENDITION_WORDS = {"mini", "thumb", "thumbnail", "standard", "full", "max", "square",
+                    "small", "large", "medium", "micro", "zoom", "default", "original"}
+
+# Framework-generic key-path vocabulary for media ranking.
+_OTHER_PRODUCT_PATH = re.compile(
+    r"related|recommend|upsell|cross|similar|recently|alsolike|youmay", re.I)
+_SELECTED_PATH = re.compile(r"selected|current|active", re.I)
+
+
 def _asset_key(url: str) -> str:
-    """Identity of the underlying asset, ignoring rendition/size differences."""
+    """Identity of the underlying asset, ignoring rendition/size differences.
+
+    Some CDNs (Centra-style) give every rendition of the same shot its own
+    content hash AND a size word in the filename, so we normalize the
+    filename: drop hash-looking tokens (hex with letters), rendition words,
+    and WxH tokens, keep the rest.
+    """
     base = url.split("?")[0].split("#")[0]
     base = _SIZE_SEGMENT.sub("/", base)
-    # Last two path segments are enough to identify an asset; the host and
-    # leading folders are shared by every image on the page.
-    return "/".join(base.rstrip("/").split("/")[-2:]).lower()
+    segments = base.rstrip("/").split("/")[-2:]
+    name = segments[-1].rsplit(".", 1)[0]
+    kept = []
+    for tok in re.split(r"[^a-z0-9]+", name.lower()):
+        if not tok or tok in _RENDITION_WORDS:
+            continue
+        if len(tok) >= 6 and re.fullmatch(r"[0-9a-f]+", tok) and re.search(r"[a-f]", tok):
+            continue  # content hash, not identity
+        if re.fullmatch(r"\d{2,4}x\d{0,4}", tok):
+            continue
+        kept.append(tok)
+    folder = segments[0].lower() if len(segments) > 1 else ""
+    return f"{folder}/{'-'.join(kept)}" if kept else "/".join(segments).lower()
 
 
 def _quality(m: MediaCandidate) -> tuple:
@@ -209,14 +253,40 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
 
     def relevance(key: str, group: list[MediaCandidate]) -> tuple:
         asset = key.split(":", 1)[1]
-        shares_stem = any(s in asset for s in stems)
+        # Count matching hero tokens, don't just test membership: on a page
+        # with sibling colorways every colorway shares the product-name
+        # tokens, but only the displayed one also matches its color tokens.
+        stem_hits = sum(1 for s in stems if s in asset)
+        # Blob key paths are framework vocabulary, not site vocabulary:
+        # "selected"-ish paths mean the displayed product, "related"-ish
+        # paths mean some other product.
+        hints = " ".join(m.path_hint.lower() for m in group)
+        demoted = bool(_OTHER_PRODUCT_PATH.search(hints)) and not _SELECTED_PATH.search(hints)
+        boosted = bool(_SELECTED_PATH.search(hints))
         # Appearing in several channels (og + blob + DOM) is a product-image
         # signal; chrome and guides usually live in exactly one.
         spread = min(len({m.origin for m in group}), 3)
-        return (shares_stem, spread, _quality(max(group, key=_quality)))
+        return (not demoted, boosted, stem_hits, spread, _quality(max(group, key=_quality)))
 
-    ranked = sorted(groups.items(), key=lambda kv: relevance(*kv), reverse=True)
-    best = [max(g, key=_quality) for _, g in ranked]
+    scored = [(relevance(k, g), k, g) for k, g in groups.items()]
+
+    # Hard exclusions, not just ranking. Related-rail media is never this
+    # product's; and when the blob explicitly marks a selected product's
+    # media, everything outside that marking is another colorway/product.
+    image_scores = [s for s, k, _ in scored if k.startswith("image:")]
+    n_clean = sum(1 for s in image_scores if s[0])
+    n_boosted = sum(1 for s in image_scores if s[1])
+    keep = []
+    for s, k, g in scored:
+        if k.startswith("image:"):
+            if not s[0] and n_clean >= 3:
+                continue  # demoted (related/recommended) with enough clean ones
+            if n_boosted >= 3 and not s[1] and all(m.origin in ("blob", "json_ld") for m in g):
+                continue  # unselected blob media on a page that marks selection
+        keep.append((s, k, g))
+
+    keep.sort(key=lambda t: t[0], reverse=True)
+    best = [max(g, key=_quality) for _, _, g in keep]
     images = [m for m in best if m.kind == "image"][:_MAX_IMAGES]
     videos = [m for m in best if m.kind == "video"][:_MAX_VIDEOS]
     return images + videos
@@ -256,3 +326,17 @@ def _fit(text: str, budget: int) -> str:
     if len(text) <= budget:
         return text
     return text[:budget] + "\n…[truncated]"
+
+
+def _fit_blobs(blobs: list, budget: int) -> str:
+    """Waterfall the budget: blobs arrive sorted by commerce score, and the
+    best one gets whatever it needs before the next sees a byte. One joined
+    _fit would let a low-value 300KB state dump truncate the product blob."""
+    parts, remaining = [], budget
+    for b in blobs:
+        if b is None or remaining < 2_000:
+            break
+        text = json.dumps(b, ensure_ascii=False, default=str)
+        parts.append(_fit(text, remaining))
+        remaining -= min(len(text), remaining)
+    return "\n".join(parts)

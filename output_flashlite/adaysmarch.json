@@ -5,14 +5,13 @@
     "currency": "USD",
     "compare_at_price": null
   },
-  "description": "- 65% TENCEL™ Lyocell, 35% cotton \r\n- One visible button and one button inside\r\n- Topstitch at waistband\r\n- Side pockets\r\n- Two back pockets with buttoning",
+  "description": "- 65% TENCEL™ Lyocell, 35% cotton \r\n- One visible button and one button inside\r\n- Topstitch at waistband\r\n- Side pockets\r\n- Two back pockets with buttoning\r\n",
   "key_features": [
     "65% TENCEL™ Lyocell, 35% cotton",
     "One visible button and one button inside",
     "Topstitch at waistband",
     "Side pockets",
-    "Two back pockets with buttoning",
-    "Made in Portugal"
+    "Two back pockets with buttoning"
   ],
   "image_urls": [
     "https://adaysmarch.centracdn.net/client/dynamic/images/8521_8e75528d95-102805-50_miller_cotton_lyocell_trousers_iron0822-square.jpg",
@@ -59,7 +58,9 @@
       "sku": "1028055044S",
       "price": 170.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg"
+      ]
     },
     {
       "selections": [
@@ -71,7 +72,9 @@
       "sku": "1028055046S",
       "price": 170.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg"
+      ]
     },
     {
       "selections": [
@@ -83,7 +86,9 @@
       "sku": "1028055048M",
       "price": 170.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg"
+      ]
     },
     {
       "selections": [
@@ -95,7 +100,9 @@
       "sku": "1028055050L",
       "price": 170.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg"
+      ]
     },
     {
       "selections": [
@@ -107,7 +114,9 @@
       "sku": "1028055052XL",
       "price": 170.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg"
+      ]
     },
     {
       "selections": [
@@ -119,7 +128,9 @@
       "sku": "1028055054XXL",
       "price": 170.0,
       "available": true,
-      "image_urls": []
+      "image_urls": [
+        "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg"
+      ]
     }
   ]
 }

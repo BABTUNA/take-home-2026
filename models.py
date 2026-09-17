@@ -129,6 +129,10 @@ class MediaCandidate:
     kind: str  # "image" | "video"
     origin: str  # channel that found it: "json_ld" | "meta" | "blob" | "dom"
     width: int | None = None
+    # For blob-origin media: the JSON key path it was found under, e.g.
+    # "selectedProduct.contentImages". Lets ranking demote related-product
+    # subtrees without knowing any site's schema.
+    path_hint: str = ""
 
 @dataclass
 class Evidence:

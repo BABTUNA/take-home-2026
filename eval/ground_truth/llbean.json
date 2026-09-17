@@ -1,0 +1,113 @@
+{
+  "_source_file": "data/llbean.html",
+  "_evidence_notes": {
+    "price": "__SERVER_DATA__ prices: 29.95 isFullPrice plus 24.99 sale (savings $4.96/17%) that applies only to the sale color (Lake, per button alt 'Sale Color Option: Lake, $24.99'). Product-level display price is 29.95 with no strikethrough; the sale is per-variant.",
+    "variants": "83 sku records with availability in __SERVER_DATA__, tied to Color x Size x Fit; the sku ids don't carry labels (labels only exist on DOM buttons), so ground truth asserts the shape (count + axes) rather than enumerating 83 hand-joined records.",
+    "image_urls": "The 25 product.media 'main' entries (one per color/view), the og:image hero 224626_0_44, and the displayed color's gallery views 224626_1176_44..48 present in the DOM gallery.",
+    "colors": "DOM color buttons incl. 'Sale Color Option: Lake'.",
+    "description": "PREMISE_STATEMENT + SIZE_FIT sections in __SERVER_DATA__ product.details (the meta description is generic SEO text)."
+  },
+  "name": "Men's Carefree Unshrinkable Tee, Traditional Fit, Henley",
+  "price": {
+    "price": 29.95,
+    "currency": "USD",
+    "compare_at_price": null
+  },
+  "description": "Made of soft cotton that resists wrinkles, shrinking, fading and pilling, our resilient henley keeps its shape wash after wash. Traditional Fit: Relaxed through the chest, sleeve and waist.",
+  "key_features": [
+    "Durable double-needle stitching.",
+    "Straight hem can be worn tucked or untucked.",
+    "Comfortable enough for everyday wear.",
+    "Tagless printed label for comfort.",
+    "Soft jersey-knit taping on neck seam.",
+    "Imported."
+  ],
+  "image_urls": [
+    "https://cdni.llbean.net/is/image/wim/224626_1176_41",
+    "https://cdni.llbean.net/is/image/wim/224626_1207_41",
+    "https://cdni.llbean.net/is/image/wim/224626_464_41",
+    "https://cdni.llbean.net/is/image/wim/224626_1_41",
+    "https://cdni.llbean.net/is/image/wim/224626_38221_41",
+    "https://cdni.llbean.net/is/image/wim/224626_36814_41",
+    "https://cdni.llbean.net/is/image/wim/224626_292_41",
+    "https://cdni.llbean.net/is/image/wim/224626_55_41",
+    "https://cdni.llbean.net/is/image/wim/224626_0_44",
+    "https://cdni.llbean.net/is/image/wim/224626_0_45",
+    "https://cdni.llbean.net/is/image/wim/224626_0_46",
+    "https://cdni.llbean.net/is/image/wim/224626_0_47",
+    "https://cdni.llbean.net/is/image/wim/224626_0_48",
+    "https://cdni.llbean.net/is/image/wim/224625_1176_41",
+    "https://cdni.llbean.net/is/image/wim/224625_1_41",
+    "https://cdni.llbean.net/is/image/wim/224625_464_41",
+    "https://cdni.llbean.net/is/image/wim/224625_38221_41",
+    "https://cdni.llbean.net/is/image/wim/224625_1207_41",
+    "https://cdni.llbean.net/is/image/wim/224625_36814_41",
+    "https://cdni.llbean.net/is/image/wim/224625_292_41",
+    "https://cdni.llbean.net/is/image/wim/224625_0_44",
+    "https://cdni.llbean.net/is/image/wim/224625_0_45",
+    "https://cdni.llbean.net/is/image/wim/224625_0_46",
+    "https://cdni.llbean.net/is/image/wim/224625_0_47",
+    "https://cdni.llbean.net/is/image/wim/224625_0_48",
+    "https://cdni.llbean.net/is/image/wim/224626_0_44",
+    "https://cdni.llbean.net/is/image/wim/224626_1176_44",
+    "https://cdni.llbean.net/is/image/wim/224626_1176_45",
+    "https://cdni.llbean.net/is/image/wim/224626_1176_46",
+    "https://cdni.llbean.net/is/image/wim/224626_1176_47",
+    "https://cdni.llbean.net/is/image/wim/224626_1176_48"
+  ],
+  "video_url": null,
+  "category": {
+    "name": "Apparel & Accessories > Clothing > Shirts & Tops"
+  },
+  "brand": "L.L.Bean",
+  "colors": [
+    "Black",
+    "Charcoal Heather",
+    "Delta Blue",
+    "Gray Heather",
+    "Lake",
+    "Navy Blue",
+    "Soft Spruce",
+    "White"
+  ],
+  "options": [
+    {
+      "name": "Color",
+      "values": [
+        "Black",
+        "Charcoal Heather",
+        "Delta Blue",
+        "Gray Heather",
+        "Lake",
+        "Navy Blue",
+        "Soft Spruce",
+        "White"
+      ]
+    },
+    {
+      "name": "Size",
+      "values": [
+        "Small",
+        "Medium",
+        "Large",
+        "X-Large",
+        "XX-Large",
+        "XXX-Large"
+      ]
+    },
+    {
+      "name": "Fit",
+      "values": [
+        "Regular",
+        "Tall"
+      ]
+    }
+  ],
+  "variants": {
+    "count": 83,
+    "axes": [
+      "Color",
+      "Size"
+    ]
+  }
+}

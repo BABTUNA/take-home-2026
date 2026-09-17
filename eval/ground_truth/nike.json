@@ -1,4 +1,11 @@
 {
+  "_source_file": "data/nike.html",
+  "_evidence_notes": {
+    "price": "Selected colorway prices: currency GBP, currentPrice 76.99, initialPrice 109.99, 30% off. DOM aria-label 'current price £76.99, original price £109.99' confirms which is which.",
+    "variants": "This page's product is colorway IO2077-030; its sizes[] (17 entries with merchSkuId) are the purchasable configurations. status ACTIVE is catalog status, not stock, and no stock field exists anywhere, so available is null. Other colorways navigate to their own pages: colors/options, not variants.",
+    "image_urls": "contentImages of the selected colorway (8 cards, no video card for this colorway).",
+    "video_url": "5 colorways carry videoURL cards, but not IO2077-030. Correct answer for this page is null."
+  },
   "name": "Nike Air Force 1 '07 LV8",
   "price": {
     "price": 76.99,
@@ -9,28 +16,17 @@
   "key_features": [
     "The leather upper with a perforated toe box is breathable and comfortable.",
     "Nike Air unit provides lightweight cushioning.",
-    "Rubber outsole with classic pivot circles delivers traction and durability.",
-    "Low-cut silhouette",
-    "Padded collar",
-    "Foam midsole"
+    "Rubber outsole with classic pivot circles delivers traction and durability."
   ],
   "image_urls": [
-    "https://static.nike.com/a/images/t_default/6a4d2051-1fee-4ce0-aba7-5de42641dae2/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/37721342-336a-40ce-8445-b2fff5a5cc4d/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/7678f86a-7a74-4f51-878e-f7c56f087102/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/c317d6c0-4d6f-40eb-a982-af179264663c/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/858aa60b-1f0a-414b-8eb6-a1c35d687876/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/5471209e-3c49-43ed-a26b-b96e95a48887/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/357779ef-ce44-4c18-b808-79f1bba7fe21/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/70ce99a1-f296-4da3-9f2b-2bd702b86f94/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dee2f219-5f43-491f-b1d9-5dfe1f2a2220/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/755ca04e-6564-45e2-8038-5864dd688dfb/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/5d7b5506-c18a-49d9-8480-9a2db5e0633e/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/3f1739a7-8ef3-45b0-80e0-7d3ab98f4a33/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/4d3918b3-8c34-4c00-97f9-6d02bd1104c6/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/c73cacc4-91e9-4f5e-89f5-00ccd9c76b05/NIKE+AIR+FORCE+1+%2707+LV8.png",
-    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/e9d0a06f-0fb3-468d-9835-6e26762d0408/NIKE+AIR+FORCE+1+%2707+LV8.png"
+    "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/c73cacc4-91e9-4f5e-89f5-00ccd9c76b05/NIKE+AIR+FORCE+1+%2707+LV8.png"
   ],
   "video_url": null,
   "category": {
@@ -45,9 +41,24 @@
     "Flax/Gum Light Brown/Black/Wheat",
     "White/Black",
     "Wolf Grey/Black/Wolf Grey",
+    "Black/Black",
     "White/White"
   ],
   "options": [
+    {
+      "name": "Color",
+      "values": [
+        "White/Pure Platinum/Team Red/Obsidian",
+        "Phantom/College Grey/Team Red/Black",
+        "Black/Black",
+        "Black/White",
+        "Flax/Gum Light Brown/Black/Wheat",
+        "White/Black",
+        "Wolf Grey/Black/Wolf Grey",
+        "Black/Black",
+        "White/White"
+      ]
+    },
     {
       "name": "Size",
       "values": [
@@ -79,7 +90,7 @@
           "value": "5"
         }
       ],
-      "sku": "00198487604139",
+      "sku": "31cc9d6b-b7ee-5493-83a8-bcd724aad543",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -91,7 +102,7 @@
           "value": "6"
         }
       ],
-      "sku": "00198487604450",
+      "sku": "37613e4c-3a0a-599a-a300-3c01157bde6c",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -103,7 +114,7 @@
           "value": "6.5"
         }
       ],
-      "sku": "00198487611021",
+      "sku": "0fd1d6cc-cf31-5c55-bbe8-155abada5b5f",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -115,7 +126,7 @@
           "value": "7"
         }
       ],
-      "sku": "00198487611984",
+      "sku": "47182471-59bb-5a46-ae49-93211846cc39",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -127,7 +138,7 @@
           "value": "7.5"
         }
       ],
-      "sku": "00198487612394",
+      "sku": "a7d434a4-d406-52ad-a5cd-a6d36148a661",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -139,7 +150,7 @@
           "value": "8"
         }
       ],
-      "sku": "00198487611656",
+      "sku": "cb68abdd-c6a4-5a2c-9524-a33e804f8006",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -151,7 +162,7 @@
           "value": "8.5"
         }
       ],
-      "sku": "00198487606287",
+      "sku": "f8d47fcb-1dca-508d-99b1-544c82c0e443",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -163,7 +174,7 @@
           "value": "9"
         }
       ],
-      "sku": "00198487614145",
+      "sku": "d545edb1-7804-58bb-a1e2-8f26af2e87b9",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -175,7 +186,7 @@
           "value": "9.5"
         }
       ],
-      "sku": "00198487614756",
+      "sku": "9803b2af-1f2e-5bb1-93e7-c936bf278c48",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -187,7 +198,7 @@
           "value": "10"
         }
       ],
-      "sku": "00198487606638",
+      "sku": "f91ba3de-f4f7-5af5-ae35-21685c44688e",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -199,7 +210,7 @@
           "value": "10.5"
         }
       ],
-      "sku": "00198487612202",
+      "sku": "0fb20bd4-a85f-549f-8c9a-634ffab9046a",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -211,7 +222,7 @@
           "value": "11"
         }
       ],
-      "sku": "00198487610482",
+      "sku": "1e2f63bb-879a-51c2-99cc-28edd0324dbf",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -223,7 +234,7 @@
           "value": "11.5"
         }
       ],
-      "sku": "00198487612714",
+      "sku": "5e4b1aa2-3d1d-56f4-b91c-edbc9c4e35dd",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -235,7 +246,7 @@
           "value": "12"
         }
       ],
-      "sku": "00198487605747",
+      "sku": "ee7db343-3233-563e-9ed7-72bd0decae73",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -247,7 +258,7 @@
           "value": "12.5"
         }
       ],
-      "sku": "00198487607659",
+      "sku": "f493e2d4-dfb5-55e8-9d73-4d5103403ee1",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -259,7 +270,7 @@
           "value": "13"
         }
       ],
-      "sku": "00198487607024",
+      "sku": "b4d573d7-6a09-5f4d-b925-40ce38881a07",
       "price": 76.99,
       "available": null,
       "image_urls": []
@@ -271,7 +282,7 @@
           "value": "14"
         }
       ],
-      "sku": "00198487608564",
+      "sku": "a0295659-bcc9-5aeb-bd3a-87fbfa88bd8a",
       "price": 76.99,
       "available": null,
       "image_urls": []

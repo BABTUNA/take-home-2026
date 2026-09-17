@@ -1,0 +1,45 @@
+{
+  "_source_file": "data/article.html",
+  "_evidence_notes": {
+    "price": "No offers in JSON-LD, empty __APOLLO_STATE__; the only price is the DOM's <span class='regularPrice'>$349</span>. No sale markup exists. Currency inferred from $ + US site locale.",
+    "image_urls": "12 distinct image bases under products/SKU25289/2890x1500/; the bare .jpg is the 2890x1500 original.",
+    "variants": "No variant pickers in raw HTML; other colorways are separate products fetched client-side. Correct answer is [] with the single colorway recorded in colors.",
+    "availability": "No stock signal anywhere in raw HTML.",
+    "key_features": "From the SSR'd specs table (General Dimensions, Materials)."
+  },
+  "name": "Pilar Floor Lamp - White Terrazzo",
+  "price": {
+    "price": 349.0,
+    "currency": "USD",
+    "compare_at_price": null
+  },
+  "description": "The Pilar is a shining light atop a tall, slender terrazzo base, emitting a warm glow from its beacon-like fabric-wrapped shade. If you're looking for that statement piece, you're in the right place—the Pilar stands four and a half feet tall, shining light across your home.",
+  "key_features": [
+    "55\"H x 21.5\"W x 21.5\"D",
+    "Terrazzo base"
+  ],
+  "image_urls": [
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154286.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154287.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154288.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154289.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154290.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154291.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154292.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154293.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154294.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154295.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image154296.jpg",
+    "https://cdn-images.article.com/products/SKU25289/2890x1500/image169693.jpg"
+  ],
+  "video_url": null,
+  "category": {
+    "name": "Home & Garden > Lighting > Lamps"
+  },
+  "brand": "Article",
+  "colors": [
+    "White Terrazzo"
+  ],
+  "options": [],
+  "variants": []
+}

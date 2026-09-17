@@ -1,4 +1,11 @@
 {
+  "_source_file": "data/adaysmarch.html",
+  "_evidence_notes": {
+    "price": "__NEXT_DATA__ product: priceAsNumber=170, priceBeforeDiscountAsNumber=170, so not on sale; /us/ locale + $ means USD.",
+    "variants": "items[] gives 6 sizes with sku and live stock counts (all > 0). Colorways (Navy, Oyster, ...) live in relatedProducts with their own URIs: sibling products, recorded as colors/options only.",
+    "video_url": "var_video.file.url in the product blob.",
+    "key_features": "The description field is itself a bullet list (materials, construction)."
+  },
   "name": "Miller Cotton Lyocell Trousers",
   "price": {
     "price": 170.0,
@@ -11,15 +18,14 @@
     "One visible button and one button inside",
     "Topstitch at waistband",
     "Side pockets",
-    "Two back pockets with buttoning",
-    "Made in Portugal"
+    "Two back pockets with buttoning"
   ],
   "image_urls": [
-    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_8e75528d95-102805-50_miller_cotton_lyocell_trousers_iron0822-square.jpg",
-    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-square.jpg",
-    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_7915020793-102805-50_miller_cotton_lyocell_trousers_iron0828-square.jpg",
-    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_b0d68ef8f6-102805-50_miller_cotton_lyocell_trousers_iron0839-square.jpg",
-    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_b24209b41b-102805-50_miller_cotton_lyocell_trousers_iron0841-square.jpg"
+    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_d363c12cd7-miller-cotton-lyocell-iron-full.jpg",
+    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_8e75528d95-102805-50_miller_cotton_lyocell_trousers_iron0822-full.jpg",
+    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_7915020793-102805-50_miller_cotton_lyocell_trousers_iron0828-full.jpg",
+    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_b0d68ef8f6-102805-50_miller_cotton_lyocell_trousers_iron0839-full.jpg",
+    "https://adaysmarch.centracdn.net/client/dynamic/images/8521_b24209b41b-102805-50_miller_cotton_lyocell_trousers_iron0841-full.jpg"
   ],
   "video_url": "https://adaysmarch.centracdn.net/client/dynamic/attributes/531/miller_2x3.mp4",
   "category": {
@@ -27,13 +33,13 @@
   },
   "brand": "A Day's March",
   "colors": [
-    "Black",
-    "Dark Brown",
     "Iron",
-    "Light Khaki",
     "Navy",
+    "Oyster",
+    "Black",
     "Olive",
-    "Oyster"
+    "Dark Brown",
+    "Light Khaki"
   ],
   "options": [
     {
