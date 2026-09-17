@@ -14,6 +14,7 @@ the picker call is small (~3K tokens) so the stronger model costs ~$0.002/page.
 """
 
 import logging
+import os
 import re
 from pathlib import Path
 
@@ -27,7 +28,10 @@ logger = logging.getLogger(__name__)
 CATEGORIES: list[str] = sorted(VALID_CATEGORIES)
 TOP_LEVEL: list[str] = [c for c in CATEGORIES if ">" not in c]
 
-_PICK_MODEL = "google/gemini-3-flash-preview"
+# benchmark-winning defaults, overridable for cost/accuracy experiments:
+#   PICK_MODEL=google/gemini-2.5-flash-lite  TAXONOMY_RETRIEVAL=lexical
+_PICK_MODEL = os.environ.get("PICK_MODEL", "google/gemini-3-flash-preview")
+_RETRIEVAL = os.environ.get("TAXONOMY_RETRIEVAL", "union")  # union | lexical
 _EMB_CACHE = Path(__file__).parent / ".cache" / "taxonomy_embeddings.npy"
 
 
@@ -103,8 +107,10 @@ def _union_shortlist(query: str, embed_query: str, k_lex: int, k_emb: int = 50) 
     top_set = set(TOP_LEVEL)
     lex = [p for p in shortlist(query, k=k_lex) if p not in top_set][:k_lex]
     seen = set(lex)
-    extra = [p for p in _embed_shortlist(embed_query, k=k_emb) if p not in seen]
-    seen.update(extra)
+    extra = []
+    if _RETRIEVAL == "union":
+        extra = [p for p in _embed_shortlist(embed_query, k=k_emb) if p not in seen]
+        seen.update(extra)
     return lex + extra + [t for t in TOP_LEVEL if t not in seen]
 
 
