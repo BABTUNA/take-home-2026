@@ -63,10 +63,15 @@
         "Charcoal Heather",
         "Delta Blue",
         "Gray Heather",
-        "Lake",
         "Navy Blue",
         "Soft Spruce",
         "White"
+      ]
+    },
+    {
+      "name": "Sale Color",
+      "values": [
+        "Lake"
       ]
     },
     {
@@ -93,6 +98,33 @@
       "selections": [
         {
           "name": "Color",
+          "value": "Delta Blue"
+        },
+        {
+          "name": "Item",
+          "value": "Regular"
+        },
+        {
+          "name": "Size",
+          "value": "Small"
+        }
+      ],
+      "sku": "0ATH201002",
+      "price": 29.95,
+      "available": true,
+      "image_urls": [
+        "https://cdni.llbean.net/is/image/wim/224626_36814_41",
+        "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
+        "https://cdni.llbean.net/is/image/wim/224626_0_45",
+        "https://cdni.llbean.net/is/image/wim/224626_0_46",
+        "https://cdni.llbean.net/is/image/wim/224626_0_47",
+        "https://cdni.llbean.net/is/image/wim/224626_0_48"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Sale Color",
           "value": "Lake"
         },
         {
@@ -120,33 +152,6 @@
       "selections": [
         {
           "name": "Color",
-          "value": "Charcoal Heather"
-        },
-        {
-          "name": "Item",
-          "value": "Regular"
-        },
-        {
-          "name": "Size",
-          "value": "Medium"
-        }
-      ],
-      "sku": "0ATH290004",
-      "price": 29.95,
-      "available": true,
-      "image_urls": [
-        "https://cdni.llbean.net/is/image/wim/224626_1176_41",
-        "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
-        "https://cdni.llbean.net/is/image/wim/224626_0_45",
-        "https://cdni.llbean.net/is/image/wim/224626_0_46",
-        "https://cdni.llbean.net/is/image/wim/224626_0_47",
-        "https://cdni.llbean.net/is/image/wim/224626_0_48"
-      ]
-    },
-    {
-      "selections": [
-        {
-          "name": "Color",
           "value": "Black"
         },
         {
@@ -155,19 +160,19 @@
         },
         {
           "name": "Size",
-          "value": "Large"
+          "value": "Medium"
         }
       ],
-      "sku": "0ATG410006",
+      "sku": "0ATG410004",
       "price": 29.95,
       "available": true,
       "image_urls": [
         "https://cdni.llbean.net/is/image/wim/224626_1_41",
-        "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
-        "https://cdni.llbean.net/is/image/wim/224626_0_45",
-        "https://cdni.llbean.net/is/image/wim/224626_0_46",
-        "https://cdni.llbean.net/is/image/wim/224626_0_47",
-        "https://cdni.llbean.net/is/image/wim/224626_0_48"
+        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Large25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Large25Retina.png 2x",
+        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Small25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_p_standard_athletic_Small25Retina.png 2x",
+        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Medium25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Medium25Retina.png 2x",
+        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_XSmall25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_XSmall25Retina.png 2x",
+        "https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Large25.png, https://www.llbean.net/firstspirit/media/image_library/2020/cs/newfitguideimages/m145_s_slightlyfitted_Large25Retina.png 2x"
       ]
     }
   ]

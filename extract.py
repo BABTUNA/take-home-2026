@@ -64,7 +64,9 @@ _SYSTEM = """You extract structured product data from the distilled contents of 
 
 ## Media
 
-8. Choose images from MEDIA CANDIDATES by index only.
+8. Choose images from MEDIA CANDIDATES by index only. Candidates carry a
+   provenance tag: [selected product] and [product data] entries are the
+   product's own media; treat [related items rail] as another product's.
    - Select every distinct gallery photo of the product this page displays, not a
      representative few.
    - Scope: if color choices stay on this page (one product URL), each color's main

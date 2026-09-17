@@ -15,7 +15,6 @@
     "Foam midsole"
   ],
   "image_urls": [
-    "https://static.nike.com/a/images/t_default/6a4d2051-1fee-4ce0-aba7-5de42641dae2/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d6d2266d-0fa9-4f34-bf74-6528c9a0945f/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/37721342-336a-40ce-8445-b2fff5a5cc4d/NIKE+AIR+FORCE+1+%2707+LV8.png",
     "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/7678f86a-7a74-4f51-878e-f7c56f087102/NIKE+AIR+FORCE+1+%2707+LV8.png",
@@ -38,8 +37,8 @@
   },
   "brand": "Nike",
   "colors": [
-    "White/Pure Platinum/Team Red/Obsidian",
     "Phantom/College Grey/Team Red/Black",
+    "White/Pure Platinum/Team Red/Obsidian",
     "Black/Black",
     "Black/White",
     "Flax/Gum Light Brown/Black/Wheat",
@@ -48,6 +47,19 @@
     "White/White"
   ],
   "options": [
+    {
+      "name": "Color",
+      "values": [
+        "Phantom/College Grey/Team Red/Black",
+        "White/Pure Platinum/Team Red/Obsidian",
+        "Black/Black",
+        "Black/White",
+        "Flax/Gum Light Brown/Black/Wheat",
+        "White/Black",
+        "Wolf Grey/Black/Wolf Grey",
+        "White/White"
+      ]
+    },
     {
       "name": "Size",
       "values": [

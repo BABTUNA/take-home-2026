@@ -281,16 +281,31 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
     return images + videos
 
 
-# print the numbered IMG_n and VID_n table the model picks from
+# print the numbered IMG_n and VID_n table the model picks from, with a
+# provenance tag so selection is grounded in where the url was found, not
+# just what it looks like
+def _media_tag(m: MediaCandidate) -> str:
+    hint = m.path_hint.lower()
+    if _SELECTED_PATH.search(hint):
+        return " [selected product]"
+    if _OTHER_PRODUCT_PATH.search(hint):
+        return " [related items rail]"
+    if m.origin == "meta":
+        return " [page hero]"
+    if m.origin in ("blob", "json_ld"):
+        return " [product data]"
+    return ""
+
+
 def _render_media(media: list[MediaCandidate]) -> str:
     lines = []
     img_i = vid_i = 0
     for m in media:
         if m.kind == "image":
-            lines.append(f"IMG_{img_i} {m.url}")
+            lines.append(f"IMG_{img_i} {m.url}{_media_tag(m)}")
             img_i += 1
         else:
-            lines.append(f"VID_{vid_i} {m.url}")
+            lines.append(f"VID_{vid_i} {m.url}{_media_tag(m)}")
             vid_i += 1
     return "\n".join(lines)
 
