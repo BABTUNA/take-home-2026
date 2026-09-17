@@ -78,7 +78,9 @@ async def resolve(candidate: str, name: str, brand: str, description: str,
                 "Prefer the deepest path that is actually correct; top-level entries are a "
                 "last resort. Judge by what the product IS, not who it's for or its brand. "
                 "Never pick an accessory or part category for the product itself: a lamp "
-                "is not a lamp shade, a camera is not a camera lens."},
+                "is not a lamp shade, a camera is not a camera lens. Prefer the ordinary "
+                "retail category over specialty ones (traditional, ceremonial, costume, "
+                "medical) unless the page explicitly says the product is that specialty kind."},
             {"role": "user", "content":
                 f"Product: {name}\nBrand: {brand}\nPage hint: {candidate}\n"
                 f"Breadcrumb: {breadcrumb}\nDescription: {description[:400]}\n\n"

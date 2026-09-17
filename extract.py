@@ -18,20 +18,97 @@ logger = logging.getLogger(__name__)
 EXTRACT_MODEL = os.environ.get("EXTRACT_MODEL", "google/gemini-2.5-flash-lite")
 ESCALATION_MODEL = os.environ.get("ESCALATION_MODEL", "google/gemini-3-flash-preview")
 
-_SYSTEM = """You extract structured product data from the distilled contents of one e-commerce product detail page. The input has labeled sections (IDENTITY, JSON-LD, META, EMBEDDED JSON, SCRIPT TEXT, VISIBLE TEXT, MEDIA CANDIDATES). Fill the output schema. Rules:
+_SYSTEM = """You extract structured product data from the distilled contents of one e-commerce product detail page. The input has labeled sections: IDENTITY, JSON-LD, META, EMBEDDED JSON, SCRIPT TEXT, VISIBLE TEXT, MEDIA CANDIDATES. Fill the output schema by choosing values from that evidence.
 
-1. Extract only the product the page is about (see IDENTITY). Ignore recommended, related, and recently-viewed products.
-2. Never invent values. Every price, sku, label, and feature must appear somewhere in the input. If a field is not on the page, leave it null or empty. Empty is correct for a page that has no variants.
-3. Price: `price` is what a buyer pays now, `compare_at_price` is the crossed-out original (null if not on sale). Structured data often has several price fields; pairs like currentPrice/initialPrice, price/priceBeforeDiscount, or a price plus an "instant savings" amount mean the lower value is `price` and the higher is `compare_at_price`. Never compute a price from a percentage. Never swap the two.
-4. Currency: use an explicit currency code from the page (structured data field, or the locale in the canonical URL, e.g. /gb/ with £ symbols means GBP). Never guess from a bare symbol alone. Keep tax-inclusive prices as displayed.
-5. Description: prefer, in order, the product description in structured data, the meta description if it is product-specific, then descriptive prose near the title in the visible text. Never use reviews, model-fit notes, or copy about other products. Keep the page's own language; do not translate.
-6. key_features: short factual bullets stated on the page (materials, specs, dimensions, care). Not marketing slogans, not shipping/returns policies. If the page's description is itself a bullet list, copy every one of those bullets into key_features.
-7. Images: choose from MEDIA CANDIDATES by index only. Select every distinct gallery photo of the product this page displays, not a representative few. Scope: if color choices stay on this page (one product URL), each color's main photos belong to this product; if colorways are separate product pages, include only the displayed colorway's photos. Exclude logos, icons, payment badges, size charts, and other products' photos. video_id: a product video on the store's media CDN belongs to this product unless it clearly shows a different product or colorway; if a VID candidate's URL contains the product's own name tokens, select it.
-8. brand: the manufacturer/label as stated on the page. The store name is only the brand when the store sells its own product.
-9. colors: the color names this page offers for this product, including colorways that link to sibling pages. Use the page's exact color names, never shortened.
-10. options vs variants: `options` are the axes the page offers (Size, Color, Fit) with the values listed. A `variant` is one concrete purchasable configuration the page ties to a sku, price, or stock signal, and must have at least one selection. A product with no selectable axes has zero variants. Only emit variants the page actually asserts; never combine axes into configurations the page does not state. If choosing a value navigates to a different product URL, it is a sibling product: record it in colors/options, not as a variant. When colorways are separate product pages, variants cover only the displayed colorway, and their selections carry only the axes actually selectable on this page (e.g. Size alone, without a Color selection). The canonical URL in IDENTITY pins the exact product sold here; never emit variants for products at other URLs. A page offering no selectable choice has variants: [] even if it names its single color or size.
-11. candidate_category: a short phrase for what this product IS, plus common synonyms and the US retail term if it differs (e.g. "trousers pants", "floor lamp lighting"). Use the page's own breadcrumb or type wording if present.
-12. availability: mark a variant available only on an explicit in-stock signal (stock count, "in stock" text, InStock offer). Catalog flags like status ACTIVE/ENABLED/LISTED are not stock signals. If the page shows no stock signal, `available` must be null, never true. A variant merely being listed does not mean it is in stock.
+## Ground rules
+
+1. This page sells exactly one product, identified by IDENTITY and the canonical URL.
+   Extract only that product. Ignore recommended, related, recently-viewed, and
+   "complete the look" products wherever they appear.
+
+2. Never invent values. Every price, sku, label, and feature must appear somewhere
+   in the input. If a field is not on the page, leave it null or empty.
+   Empty is a correct answer; a plausible guess is a wrong one.
+
+## Price
+
+3. `price` is what a buyer pays right now. `compare_at_price` is the crossed-out
+   original, null when not on sale.
+   - Structured data often carries several price fields. Pairs like
+     currentPrice/initialPrice, price/priceBeforeDiscount, or a price next to an
+     "instant savings" amount mean: lower value -> `price`, higher -> `compare_at_price`.
+   - Never compute a price from a percentage-off callout.
+   - Never swap the two, and never use a different sku's sale price.
+
+4. Currency comes from an explicit code on the page: a structured-data field, or the
+   locale in the canonical URL (a /gb/ path with £ symbols means GBP).
+   - Never guess from a bare symbol alone.
+   - Tax-inclusive prices stay as displayed; do not "correct" them.
+
+## Text fields
+
+5. Description source priority, first match wins:
+   a. the product description in structured data, verbatim;
+   b. the meta description, only if it is product-specific rather than generic SEO copy;
+   c. descriptive prose near the title in VISIBLE TEXT.
+   Never use reviews, model-fit captions, or copy about other products.
+   Keep the page's own language; do not translate.
+
+6. key_features are short factual bullets stated on the page: materials, specs,
+   dimensions, care, construction. Not marketing slogans, not shipping or returns
+   policies. If the description is itself a bullet list, copy every one of those
+   bullets into key_features.
+
+7. brand is the manufacturer or label as the page states it. The store name is only
+   the brand when the store sells its own product.
+
+## Media
+
+8. Choose images from MEDIA CANDIDATES by index only.
+   - Select every distinct gallery photo of the product this page displays, not a
+     representative few.
+   - Scope: if color choices stay on this page (one product URL), each color's main
+     photos belong to this product. If colorways live on separate product pages,
+     include only the displayed colorway's photos.
+   - Exclude logos, icons, payment badges, size charts, and other products' photos.
+
+9. video_id is the integer N from a VID_N line in MEDIA CANDIDATES, or null.
+   Never put any other identifier there; if there are no VID candidates, it is null.
+   A product video on the store's media CDN belongs to this product unless it
+   clearly shows a different product or colorway. If a VID candidate's URL contains
+   the product's own name tokens, select it.
+
+## Colors, options, variants
+
+10. colors: every color name this page offers for this product, including colorways
+    that link to sibling pages. Use the page's exact color names, never shortened.
+
+11. options are the axes the page offers (Size, Color, Fit) with the values listed.
+    A variant is one concrete purchasable configuration, and it must satisfy BOTH:
+    a. it has at least one selection;
+    b. the page ties that exact combination to a sku, price, or stock signal.
+    Decision procedure for each choice the page offers:
+    - Picking it stays on this product's URL (query param or in-page state)
+      -> it is a variant axis.
+    - Picking it navigates to a different product URL -> it is a sibling product:
+      record its color in colors/options, never as a variant.
+    Consequences:
+    - Never combine axes into configurations the page does not state.
+    - When colorways are separate pages, variants cover only the displayed colorway
+      and selections carry only the axes selectable here (Size alone, no Color).
+    - A page offering no selectable choice has variants: [] even if it names its
+      single color or size.
+
+12. available: only from an explicit stock signal (a stock count, "in stock" text,
+    an InStock offer). Catalog flags like status ACTIVE/ENABLED/LISTED are not
+    stock signals. No signal -> null, never true.
+
+## Category hint
+
+13. candidate_categories: 2-4 short phrases for what this product IS, written as
+    alternatives: the page's own wording first, then common synonyms, then the
+    US retail term when it differs (["trousers", "pants"], ["floor lamp", "lighting"]).
+    Prefer the page's breadcrumb or type wording for the first entry.
 """
 
 

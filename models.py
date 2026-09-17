@@ -95,9 +95,10 @@ class Draft(BaseModel):
     key_features: list[str]
     image_ids: list[int]
     video_id: int | None = None
-    # Free-text guess ("cordless drills"); resolved to a real taxonomy path
-    # in a separate step.
-    candidate_category: str
+    # 2-4 free-text guesses at what the product is, synonyms included
+    # ("trousers", "pants"). A list so the schema itself forces alternatives;
+    # the lexical taxonomy shortlist is synonym-blind and needs them.
+    candidate_categories: list[str]
     brand: str
     colors: list[str]
     options: list[Option] = []

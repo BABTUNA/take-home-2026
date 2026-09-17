@@ -26,7 +26,7 @@ async def extract_product(raw_html: str) -> Product:
 
     breadcrumb = _breadcrumb_hint(ctx)
     category = await taxonomy.resolve(
-        draft.candidate_category, draft.name, draft.brand, draft.description,
+        " ".join(draft.candidate_categories), draft.name, draft.brand, draft.description,
         breadcrumb=breadcrumb)
 
     return resolve_draft(draft, ctx, category)
