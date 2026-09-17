@@ -1,0 +1,79 @@
+{
+  "name": "VX1™",
+  "price": {
+    "price": 379.95,
+    "currency": "USD",
+    "compare_at_price": null
+  },
+  "description": "The new VX1 delivers the essential Vitamix experience, focusing on what matters most: quality, durability, and performance. Built for those who are ready for their first real blender, or fans of classic models like the Vitamix 5200, it’s a perfect introduction to the brand trusted by professional chefs.",
+  "key_features": [
+    "Self-Cleaning Program",
+    "Variable Speed Control",
+    "Pulse",
+    "64-Ounce Standard Container",
+    "Powerful Motor",
+    "Stainless-Steel Blades",
+    "5-Year Limited Warranty"
+  ],
+  "image_urls": [
+    "https://www.vitamix.com/us/en_us/products/media_2351fcf55647dca9d1976174ed6b735689038d06.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_b261fb161aff7aa5b12b4e3c7186c5358968d0a5.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_053cc6e7ea0b6d60f6d81cf15b0b4010a35721a3.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_162065a4f849d19b749ce90931c9996b4c525c2f.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_bdd37291df3336c4b5373f587ff9f95aad27316f.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_998e132a63b7d243d287074a555f933e98b4ed6f.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_10cebae25ed5f0d506fcb653b320f8a136ab805a.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_c9afa528a65aacdd9788378d8345142a3d30d579.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_c855415d7cc1f0513e8d5336475725840506300f.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_242a32db8892f0681be06d9f7f9f2fea69b238e3.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_dffd21372e699764936180225045f917a0b517e8.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_a5ae7989918c8d7e13ea16233b492b2deae87ddb.jpg",
+    "https://www.vitamix.com/us/en_us/products/media_3068f7655b2d15867c20761c5549490dc7089cac.jpg"
+  ],
+  "video_url": null,
+  "category": {
+    "name": "Home & Garden > Kitchen & Dining > Kitchen Appliances > Food Mixers & Blenders"
+  },
+  "brand": "Vitamix",
+  "colors": [
+    "Black"
+  ],
+  "options": [
+    {
+      "name": "Color",
+      "values": [
+        "Black"
+      ]
+    },
+    {
+      "name": "Limited Warranty, 5 yrs",
+      "values": [
+        "Limited Warranty, 5 yrs"
+      ]
+    },
+    {
+      "name": "Extended Warranty, add 3 yrs",
+      "values": [
+        "Extended Warranty, add 3 yrs"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "selections": [
+        {
+          "name": "Color",
+          "value": "Black"
+        }
+      ],
+      "sku": "075804-04",
+      "price": 379.95,
+      "available": true,
+      "image_urls": [
+        "https://www.vitamix.com/us/en_us/products/media_13461d7eb761b78b23315cced08793fd15776593.jpg",
+        "https://www.vitamix.com/us/en_us/products/media_b83f26e3812c9f6dc9cc9a3cb74400ac9413b73f.jpg",
+        "https://www.vitamix.com/us/en_us/products/media_2901afbc1175a6e1ee858c74188c02b12f211b14.jpg"
+      ]
+    }
+  ]
+}
