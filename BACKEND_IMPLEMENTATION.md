@@ -5,57 +5,66 @@
 Turn raw PDP HTML from any store into a validated `Product`, cheaply, with no site-specific logic.
 
 - Deterministic code harvests evidence from five generic channels (JSON-LD, meta tags, embedded JSON blobs, raw script text, visible text with attributes inlined).
-- The evidence is distilled to a few KB: identity anchoring drops other products (including extra JSON-LD blocks for related items), per-section budgets keep channels balanced, media URLs are deduped and numbered.
-- One cheap structured-output LLM call fills the schema. It picks media by index and can only use prices that appear in the evidence, so it can't hallucinate URLs or numbers. Page language is preserved, currency comes from explicit codes, never symbols.
-- Category is resolved separately: lexical shortlist from the 5,596-path taxonomy, model copies one verbatim, pydantic validates it exists.
-- Failures retry once with the validation error, then escalate to a stronger model, then fail loudly. A fast path skips the LLM when deterministic evidence already covers the schema.
+- The evidence is distilled to a prompt-sized context: identity anchoring drops other products (including extra JSON-LD blocks for related items), per-section budgets keep channels balanced, media URLs are deduped by asset and ranked by relevance to the page's own hero image, then numbered.
+- One cheap structured-output LLM call fills the schema. It picks media by index and its prices must literally appear in the evidence, so it can't hallucinate URLs or numbers. Page language is preserved, currency comes from explicit codes, never symbols.
+- Category is resolved separately: stemmed lexical shortlist from the 5,596-path taxonomy (the extractor supplies synonyms in its hint), model picks by number, pydantic validates the path exists.
+- Failure path: cheap model, one repair retry with the validation error, escalate to a stronger model, then fail loudly. No silent partial success.
 
 ## Call trace
 
 ```
-main()                                         run_extract.py
-└─ extract_product(html)                       pipeline.py
-   ├─ harvest(html) -> Evidence                harvest.py
-   │  ├─ extract_json_ld()
-   │  ├─ extract_meta()
-   │  ├─ extract_json_blobs()                  # raw_decode + commerce-key scoring
-   │  ├─ extract_script_text()                 # non-JSON scripts, keyword-density ranked
-   │  ├─ extract_visible_text()                # aria-label/alt/title inlined
-   │  └─ collect_media()
-   ├─ distill(evidence) -> PromptContext       distill.py
-   │  ├─ page_identity()                       # h1 + og:title + sku + canonical slug
-   │  ├─ filter_by_identity()                  # applies to JSON-LD blocks too
-   │  ├─ prune_blobs()                         # keep commerce subtrees, drop nav/i18n
-   │  ├─ resolve_media()                       # dedupe by asset id, srcset largest, number IMG_n/VID_n
-   │  └─ render()                              # sectioned string, per-section budgets
-   ├─ try_fast_path(evidence) -> Draft | None  pipeline.py
-   ├─ extract_draft(context) -> Draft          extract.py
-   │  └─ ai.responses(text_format=Draft)       ai.py
-   ├─ resolve_draft_media(draft, context)      extract.py    # IMG_n indices -> URLs
-   ├─ resolve_category(draft, context)         taxonomy.py
-   │  ├─ shortlist()                           # ~150 lexical matches + all top-levels
-   │  └─ ai.responses(pick verbatim)           ai.py
-   └─ assemble(draft, ...) -> Product          pipeline.py
-      └─ on ValidationError: retry_with_error() -> escalate_model() -> raise
+main()                                          run_extract.py
+└─ run_one(path)                                run_extract.py
+   └─ extract_product(raw_html)                 pipeline.py
+      ├─ harvest(raw_html) -> Evidence          harvest.py
+      │  ├─ _extract_page_identity()            # title, h1, canonical
+      │  ├─ _extract_json_ld()                  # retry ladder: raw/CDATA/unescaped
+      │  ├─ _extract_meta()                     # og:/twitter:/product:/description
+      │  ├─ _extract_scripts()                  # channels C+D in one pass
+      │  │  ├─ _json_objects_in_script()        # whole-body / `= {` raw_decode / JSON.parse
+      │  │  ├─ _commerce_score()                # keeps product blobs, drops config JSON
+      │  │  └─ _keyword_density()               # raw text kept when JSON parse fails
+      │  ├─ _collect_media()                    # img/srcset/source/preload/meta/blob walk,
+      │  │                                      # beacon filter, derived query-stripped twins
+      │  └─ _extract_visible_text()             # strip chrome, inline aria-label/alt/title
+      ├─ distill(evidence) -> PromptContext     distill.py
+      │  ├─ _identity_tokens()                  # h1 + og:title + title tokens
+      │  ├─ _filter_json_ld()                   # Product blocks matching identity + breadcrumbs
+      │  ├─ _prune()                            # noise keys out, long strings capped
+      │  ├─ _resolve_media()                    # dedupe by _asset_key, rank by _hero_stems
+      │  │                                      # match + channel spread + _quality
+      │  └─ render sections                     # per-section budgets via _fit()
+      ├─ _draft_with_retries(ctx) -> Draft      pipeline.py
+      │  ├─ extract_draft(ctx, model)           extract.py
+      │  │  └─ ai.responses(text_format=Draft)  ai.py
+      │  └─ _provenance_problems(draft, ctx)    pipeline.py   # prices on page, indices in range
+      │     # fail -> repair retry -> escalate model -> raise
+      ├─ taxonomy.resolve(hint, name, ...)      taxonomy.py
+      │  ├─ _breadcrumb_hint(ctx)               pipeline.py   # BreadcrumbList names for the query
+      │  ├─ shortlist(query, k)                 # stemmed token overlap, leaf-weighted,
+      │  │                                      # top 150 + all top-levels
+      │  └─ ai.responses(text_format=_Pick)     ai.py         # picks by index; retry k=400 on stronger model
+      └─ resolve_draft(draft, ctx, category)    extract.py
+         └─ media_by_index()                    distill.py    # IMG_n/VID_n indices -> URLs,
+                                                              # drops selection-less variants
 ```
+
+Not yet implemented (planned): `try_fast_path()` (skip the LLM when deterministic evidence covers the schema), `server.py`, and the `eval/` harness.
 
 ### Files
 
 | File | What it does |
 |---|---|
-| `models.py` | Provided `Product`/`Price`/`Category`, plus `Variant`, `Option`, `Evidence`, `PromptContext`, `Draft` |
-| `harvest.py` | HTML in, `Evidence` out. The five channels, nothing else |
-| `distill.py` | `Evidence` in, `PromptContext` out. Identity, pruning, media table, budgets |
-| `extract.py` | The extraction LLM call, its rule-spec prompt, and index-to-URL resolution |
-| `taxonomy.py` | Loads categories.txt, shortlists, runs the pick call, validates |
-| `pipeline.py` | Orchestration: fast path, retries, escalation, assembly |
+| `models.py` | Provided `Product`/`Price`/`Category`, plus `Selection`, `Option`, `Variant`, LLM-facing `Draft`/`DraftVariant`, and internal `Evidence`/`JsonBlob`/`ScriptText`/`MediaCandidate`/`PromptContext` |
+| `harvest.py` | HTML in, `Evidence` out. The five channels, media collection, nothing else |
+| `distill.py` | `Evidence` in, `PromptContext` out. Identity filtering, blob pruning, media ranking/numbering, section budgets |
+| `extract.py` | The 12-rule extraction prompt, the extraction call, and draft-to-Product assembly |
+| `taxonomy.py` | Loads categories.txt, stemmed shortlist, index-pick call, escalation, no silent fallback |
+| `pipeline.py` | Orchestration: retries, escalation, provenance gating, breadcrumb hint |
 | `ai.py` | Provided OpenRouter wrapper with cost logging (unchanged) |
-| `run_extract.py` | Batch CLI: runs `data/` and `data_unseen/`, writes `output/*.json`, prints cost table |
-| `server.py` | FastAPI: serves extracted products to the frontend |
-| `eval/ground_truth/` | Hand-written expected Product per graded page, with evidence notes |
-| `eval/score.py` | Per-field, per-page scoreboard with tolerant matchers |
-| `eval/baseline.py` | No-LLM extractor over the same Evidence, the measured floor |
-| `eval/reachability.py` | Asserts every ground-truth value survives distillation |
+| `run_extract.py` | Batch CLI: `data/` by default, `--unseen` adds `data_unseen/`, or explicit paths; writes `output/*.json` |
+| `server.py` | (planned) FastAPI serving extracted products to the frontend |
+| `eval/` | (planned) ground truth with evidence notes, per-field scorer, no-LLM baseline, reachability check |
 
 ## Core data structures
 
@@ -63,48 +72,54 @@ main()                                         run_extract.py
 
 ```python
 Evidence(
-  json_ld=[{"@type": "Product", "name": "...", "offers": {...}}, ...],
+  title="Miller Cotton Lyocell Trousers | A Day's March",
+  h1="Miller Cotton Lyocell Trousers",
+  canonical_url="https://www.adaysmarch.com/us/miller-cotton-lyocell-trousers-iron",
+  json_ld=[{"@type": "Product", "name": "...", "offers": {...}}],
   meta={"og:title": "...", "og:image": "...", "description": "..."},
-  json_blobs=[JsonBlob(source="script#__NEXT_DATA__", score=0.91, data={...})],
-  script_texts=[ScriptText(score=0.42, text='self.__next_f.push([1,"..."')],
-  visible_text="Miller Cotton Lyocell Trousers\n$170\n[option] 46 | in stock ...",
+  json_blobs=[JsonBlob(source="__NEXT_DATA__", score=2.81, data={...})],
+  script_texts=[ScriptText(score=0.62, text='self.__next_f.push([1,"...')],
+  visible_text="Miller Cotton Lyocell Trousers\n$170\n[44 | in stock] ...",
   media=[MediaCandidate(url="https://...", kind="image", origin="blob", width=1728)],
 )
 ```
 
-**`PromptContext`** (distill output): the sectioned string the model sees, plus the media table for resolving indices later.
+**`PromptContext`** (distill output): the sectioned string the model sees, plus the media table for resolving indices.
 
 ```python
 PromptContext(
-  identity=PageIdentity(title="Air Force 1 '07 LV8", sku="IO2077-030", canonical="https://www.nike.com/gb/..."),
-  text="== IDENTITY ==\n...\n== JSON-LD ==\n...\n== MEDIA ==\nIMG_0 https://...\nVID_0 https://...",
-  media=[...],          # index position == IMG_n
-  token_estimate=4200,
+  text="== IDENTITY ==\nh1: ...\n== JSON-LD ==\n...\n== MEDIA CANDIDATES ==\nIMG_0 https://...\nVID_0 https://...",
+  media=[...],                # images first then videos; position within kind == IMG_n / VID_n
+  identity_tokens={"miller", "cotton", "lyocell", "trousers"},
 )
 ```
 
-**`Draft`** (LLM output, structured): indices instead of URLs, free-text category.
+**`Draft`** (LLM output, structured): indices instead of URLs, flat price fields, free-text category hint with synonyms.
 
 ```json
-{"name": "Air Force 1 '07 LV8",
- "price": {"price": 76.99, "currency": "GBP", "compare_at_price": 109.99},
+{"name": "Miller Cotton Lyocell Trousers",
+ "price": 170.0, "currency": "USD", "compare_at_price": null,
  "description": "...", "key_features": ["..."],
- "image_ids": [0, 1, 4, 5], "video_id": 0,
- "candidate_category": "sneakers",
- "brand": "Nike", "colors": ["Black/Iron Grey"],
- "options": [{"name": "Size", "values": ["UK 6", "UK 7", "UK 8"]}],
- "variants": [{"selections": {"Size": "UK 7"}, "sku": "...", "price": 76.99, "available": true}]}
+ "image_ids": [0, 1, 2, 3], "video_id": 0,
+ "candidate_category": "trousers pants",
+ "brand": "A Day's March",
+ "colors": ["Iron", "Navy", "Oyster", "Black"],
+ "options": [{"name": "Size", "values": ["44", "46", "48", "50", "52", "54"]}],
+ "variants": [{"selections": [{"name": "Size", "value": "46"}],
+               "sku": "102805-46", "price": 170.0, "available": true, "image_ids": []}]}
 ```
 
-**`Product`** (final): `Draft` with indices resolved to URLs and `candidate_category` replaced by a validated taxonomy path.
+**`Product`** (final): `Draft` with indices resolved to URLs, selection-less variants dropped, and `candidate_category` replaced by a validated taxonomy path.
 
 ```json
-{"name": "Air Force 1 '07 LV8",
- "price": {"price": 76.99, "currency": "GBP", "compare_at_price": 109.99},
- "image_urls": ["https://static.nike.com/a/images/t_default/..."],
- "video_url": "https://shortformvideo.nike.com/.../video.mp4",
- "category": {"name": "Apparel & Accessories > Shoes > Sneakers"},
- "variants": [{"selections": {"Size": "UK 7"}, "sku": "...", "price": 76.99, "available": true}]}
+{"name": "Miller Cotton Lyocell Trousers",
+ "price": {"price": 170.0, "currency": "USD", "compare_at_price": null},
+ "image_urls": ["https://adaysmarch.centracdn.net/client/dynamic/images/..."],
+ "video_url": "https://adaysmarch.centracdn.net/client/dynamic/attributes/531/miller_2x3.mp4",
+ "category": {"name": "Apparel & Accessories > Clothing > Pants"},
+ "options": [{"name": "Size", "values": ["44", "46", "48", "50", "52", "54"]}],
+ "variants": [{"selections": [{"name": "Size", "value": "46"}],
+               "sku": "102805-46", "price": 170.0, "available": true, "image_urls": []}]}
 ```
 
 The invariant across all four shapes: every URL, price, and label in a later structure must be traceable to a field in `Evidence`. The model narrows, it never adds.
