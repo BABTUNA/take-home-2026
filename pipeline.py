@@ -18,6 +18,7 @@ from models import Draft, Product, PromptContext
 logger = logging.getLogger(__name__)
 
 
+# the whole pipeline for one page: harvest, distill, draft, categorize, assemble
 async def extract_product(raw_html: str) -> Product:
     ctx = distill(harvest(raw_html))
 
@@ -31,6 +32,7 @@ async def extract_product(raw_html: str) -> Product:
     return resolve_draft(draft, ctx, category)
 
 
+# cheap model first, repair retry with the error, escalate, then raise
 async def _draft_with_retries(ctx: PromptContext) -> Draft:
     attempts = [
         (EXTRACT_MODEL, None),
@@ -52,8 +54,8 @@ async def _draft_with_retries(ctx: PromptContext) -> Draft:
     raise RuntimeError(f"extraction failed after escalation: {last_error}")
 
 
+# facts the model asserted must literally appear in the evidence
 def _provenance_problems(draft: Draft, ctx: PromptContext) -> list[str]:
-    """Facts the model asserted must literally appear in the evidence."""
     problems = []
     for label, value in [("price", draft.price), ("compare_at_price", draft.compare_at_price)]:
         if value is not None and not _number_on_page(value, ctx.text):
@@ -67,9 +69,9 @@ def _provenance_problems(draft: Draft, ctx: PromptContext) -> list[str]:
     return problems
 
 
+# is this number anywhere on the page: 129 129.0 129.00 129,00 or 12900
+# (eu decimal commas and minor-unit prices in state blobs)
 def _number_on_page(value: float, text: str) -> bool:
-    # 129.0 may appear as 129, 129.0, 129.00, "129,00" (EU decimal comma),
-    # or 12900 (minor units in state blobs).
     forms = {f"{value:g}", f"{value:.2f}", f"{value:.2f}".replace(".", ","),
              f"{int(round(value * 100))}"}
     if value == int(value):
@@ -77,8 +79,8 @@ def _number_on_page(value: float, text: str) -> bool:
     return any(f in text for f in forms)
 
 
+# pull breadcrumb names out of the context to seed the category query
 def _breadcrumb_hint(ctx: PromptContext) -> str:
-    """Pull breadcrumb-ish path text out of the context for the category step."""
     m = re.search(r'"BreadcrumbList".{0,2000}', ctx.text, re.S)
     if not m:
         return ""

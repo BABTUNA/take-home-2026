@@ -28,10 +28,9 @@ class _Pick(BaseModel):
     index: int
 
 
+# tokenize with naive plural stemming so "shirt" matches "Shirts & Tops"
+# real synonyms (trousers/pants) come from the extractor's category hint
 def _tokens(text: str) -> set[str]:
-    # Naive plural stemming so "shirt" matches "Shirts & Tops". Real synonyms
-    # (trousers/pants) come from the extractor, which is asked to include
-    # them in its category hint.
     out = set()
     for t in re.findall(r"[a-z0-9]+", text.lower()):
         if len(t) > 2:
@@ -46,6 +45,7 @@ _PATH_TOKENS: list[tuple[str, set[str], set[str]]] = [
 ]
 
 
+# narrow 5596 paths to the k closest by token overlap, leaf matches weighted
 def shortlist(query: str, k: int = 150) -> list[str]:
     q = _tokens(query)
     scored = []
@@ -62,6 +62,7 @@ def shortlist(query: str, k: int = 150) -> list[str]:
     return top + [t for t in TOP_LEVEL if t not in top]
 
 
+# shortlist then have the model pick one path by index, validated to exist
 async def resolve(candidate: str, name: str, brand: str, description: str,
                   breadcrumb: str = "") -> Category:
     query = " ".join([candidate, candidate, name, brand, breadcrumb, description[:300]])

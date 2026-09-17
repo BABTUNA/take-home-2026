@@ -34,6 +34,7 @@ _IMAGE_PATH_HINT = re.compile(r"/(?:is/image|images?|media|photos?|files?)/", re
 _NOISE_URL = re.compile(r"analytics|beacon|pixel|track|telemetry|metrics|/api/|doubleclick|facebook\.com/tr", re.I)
 
 
+# run all five channels over one page and return the evidence bundle
 def harvest(raw_html: str) -> Evidence:
     soup = BeautifulSoup(raw_html, "lxml")
     ev = Evidence()
@@ -48,6 +49,7 @@ def harvest(raw_html: str) -> Evidence:
     return ev
 
 
+# grab title h1 and canonical url
 def _extract_page_identity(soup: BeautifulSoup, ev: Evidence) -> None:
     if soup.title and soup.title.string:
         ev.title = soup.title.string.strip()
@@ -59,6 +61,7 @@ def _extract_page_identity(soup: BeautifulSoup, ev: Evidence) -> None:
         ev.canonical_url = canonical["href"].strip()
 
 
+# parse every ld+json block with a retry ladder for cdata and escaped bodies
 def _extract_json_ld(soup: BeautifulSoup, ev: Evidence) -> None:
     for tag in soup.find_all("script", type="application/ld+json"):
         body = tag.string or tag.get_text()
@@ -75,6 +78,7 @@ def _extract_json_ld(soup: BeautifulSoup, ev: Evidence) -> None:
                 continue
 
 
+# collect og twitter product and description meta tags
 def _extract_meta(soup: BeautifulSoup, ev: Evidence) -> None:
     for tag in soup.find_all("meta"):
         key = tag.get("property") or tag.get("name")
@@ -88,8 +92,8 @@ def _extract_meta(soup: BeautifulSoup, ev: Evidence) -> None:
             ev.meta.setdefault(key, content.strip())
 
 
+# channels c and d in one pass over every script tag
 def _extract_scripts(soup: BeautifulSoup, ev: Evidence) -> None:
-    """Channel C (parseable JSON blobs) and channel D (raw script text)."""
     for tag in soup.find_all("script"):
         stype = (tag.get("type") or "").lower()
         if stype == "application/ld+json":
@@ -118,14 +122,11 @@ def _extract_scripts(soup: BeautifulSoup, ev: Evidence) -> None:
     ev.script_texts.sort(key=lambda s: s.score, reverse=True)
 
 
+# find json in a script body without knowing the site's naming
+# handles the three shapes seen in the wild: a whole-body json script,
+# `window.X = {...};` assignments (raw_decode, the statement continues after
+# the object), and JSON.parse("...") with an escaped string argument
 def _json_objects_in_script(body: str, stype: str) -> list:
-    """Find JSON objects in a script body without knowing the site's naming.
-
-    Handles the three shapes seen in the wild: a script tag whose whole body
-    is JSON (type=application/json or Kibo-style preloads), `window.X = {...};`
-    assignments (needs raw_decode, the statement continues after the object),
-    and JSON.parse("...") with an escaped string argument.
-    """
     stripped = body.strip()
     results = []
 
@@ -158,8 +159,8 @@ def _json_objects_in_script(body: str, stype: str) -> list:
     return results
 
 
+# score how product-like a json object's keys are, keeps blobs and drops config
 def _commerce_score(data, _depth: int = 0) -> float:
-    """Fraction-ish score of how product-like a JSON object's keys are."""
     keys = set()
     _walk_keys(data, keys, 0)
     if not keys:
@@ -180,6 +181,7 @@ def _walk_keys(node, out: set, depth: int) -> None:
             _walk_keys(item, out, depth + 1)
 
 
+# rough product-keyword density, decides if unparseable script text is kept
 def _keyword_density(text: str) -> float:
     sample = text[:100_000].lower()
     hits = sum(sample.count(k) for k in ("price", "sku", "variant", "image", "product", "currency"))
@@ -191,6 +193,7 @@ _CHROME_TAGS = ("script", "style", "noscript", "svg", "iframe", "nav", "header",
 _INLINE_ATTRS = ("aria-label", "alt", "title")
 
 
+# strip chrome then flatten to text with aria-label alt and title inlined
 def _extract_visible_text(soup: BeautifulSoup) -> str:
     for role in ("navigation", "banner", "contentinfo", "complementary"):
         for el in soup.find_all(attrs={"role": role}):
@@ -218,6 +221,7 @@ def _extract_visible_text(soup: BeautifulSoup) -> str:
     return "\n".join(lines)
 
 
+# gather every image and video url from dom meta and blobs with provenance
 def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
     seen: dict[str, MediaCandidate] = {}
 
@@ -301,6 +305,7 @@ def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
     ev.media = list(seen.values())
 
 
+# split a srcset attribute into url and width pairs
 def _parse_srcset(srcset: str) -> list[tuple[str, int | None]]:
     out = []
     for part in srcset.split(","):

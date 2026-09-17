@@ -18,6 +18,7 @@ from pipeline import extract_product
 OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", "output"))
 
 
+# extract one page, write its json, never let one failure kill the batch
 async def run_one(path: Path) -> tuple[str, bool, float]:
     t0 = time.time()
     try:
@@ -31,6 +32,7 @@ async def run_one(path: Path) -> tuple[str, bool, float]:
     return path.stem, True, time.time() - t0
 
 
+# pick the file set, run everything concurrently, print the tally
 async def main() -> None:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if args:

@@ -35,6 +35,7 @@ _SYSTEM = """You extract structured product data from the distilled contents of 
 """
 
 
+# the extraction call: distilled context in, structured draft out
 async def extract_draft(ctx: PromptContext, model: str = EXTRACT_MODEL,
                         repair_error: str | None = None) -> Draft:
     messages = [
@@ -48,8 +49,8 @@ async def extract_draft(ctx: PromptContext, model: str = EXTRACT_MODEL,
     return await ai.responses(model, messages, text_format=Draft)
 
 
+# map the draft's media indices back to urls and assemble the final product
 def resolve_draft(draft: Draft, ctx: PromptContext, category) -> Product:
-    """Map the draft's media indices back to URLs and assemble the Product."""
     image_urls, video_urls = media_by_index(ctx.media)
 
     def imgs(ids: list[int]) -> list[str]:

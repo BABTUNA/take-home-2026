@@ -29,6 +29,7 @@ _MAX_VIDEOS = 5
 _STOPWORDS = {"the", "and", "for", "with", "men", "mens", "women", "womens", "s"}
 
 
+# turn raw evidence into the budgeted prompt context the model will see
 def distill(ev: Evidence) -> PromptContext:
     identity = _identity_tokens(ev)
 
@@ -49,6 +50,7 @@ def distill(ev: Evidence) -> PromptContext:
     return PromptContext(text=text, media=media, identity_tokens=identity)
 
 
+# fingerprint of what this page sells from h1 og:title and title
 def _identity_tokens(ev: Evidence) -> set[str]:
     parts = [ev.h1 or "", ev.meta.get("og:title", ""), ev.title or ""]
     tokens = set()
@@ -59,6 +61,7 @@ def _identity_tokens(ev: Evidence) -> set[str]:
     return tokens
 
 
+# does a product name share enough tokens with the page fingerprint
 def _name_matches_identity(name: str, identity: set[str]) -> bool:
     toks = {t for t in re.findall(r"[a-z0-9]+", name.lower()) if len(t) > 2}
     if not toks or not identity:
@@ -66,13 +69,9 @@ def _name_matches_identity(name: str, identity: set[str]) -> bool:
     return len(toks & identity) / len(toks) >= 0.3
 
 
+# keep product blocks about this page plus breadcrumbs, drop related items
+# (pages ship json-ld for recommendations and bundle components too)
 def _filter_json_ld(ev: Evidence, identity: set[str]) -> list:
-    """Keep Product blocks about THIS page plus breadcrumbs (category signal).
-
-    Pages ship JSON-LD for related items and bundle components too; a Product
-    block whose name shares almost no tokens with the page identity is about
-    a different product.
-    """
     kept = []
     for block in ev.json_ld:
         for node in _ld_nodes(block):
@@ -86,6 +85,7 @@ def _filter_json_ld(ev: Evidence, identity: set[str]) -> list:
     return kept
 
 
+# flatten json-ld into individual nodes, unwrapping lists and @graph
 def _ld_nodes(block) -> list[dict]:
     if isinstance(block, list):
         return [n for item in block for n in _ld_nodes(item)]
@@ -104,14 +104,10 @@ _NOISE_KEY = re.compile(
     r"|router|routes|routing|webpack|chunks|assets|styles|warehouses?)(?:$|_)", re.I)
 
 
+# cut noise keys, shrink urls, and summarize related-product subtrees
+# summary mode keeps sibling products to shallow scalars (name color price
+# url) so one rail can't eat the whole blob budget
 def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
-    """Keep subtrees that carry commerce keys or mention the page identity.
-
-    Under a related/recommended-products key, `summary` mode kicks in: sibling
-    products only matter for their identity (name, color, price, URL), so
-    their nested media/variant/stock structures are dropped instead of
-    letting one rail eat the whole blob budget.
-    """
     if depth > 25:
         return None
     if isinstance(node, dict):
@@ -149,27 +145,6 @@ def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
     return node
 
 
-def _subtree_is_relevant(node, identity: set[str]) -> bool:
-    keys: set[str] = set()
-    _collect_keys(node, keys, 0)
-    if any(c in k.lower() for k in keys for c in _COMMERCE_KEYS):
-        return True
-    text = json.dumps(node, default=str)[:2000].lower()
-    return any(tok in text for tok in list(identity)[:10])
-
-
-def _collect_keys(node, out: set, depth: int) -> None:
-    if depth > 4 or len(out) > 200:
-        return
-    if isinstance(node, dict):
-        for k, v in node.items():
-            out.add(str(k))
-            _collect_keys(v, out, depth + 1)
-    elif isinstance(node, list):
-        for item in node[:20]:
-            _collect_keys(item, out, depth + 1)
-
-
 # ---------------------------------------------------------------------------
 # Media resolution
 # ---------------------------------------------------------------------------
@@ -181,20 +156,17 @@ _SIZE_SEGMENT = re.compile(r"/\d{2,4}x\d{0,4}/|_\d{2,4}x\d{0,4}(?=\.)|w_\d+|h_\d
 _RENDITION_WORDS = {"mini", "thumb", "thumbnail", "standard", "full", "max", "square",
                     "small", "large", "medium", "micro", "zoom", "default", "original"}
 
-# Framework-generic key-path vocabulary for media ranking.
+# framework-generic key-path vocabulary for media ranking
 _OTHER_PRODUCT_PATH = re.compile(
     r"related|recommend|upsell|cross|similar|recently|alsolike|youmay", re.I)
 _SELECTED_PATH = re.compile(r"selected|current|active", re.I)
 
 
+# identity of the underlying asset ignoring rendition and size differences
+# some cdns give every rendition its own content hash and size word, so the
+# filename is normalized: drop hash-looking tokens (hex with letters),
+# rendition words, and WxH tokens, keep the rest
 def _asset_key(url: str) -> str:
-    """Identity of the underlying asset, ignoring rendition/size differences.
-
-    Some CDNs (Centra-style) give every rendition of the same shot its own
-    content hash AND a size word in the filename, so we normalize the
-    filename: drop hash-looking tokens (hex with letters), rendition words,
-    and WxH tokens, keep the rest.
-    """
     base = url.split("?")[0].split("#")[0]
     base = _SIZE_SEGMENT.sub("/", base)
     segments = base.rstrip("/").split("/")[-2:]
@@ -212,9 +184,9 @@ def _asset_key(url: str) -> str:
     return f"{folder}/{'-'.join(kept)}" if kept else "/".join(segments).lower()
 
 
+# best url within an asset group: blob and json-ld origins first (usually
+# the full-res set), then clean urls over sized renditions, then srcset width
 def _quality(m: MediaCandidate) -> tuple:
-    # Prefer blob/JSON-LD origins (usually the full-res set), then the clean
-    # canonical URL over sized renditions (?w=320 style), then srcset width.
     origin_rank = {"blob": 3, "json_ld": 3, "meta": 1, "dom": 2}.get(m.origin, 0)
     has_size_params = 1 if re.search(r"[?&](?:w|wid|width|h|hei|sw|size)=\d", m.url) else 0
     return (origin_rank, -has_size_params, m.width or 0, len(m.url.split("?")[0]))
@@ -224,13 +196,11 @@ _GENERIC_PATH_WORDS = {"image", "images", "product", "products", "media", "photo
                        "photos", "files", "default", "thumb", "large", "small", "assets"}
 
 
+# identifier tokens from the page's own hero image url (og and twitter image)
+# product galleries share an asset id or sku token with the hero, either in
+# the filename (224626_0_44 -> 224626) or a path segment (/SKU25289/), which
+# separates them from same-cdn content like size guides and cross-sells
 def _hero_stems(ev: Evidence) -> set[str]:
-    """Identifier tokens from the page's own hero image URL (og/twitter image).
-
-    Product galleries share an asset id or sku token with the hero, either in
-    the filename (224626_0_44 -> 224626) or a path segment (/SKU25289/). That
-    separates them from same-CDN content like size guides and cross-sells.
-    """
     stems = set()
     for key in ("og:image", "og:image:secure_url", "twitter:image"):
         url = ev.meta.get(key)
@@ -244,6 +214,7 @@ def _hero_stems(ev: Evidence) -> set[str]:
     return stems
 
 
+# dedupe media by asset, rank by relevance to this product, number survivors
 def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
     groups: dict[str, list[MediaCandidate]] = {}
     for m in ev.media:
@@ -292,6 +263,7 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
     return images + videos
 
 
+# print the numbered IMG_n and VID_n table the model picks from
 def _render_media(media: list[MediaCandidate]) -> str:
     lines = []
     img_i = vid_i = 0
@@ -305,12 +277,13 @@ def _render_media(media: list[MediaCandidate]) -> str:
     return "\n".join(lines)
 
 
+# parallel lists so IMG_n and VID_n indices map straight back to urls
 def media_by_index(media: list[MediaCandidate]) -> tuple[list[str], list[str]]:
-    """Parallel lists: image URLs by IMG index, video URLs by VID index."""
     return ([m.url for m in media if m.kind == "image"],
             [m.url for m in media if m.kind == "video"])
 
 
+# the identity section header lines
 def _render_identity(ev: Evidence) -> str:
     lines = []
     if ev.h1:
@@ -322,16 +295,17 @@ def _render_identity(ev: Evidence) -> str:
     return "\n".join(lines)
 
 
+# cap a section at its character budget
 def _fit(text: str, budget: int) -> str:
     if len(text) <= budget:
         return text
     return text[:budget] + "\n…[truncated]"
 
 
+# waterfall the blob budget: blobs arrive sorted by commerce score and the
+# best one gets what it needs before the next sees a byte (one joined fit
+# would let a low-value 300KB state dump truncate the product blob)
 def _fit_blobs(blobs: list, budget: int) -> str:
-    """Waterfall the budget: blobs arrive sorted by commerce score, and the
-    best one gets whatever it needs before the next sees a byte. One joined
-    _fit would let a low-value 300KB state dump truncate the product blob."""
     parts, remaining = [], budget
     for b in blobs:
         if b is None or remaining < 2_000:
