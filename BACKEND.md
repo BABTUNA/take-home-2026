@@ -89,9 +89,9 @@ Three real saves from this channel:
 
 Evidence bundle down to a few KB of prompt context. Three jobs:
 
-**Budgets per section**, so one bloated channel can't evict another (JSON gets the biggest budget, then text, then media list). Blob subtrees pruned by commerce-key scoring; nav data, i18n bundles, and analytics config are 60-90% of blob bytes and get dropped.
+**Budgets per section**, so one bloated channel can't evict another (JSON gets the biggest budget, then text, then media list). Blob subtrees pruned by commerce-key scoring; nav data, i18n bundles, and analytics config are 60-90% of blob bytes and get dropped. Input ceiling is set by `data_unseen/`, not `data/`: the largest unseen page is 1.9MB, over twice the biggest assignment page, so harvest and pruning stay streaming/regex-first and never hold multiple parsed copies of a page.
 
-**Identity anchoring.** Compute the page's own identity first (h1, og:title, sku, canonical slug) and drop evidence about other products. Without this, Nike's recommendation rail and 8 sibling colorway products leak into the extraction.
+**Identity anchoring.** Compute the page's own identity first (h1, og:title, sku, canonical slug) and drop evidence about other products. Without this, Nike's recommendation rail and 8 sibling colorway products leak into the extraction. This applies to JSON-LD too: several pages in `data_unseen/` carry multiple JSON-LD Product blocks (related items, bundle components), so blocks are filtered against the page identity the same way blobs are.
 
 **Media candidates.** Every image URL found anywhere, deduped by terminal asset id, sized-up (srcset largest wins, size params stripped: `imageNNN.jpg?fit=max&w=1200` -> the 2890x1500 original on article), then numbered:
 
@@ -120,7 +120,7 @@ One structured-output call on a cheap model (gemini-2.5-flash-lite class). The m
 
 - Media by index only. It answers `"image_ids": [0, 1, 4]`, code maps back to URLs. A hallucinated URL is unrepresentable.
 - Prices are provenance-gated: accepted only if the number literally appears in the evidence.
-- The system prompt is a numbered rule spec of site-agnostic patterns. Examples of rules: price field pairs (`currentPrice` vs `priceAfterInstantSavings`: displayed price is the lower, list price is compare_at); description source ladder (JSON-LD verbatim, then meta description, then prose under the title, never reviews or sister-product copy); variant test (option changes a query param = variant, option links to a different URL path = sister product, record the color only).
+- The system prompt is a numbered rule spec of site-agnostic patterns. Examples of rules: price field pairs (`currentPrice` vs `priceAfterInstantSavings`: displayed price is the lower, list price is compare_at); description source ladder (JSON-LD verbatim, then meta description, then prose under the title, never reviews or sister-product copy); variant test (option changes a query param = variant, option links to a different URL path = sister product, record the color only); international rules (keep the page's language, don't translate; currency from an explicit code in JSON-LD, blob, or URL locale, never from a symbol alone; tax-inclusive prices stay as displayed). The German and EUR/GBP pages in `data_unseen/` are the test for that last rule.
 
 Model output for the ace page should look like:
 
@@ -172,6 +172,7 @@ Built alongside, not after:
 - `eval/score.py`: per-field, per-page matrix. Tolerant matchers: images compared by asset id, text by token containment, prices exact.
 - `eval/baseline.py`: no-LLM extractor over the same evidence. The scoreboard shows what the model adds and what it costs.
 - `eval/reachability.py`: rerun distill with caps raised, assert every ground-truth value is findable in the context. If distillation drops the article price, this names it before the LLM ever runs.
+- The 16 pages in `data_unseen/` get a lighter check than the graded 5: the pipeline must run and validate on all of them, with a spot-check table (name, price, variant count vs the live page) instead of full ground truth. Vitamix (a 22KB client-rendered shell) is the documented graceful-degradation case: partial product, no invented fields.
 
 ## Cost target
 
