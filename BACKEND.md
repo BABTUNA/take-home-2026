@@ -39,11 +39,32 @@ Collect evidence from five generic channels. Nothing here knows about any specif
 
 Parsing detail: `window.X = {...}; more js` needs `JSONDecoder.raw_decode`, not `json.loads`, and `JSON.parse("...")` arguments need unescaping first.
 
-**Channel D: raw inline-script text.** Scripts that refuse to parse as JSON, kept as text and ranked by keyword density. Next.js App Router pages stream data as escaped fragments (`self.__next_f.push([1,"{\"product\":..."`)`) that a JSON miner can't see but an LLM reads fine. None of the 5 assignment pages need this channel; it exists for unseen sites.
+**Channel D: raw inline-script text.** Scripts that refuse to parse as JSON, kept as text and ranked by keyword density:
 
-**Channel E: visible text with attributes inlined.** Strip script/style/nav/footer, then inline `aria-label`, `alt`, `title` into the text stream. Three real saves: `article.html`'s price exists only as `<span class="regularPrice">$349</span>`; `nike.html`'s `aria-label="current price £76.99, original price £109.99"` disambiguates price vs compare-at; `llbean.html`'s variant labels exist only on buttons (`alt="Sale Color Option: Lake, $24.99"`).
+```js
+self.__next_f.push([1,"{\"product\":{\"name\":\"Nike Pegasus\",\"price\":110}}"])
+```
 
-Media collection runs across all channels: img/srcset/source/preload tags, og:image, every image-looking URL inside blobs (tagged with the JSON key path it was found under, which matters later), tracking beacons filtered out, and a query-stripped twin added for sized renditions.
+Not clean JSON, so a blob miner sees nothing, but the model still reads `name = Nike Pegasus, price = 110` from the raw text. None of the 5 assignment pages need this channel; it exists for unseen sites on newer frameworks.
+
+**Channel E: visible text with attributes inlined.** Strip script/style/nav/footer, then inline `aria-label`, `alt`, `title` into the text stream:
+
+```html
+<button aria-label="Size 10, sold out">10</button>
+```
+
+Plain text scraping sees only `10`. Channel E keeps the attribute, so the model sees `10 [Size 10, sold out]`. Three real saves in our data: `article.html`'s price exists only as visible text (`$349`), `nike.html`'s `aria-label="current price £76.99, original price £109.99"` disambiguates price vs compare-at, and `llbean.html`'s variant labels exist only on buttons (`alt="Sale Color Option: Lake, $24.99"`).
+
+**Media collection** runs across all channels and keeps everything with its provenance:
+
+```
+main.jpg?w=300      (dom, srcset)
+main.jpg?w=1200     (dom, srcset)
+main.jpg            (blob, under selectedProduct)
+recommended.jpg     (blob, under relatedProducts)
+```
+
+Harvest collects all of them and remembers origin and JSON key path; distill later groups the three `main.jpg` renditions into one asset, keeps the cleanest URL, and demotes the recommendation image by its path. Tracking beacons are filtered here, and sized renditions get a query-stripped twin added.
 
 ## Stage 2: Distill
 
