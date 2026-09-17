@@ -57,13 +57,33 @@ Sizes with live stock counts, and sister colorways as related products. From `ni
 
 Parsing detail: `window.__X__ = {...}; other js` needs `JSONDecoder.raw_decode`, not `json.loads`.
 
-**Channel D: raw inline-script text.** Scripts that don't parse as JSON (Next.js Flight payloads), kept as text and ranked by keyword density with size caps. Insurance for unseen sites.
+**Channel D: raw inline-script text.** Scripts that don't parse as JSON, kept as text and ranked by keyword density with size caps. The main target is Next.js App Router pages, which stream data as escaped string fragments instead of one JSON object:
 
-**Channel E: visible text with attributes inlined.** Strip script/style/nav/footer, then inline `aria-label`, `alt`, `title` into the text stream. Two real saves:
+```html
+<script>self.__next_f.push([1,"{\"product\":{\"name\":\"Trail Runner\",\"price\":{\"amount\":128,\"currency\":\"USD\"},\"sizes\":[\"8\",\"9\",\"10\"]}"])</script>
+```
+
+A JSON-blob miner sees no parseable object here, but the product data is plainly in the text, and an LLM reads escaped JSON fine. None of the 5 assignment pages need this channel (they all use the older parseable `__NEXT_DATA__` style), which is exactly the point: it exists for unseen sites on newer frameworks.
+
+**Channel E: visible text with attributes inlined.** Strip script/style/nav/footer, then inline `aria-label`, `alt`, `title` into the text stream. What this looks like on `llbean.html`, where the state blob has 83 skus but no human-readable labels:
+
+```html
+<button type="button" role="radio" aria-checked="false" data-test-id="answer-Black" title="Black">
+  <img src="https://cdni.llbean.net/is/image/wim/224626_1_41?wid=65..." alt="Color Option: Black, $29.95"/>
+</button>
+```
+
+becomes this line in the text stream:
+
+```
+[option] Black | Color Option: Black, $29.95
+```
+
+Three real saves from this channel:
 
 - `article.html` has an empty state blob and no price in JSON-LD. Its price exists only as `<span class="regularPrice">$349</span>`.
-- `nike.html` DOM: `aria-label="current price £76.99, original price £109.99"`. That one attribute disambiguates price vs compare_at.
-- `llbean.html` buttons: `data-test-id="answer-40645-Size-Medium"`, alt text `"Sale Color Option: Lake, $24.99"`. The blob has 83 skus but no human-readable labels; the labels only live here.
+- `nike.html` DOM: `<div id="price-container" aria-label="current price £76.99, original price £109.99">`. That one attribute disambiguates price vs compare_at.
+- `llbean.html` sale colors: `alt="Sale Color Option: Lake, $24.99"` next to `alt="Color Option: Black, $29.95"` carries per-color sale pricing that exists nowhere else on the page.
 
 ## Layer 2: Distill
 
