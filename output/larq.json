@@ -12,10 +12,7 @@
     "Electropolished 18/8 stainless steel (BPA free)",
     "Rechargeable lithium-polymer battery",
     "MicroUSB connector",
-    "Proprietary powder coating",
-    "Detachable handle",
-    "Self-cleaning",
-    "USB-C charging"
+    "Proprietary powder coating"
   ],
   "image_urls": [
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1770984506/BWOB068A_600857559/BWOB068A_600857559.png?_i=AA",
@@ -32,10 +29,9 @@
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071919/BWOB068A-53/BWOB068A-53.png?_i=AA",
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071954/BWOB068A-2/BWOB068A-2.png?_i=AA",
     "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071928/BWOB068A-5/BWOB068A-5.png?_i=AA",
-    "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071916/BWOB068A/BWOB068A.png?_i=AA",
-    "https://res.cloudinary.com/larq/image/upload/q_auto/w_900/v1714750463/SKU/SPA/v3/BWOB068A.jpg"
+    "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071916/BWOB068A/BWOB068A.png?_i=AA"
   ],
-  "video_url": null,
+  "video_url": "https://res.cloudinary.com/larq/video/upload/f_auto/v1777442398/assets/spa/v3/products/video/LARQ_Bottle_PureVis_2_mbb/LARQ_MBBxPV2_m-opt.mp4",
   "category": {
     "name": "Home & Garden > Kitchen & Dining > Food & Beverage Carriers > Water Bottles"
   },
@@ -78,20 +74,33 @@
     {
       "selections": [
         {
-          "name": "Size",
-          "value": "23 oz"
-        },
-        {
           "name": "Color",
           "value": "Obsidian Black"
+        },
+        {
+          "name": "Size",
+          "value": "23 oz"
         }
       ],
       "sku": "BWOB068A",
       "price": 129.0,
       "available": true,
       "image_urls": [
-        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071916/BWOB068A/BWOB068A.png?_i=AA",
-        "https://res.cloudinary.com/larq/image/upload/q_auto/w_900/v1714750463/SKU/SPA/v3/BWOB068A.jpg"
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1770984506/BWOB068A_600857559/BWOB068A_600857559.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071948/BWOB068A-4A1/BWOB068A-4A1.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071946/BWOB068A-4A2/BWOB068A-4A2.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071942/BWOB068A-4A3/BWOB068A-4A3.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071936/BWOB068A-4B1/BWOB068A-4B1.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071933/BWOB068A-4B2/BWOB068A-4B2.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071931/BWOB068A-4B3/BWOB068A-4B3.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071951/BWOB068A-4A/BWOB068A-4A.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071940/BWOB068A-4B/BWOB068A-4B.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071925/BWOB068A-51/BWOB068A-51.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071923/BWOB068A-52/BWOB068A-52.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071919/BWOB068A-53/BWOB068A-53.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071954/BWOB068A-2/BWOB068A-2.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071928/BWOB068A-5/BWOB068A-5.png?_i=AA",
+        "https://res.cloudinary.com/larq/images/f_auto,q_auto/v1715071916/BWOB068A/BWOB068A.png?_i=AA"
       ]
     }
   ]

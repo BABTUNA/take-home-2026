@@ -1,0 +1,55 @@
+{
+  "name": "Boss RC-600 Loop Station",
+  "price": {
+    "price": 409.0,
+    "currency": "GBP",
+    "compare_at_price": null
+  },
+  "description": "Effect pedal for electric guitar  Looper, 6 Simultaneous stereo phrase tracks, 9 Individually assignable footswitches and 3 pedal modes, 49 Input FX and 53 track FX types, 4 of which can be used simultaneously, Time-based effects can be automatically synchronised with rhythms and loop tempo",
+  "key_features": [
+    "Effect pedal for electric guitar",
+    "Looper",
+    "6 Simultaneous stereo phrase tracks",
+    "9 Individually assignable footswitches and 3 pedal modes",
+    "49 Input FX and 53 track FX types, 4 of which can be used simultaneously",
+    "Time-based effects can be automatically synchronised with rhythms and loop tempo",
+    "99 Memory locations",
+    "200 Onboard rhythm patterns and 16 drum kits",
+    "USB for data backup, phrase import/export with BOSS Tone Studio and pattern import with RC Rhythm Converter",
+    "Controls: CTL 1-4 and Output Level",
+    "Push buttons: Menu, Loop, Rhythm, Tap Tempo, Exit, Enter (together: Write), Page Up/Down (together: Lock)",
+    "Graphic backlit LC display with 128 x 64 pixels",
+    "Dimensions (W x D x H): 435 x 163 x 66 mm",
+    "Weight: 2.4 kg",
+    "Recording time in minutes: 780 m",
+    "USB connector: Yes",
+    "MIDI: Yes",
+    "Stereo: Yes",
+    "XLR Input: Yes"
+  ],
+  "image_urls": [
+    "https://www.thomann.de/thumb/opengraph/pics/prod/529921.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234688_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234703_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234683_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234693_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234678_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234658_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234709_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234698_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234663_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234710_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234708_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234723_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234668_800.jpg",
+    "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_52/529921/17234673_800.jpg"
+  ],
+  "video_url": null,
+  "category": {
+    "name": "Electronics > Audio > Audio Components > Signal Processors > Effects Processors"
+  },
+  "brand": "Boss",
+  "colors": [],
+  "options": [],
+  "variants": []
+}

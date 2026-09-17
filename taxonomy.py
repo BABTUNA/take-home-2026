@@ -80,7 +80,11 @@ async def resolve(candidate: str, name: str, brand: str, description: str,
                 "Never pick an accessory or part category for the product itself: a lamp "
                 "is not a lamp shade, a camera is not a camera lens. Prefer the ordinary "
                 "retail category over specialty ones (traditional, ceremonial, costume, "
-                "medical) unless the page explicitly says the product is that specialty kind."},
+                "medical) unless the page explicitly says the product is that specialty kind. "
+                "Sport-branded apparel and footwear belong under Apparel & Accessories, not "
+                "under the sport's equipment category: a basketball shoe is Shoes, not "
+                "Basketball. Media products go under their format: an album is Music CDs "
+                "or Digital Music Downloads, not a hobby category."},
             {"role": "user", "content":
                 f"Product: {name}\nBrand: {brand}\nPage hint: {candidate}\n"
                 f"Breadcrumb: {breadcrumb}\nDescription: {description[:400]}\n\n"

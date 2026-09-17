@@ -109,6 +109,9 @@ _SYSTEM = """You extract structured product data from the distilled contents of 
     alternatives: the page's own wording first, then common synonyms, then the
     US retail term when it differs (["trousers", "pants"], ["floor lamp", "lighting"]).
     Prefer the page's breadcrumb or type wording for the first entry.
+    Always write these phrases in English, even when the page is in another
+    language (they feed an English-language category index). This is the one
+    field where rule 5's keep-the-page-language rule does not apply.
 """
 
 

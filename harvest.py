@@ -31,7 +31,9 @@ _VIDEO_EXT = re.compile(r"\.(?:mp4|webm|m3u8)(?:\?|$)", re.I)
 _IMAGE_PATH_HINT = re.compile(r"/(?:is/image|images?|media|photos?|files?)/", re.I)
 # Tracking beacons render as <img> tags too; these tokens identify analytics
 # vendors/endpoints, not any particular store.
-_NOISE_URL = re.compile(r"analytics|beacon|pixel|track|telemetry|metrics|/api/|doubleclick|facebook\.com/tr", re.I)
+_NOISE_URL = re.compile(
+    r"analytics|beacon|pixel|track|telemetry|metrics|/api/|doubleclick"
+    r"|facebook\.com/tr|pinterest\.com/v3|bat\.bing|noscript=1", re.I)
 
 
 # run all five channels over one page and return the evidence bundle
@@ -255,8 +257,11 @@ def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
                 seen[base] = MediaCandidate(url=base, kind=kind, origin=origin, width=None)
 
     for img in soup.find_all("img"):
-        if img.get("src"):
-            add(img["src"], "image", "dom")
+        # data-src / data-image are the standard lazy-loading attributes
+        # (Squarespace and most lightbox galleries put the real URL there).
+        for attr in ("src", "data-src", "data-image"):
+            if img.get(attr):
+                add(img[attr], "image", "dom")
         for url, width in _parse_srcset(img.get("srcset") or img.get("data-srcset") or ""):
             add(url, "image", "dom", width)
     for source in soup.find_all("source"):

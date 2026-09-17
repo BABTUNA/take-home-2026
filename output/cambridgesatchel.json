@@ -1,0 +1,52 @@
+{
+  "name": "The Mini - True Blue",
+  "price": {
+    "price": 185.0,
+    "currency": "GBP",
+    "compare_at_price": null
+  },
+  "description": "Compact sophistication with a practical twist. This smaller version of our beloved Satchel features a convenient top handle alongside the traditional shoulder strap, making it perfect for busy days and spontaneous adventures. - Top handle and detachable, adjustable shoulder strap - Magnetic closures - Front pocket for quick access - Compact Satchel design - Includes protective dust bag - Handcrafted in England",
+  "key_features": [
+    "Top handle and detachable, adjustable shoulder strap",
+    "Magnetic closures",
+    "Front pocket for quick access",
+    "Compact Satchel design",
+    "Includes protective dust bag",
+    "Handcrafted in England",
+    "H: 19cm / 7.48in (External Including Handle)",
+    "W: 21.5cm / 8.46in (External Including Handle)",
+    "D: 6cm / 2.36in (External Including Handle)"
+  ],
+  "image_urls": [
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July76.jpg?v=1786977464",
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July82.jpg?v=1786977473",
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July77_1.jpg?v=1786977486",
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July125.jpg?v=1786977517",
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July121.jpg?v=1786977550",
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July87.jpg?v=1786977484",
+    "https://www.cambridgesatchel.com/cdn/shop/files/Copyofsaturday11July93_1_0de7fb6e-a94e-43d2-ab9b-2c812bb42228.jpg?v=1786977514"
+  ],
+  "video_url": "https://www.cambridgesatchel.com/cdn/shop/videos/c/vp/2e7bc5c8640f40729acbbbc1e449e5a0/2e7bc5c8640f40729acbbbc1e449e5a0.HD-1080p-7.2Mbps-77220915.mp4?v=0",
+  "category": {
+    "name": "Luggage & Bags > Messenger Bags"
+  },
+  "brand": "Cambridge Satchel",
+  "colors": [
+    "True Blue",
+    "Black",
+    "Clay, Oxblood & Navy",
+    "Oxblood",
+    "Bay",
+    "Racing Green",
+    "Ultramarine Blue Plaid & Brilliant White",
+    "Lemon",
+    "Navy, Brilliant White & Bay",
+    "Tutti Frutti",
+    "Black with Harvard Stripe",
+    "White with Harvard Stripe",
+    "Black & Brilliant White",
+    "Midnight with Columbia Stripe"
+  ],
+  "options": [],
+  "variants": []
+}

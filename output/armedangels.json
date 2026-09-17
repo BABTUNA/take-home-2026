@@ -5,15 +5,18 @@
     "currency": "EUR",
     "compare_at_price": null
   },
-  "description": "Die BAARLY Jeans überzeugt mit einem hohen Bund, Barrel-Schnitt und knöchellanger Passform. Sie besteht aus einem Bio-Baumwoll Mix non stretch und verleiht jedem Outfit einen lässigen, authentischen Jeans-Look.",
+  "description": "Die BAARLY Jeans überzeugt mit einem hohen Bund, Barrel-Schnitt und knöchellanger Passform. Sie besteht aus einem Bio-Baumwolle, sowie TENCEL™ Lyocell in stretchfreier Qualität und verleiht jedem Outfit einen lässigen, authentischen Jeans-Look.",
   "key_features": [
-    "64% OCS certified organic cotton",
-    "TENCEL™ Lyocell fibers",
+    "Optik: Einfarbig",
+    "Taschen: 5-Pocket",
+    "Verschlussart: Knopfleiste",
+    "Schnitt: Loose Fit",
+    "Beinform: Barrel Leg",
+    "Bundhöhe: High waist",
+    "Länge: Knöchellang",
+    "64% Baumwolle (bio), 36% Lyocell (TENCEL™)",
     "Non-Stretch",
-    "Loose Fit",
-    "Barrel Leg",
-    "High waist",
-    "Knöchellang"
+    "30° Pflegeleicht"
   ],
   "image_urls": [
     "https://www.armedangels.com/cdn/shop/files/30009185-3045_111.jpg?v=1789057159",
@@ -26,19 +29,20 @@
   ],
   "video_url": null,
   "category": {
-    "name": "Apparel & Accessories > Clothing > Pants"
+    "name": "Apparel & Accessories"
   },
   "brand": "ARMEDANGELS",
   "colors": [
-    "noise"
+    "Crunchy",
+    "White",
+    "Pink Mist",
+    "Loa",
+    "Nutmeg",
+    "Fluid Ink",
+    "Noise",
+    "Ebony Black"
   ],
   "options": [
-    {
-      "name": "Color",
-      "values": [
-        "noise"
-      ]
-    },
     {
       "name": "Waist",
       "values": [
@@ -67,10 +71,6 @@
     {
       "selections": [
         {
-          "name": "Color",
-          "value": "noise"
-        },
-        {
           "name": "Waist",
           "value": "25"
         },
@@ -82,16 +82,10 @@
       "sku": "30009185000001",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_111.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "26"
@@ -104,16 +98,10 @@
       "sku": "30009185000004",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_211.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "27"
@@ -126,16 +114,10 @@
       "sku": "30009185000007",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_311.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "28"
@@ -148,16 +130,10 @@
       "sku": "30009185000010",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_301.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "29"
@@ -170,16 +146,10 @@
       "sku": "30009185000013",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_411.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "30"
@@ -192,16 +162,10 @@
       "sku": "30009185000016",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_611.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "31"
@@ -214,16 +178,10 @@
       "sku": "30009185000019",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_101.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "32"
@@ -236,16 +194,10 @@
       "sku": "30009185000022",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_111.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "33"
@@ -258,16 +210,10 @@
       "sku": "30009185000025",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_211.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "34"
@@ -280,16 +226,10 @@
       "sku": "30009185000028",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_311.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "25"
@@ -302,16 +242,10 @@
       "sku": "30009185000002",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_301.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "26"
@@ -324,16 +258,10 @@
       "sku": "30009185000005",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_411.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "27"
@@ -346,16 +274,10 @@
       "sku": "30009185000008",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_611.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "28"
@@ -368,16 +290,10 @@
       "sku": "30009185000011",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_101.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "29"
@@ -390,16 +306,10 @@
       "sku": "30009185000014",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_111.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "30"
@@ -412,16 +322,10 @@
       "sku": "30009185000017",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_211.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "31"
@@ -434,16 +338,10 @@
       "sku": "30009185000020",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_311.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "32"
@@ -456,16 +354,10 @@
       "sku": "30009185000023",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_301.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "33"
@@ -478,16 +370,10 @@
       "sku": "30009185000026",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_411.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "34"
@@ -500,16 +386,10 @@
       "sku": "30009185000029",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_611.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "25"
@@ -522,16 +402,10 @@
       "sku": "30009185000003",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_101.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "26"
@@ -544,16 +418,10 @@
       "sku": "30009185000006",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_111.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "27"
@@ -566,16 +434,10 @@
       "sku": "30009185000009",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_211.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "28"
@@ -588,16 +450,10 @@
       "sku": "30009185000012",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_311.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "29"
@@ -610,16 +466,10 @@
       "sku": "30009185000015",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_301.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "30"
@@ -632,16 +482,10 @@
       "sku": "30009185000018",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_411.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "31"
@@ -654,16 +498,10 @@
       "sku": "30009185000021",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_611.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "32"
@@ -676,16 +514,10 @@
       "sku": "30009185000024",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_101.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "33"
@@ -698,16 +530,10 @@
       "sku": "30009185000027",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_111.jpg?v=1789057159"
-      ]
+      "image_urls": []
     },
     {
       "selections": [
-        {
-          "name": "Color",
-          "value": "noise"
-        },
         {
           "name": "Waist",
           "value": "34"
@@ -720,9 +546,7 @@
       "sku": "30009185000030",
       "price": 129.9,
       "available": true,
-      "image_urls": [
-        "https://www.armedangels.com/cdn/shop/files/30009185-3045_211.jpg?v=1789057159"
-      ]
+      "image_urls": []
     }
   ]
 }

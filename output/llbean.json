@@ -5,9 +5,8 @@
     "currency": "USD",
     "compare_at_price": null
   },
-  "description": "Made of soft cotton that resists wrinkles, shrinking, fading and pilling, our resilient henley keeps its shape wash after wash. We've put our Unshrinkable Carefree Tees to the test, in the lab and in the field. And we're glad to say our unshrinkable t-shirts passed with flying colors. What's more, the 100% cotton fabric resists wrinkles, fading, pilling and shrinking, so our tee keeps its true-to-size fit while maintaining its comfort and softness.",
+  "description": "Made of soft cotton that resists wrinkles, shrinking, fading and pilling, our resilient henley keeps its shape wash after wash.",
   "key_features": [
-    "Traditional Fit: Relaxed through the chest, sleeve and waist.",
     "Ribbed trim is 90% cotton/10% Lycra® elastane.",
     "100% jersey-knit cotton.",
     "Double ring-spun fabric fights shrinkage, wrinkles, fading and pilling.",
@@ -63,10 +62,10 @@
         "Charcoal Heather",
         "Delta Blue",
         "Gray Heather",
-        "Lake",
         "Navy Blue",
         "Soft Spruce",
-        "White"
+        "White",
+        "Lake"
       ]
     },
     {
@@ -109,6 +108,60 @@
       "available": true,
       "image_urls": [
         "https://cdni.llbean.net/is/image/wim/224626_36814_41",
+        "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
+        "https://cdni.llbean.net/is/image/wim/224626_0_45",
+        "https://cdni.llbean.net/is/image/wim/224626_0_46",
+        "https://cdni.llbean.net/is/image/wim/224626_0_47",
+        "https://cdni.llbean.net/is/image/wim/224626_0_48"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Color",
+          "value": "Black"
+        },
+        {
+          "name": "Item",
+          "value": "Regular"
+        },
+        {
+          "name": "Size",
+          "value": "Small"
+        }
+      ],
+      "sku": "0ATH210002",
+      "price": 29.95,
+      "available": true,
+      "image_urls": [
+        "https://cdni.llbean.net/is/image/wim/224626_1_41",
+        "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
+        "https://cdni.llbean.net/is/image/wim/224626_0_45",
+        "https://cdni.llbean.net/is/image/wim/224626_0_46",
+        "https://cdni.llbean.net/is/image/wim/224626_0_47",
+        "https://cdni.llbean.net/is/image/wim/224626_0_48"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Color",
+          "value": "Charcoal Heather"
+        },
+        {
+          "name": "Item",
+          "value": "Regular"
+        },
+        {
+          "name": "Size",
+          "value": "Small"
+        }
+      ],
+      "sku": "0ATH290002",
+      "price": 29.95,
+      "available": true,
+      "image_urls": [
+        "https://cdni.llbean.net/is/image/wim/224626_1176_41",
         "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
         "https://cdni.llbean.net/is/image/wim/224626_0_45",
         "https://cdni.llbean.net/is/image/wim/224626_0_46",

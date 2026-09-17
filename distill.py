@@ -163,25 +163,30 @@ _SELECTED_PATH = re.compile(r"selected|current|active", re.I)
 
 
 # identity of the underlying asset ignoring rendition and size differences
-# some cdns give every rendition its own content hash and size word, so the
-# filename is normalized: drop hash-looking tokens (hex with letters),
-# rendition words, and WxH tokens, keep the rest
+# uses the full path because some cdns (puma-style) keep a constant filename
+# and encode the view code several directories up; per segment it drops
+# transform dsl (segments with , : =), WxH sizes, rendition words, and
+# hash-looking tokens (hex with letters), keeping everything else
 def _asset_key(url: str) -> str:
     base = url.split("?")[0].split("#")[0]
     base = _SIZE_SEGMENT.sub("/", base)
-    segments = base.rstrip("/").split("/")[-2:]
-    name = segments[-1].rsplit(".", 1)[0]
-    kept = []
-    for tok in re.split(r"[^a-z0-9]+", name.lower()):
-        if not tok or tok in _RENDITION_WORDS:
-            continue
-        if len(tok) >= 6 and re.fullmatch(r"[0-9a-f]+", tok) and re.search(r"[a-f]", tok):
-            continue  # content hash, not identity
-        if re.fullmatch(r"\d{2,4}x\d{0,4}", tok):
-            continue
-        kept.append(tok)
-    folder = segments[0].lower() if len(segments) > 1 else ""
-    return f"{folder}/{'-'.join(kept)}" if kept else "/".join(segments).lower()
+    path = base.split("//", 1)[-1].split("/")[1:]  # drop scheme and host
+    kept_segments = []
+    for seg in path:
+        if not seg or "," in seg or ":" in seg or "=" in seg:
+            continue  # cloudinary/akamai transform segments, not identity
+        toks = []
+        for tok in re.split(r"[^a-z0-9]+", seg.lower()):
+            if not tok or tok in _RENDITION_WORDS:
+                continue
+            if len(tok) >= 6 and re.fullmatch(r"[0-9a-f]+", tok) and re.search(r"[a-f]", tok):
+                continue  # content hash, not identity
+            if re.fullmatch(r"\d{2,4}x\d{0,4}", tok):
+                continue
+            toks.append(tok)
+        if toks:
+            kept_segments.append("-".join(toks))
+    return "/".join(kept_segments) if kept_segments else base.lower()
 
 
 # best url within an asset group: blob and json-ld origins first (usually

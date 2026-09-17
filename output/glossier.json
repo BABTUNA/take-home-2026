@@ -10,15 +10,13 @@
     "universal skin salve",
     "lip care",
     "lip balm",
-    "glossier balm dotcom",
-    "Moisturizing",
-    "Nourishing",
     "Castor Seed Oil - A plant-based oil with fatty acids and unique water-binding properties to help keep lips moisturized.",
-    "Beeswax - A naturally-derived emollient that leaves lips feeling cushiony and non-sticky."
+    "Beeswax - A naturally-derived emollient that leaves lips feeling cushiony and non-sticky.",
+    "15 ml / 0.5 fl oz"
   ],
   "image_urls": [
+    "https://www.glossier.com/cdn/shop/files/BDC_Trio_-_I_3NY_birthday_blackcherry.png?v=1788208005",
     "https://www.glossier.com/cdn/shop/files/glossier-0813-balm-dotcom-trio-carousel-02.png?v=1786650890",
-    "https://glossier-prod.imgix.net/files/BDC_Trio_-_I_3NY_birthday_blackcherry.png?auto=compress,format&cs=srgb&w={width}",
     "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-02_427b3436-63a6-423a-9838-446fcb39a972.png?v=1784582788",
     "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-04_1aaa8b8e-d2ee-4161-a328-99666fe46ce5.png?v=1784582723",
     "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-05_66da3348-9ae3-4638-aa45-b2981b8973d3.png?v=1784582722",
@@ -46,32 +44,22 @@
   ],
   "options": [
     {
-      "name": "Title",
+      "name": "Flavor",
       "values": [
-        "Default Title"
+        "I ❤️ NY",
+        "Black Cherry",
+        "Birthday",
+        "Strawberry",
+        "Original",
+        "Mint",
+        "Mango",
+        "Rose",
+        "Coconut",
+        "Wild Fig",
+        "Lavender",
+        "Espresso"
       ]
     }
   ],
-  "variants": [
-    {
-      "selections": [
-        {
-          "name": "Title",
-          "value": "Default Title"
-        }
-      ],
-      "sku": "BDCTRIO",
-      "price": 42.0,
-      "available": true,
-      "image_urls": [
-        "https://www.glossier.com/cdn/shop/files/glossier-0813-balm-dotcom-trio-carousel-02.png?v=1786650890",
-        "https://glossier-prod.imgix.net/files/BDC_Trio_-_I_3NY_birthday_blackcherry.png?auto=compress,format&cs=srgb&w={width}",
-        "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-02_427b3436-63a6-423a-9838-446fcb39a972.png?v=1784582788",
-        "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-04_1aaa8b8e-d2ee-4161-a328-99666fe46ce5.png?v=1784582723",
-        "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-05_66da3348-9ae3-4638-aa45-b2981b8973d3.png?v=1784582722",
-        "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-06_81576623-1cb8-467f-a608-8c05009766a4.png?v=1784582723",
-        "https://www.glossier.com/cdn/shop/files/glossier-iheartny-bdc-trio-carousel-07_ff0d52a1-a34b-44b5-8343-51ae42cd9fcc.png?v=1784582722"
-      ]
-    }
-  ]
+  "variants": []
 }
