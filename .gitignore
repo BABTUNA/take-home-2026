@@ -3,3 +3,4 @@ __pycache__/
 
 # don't assume they're using UV
 uv.lock
+.cache/

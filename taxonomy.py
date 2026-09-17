@@ -1,13 +1,21 @@
 """Resolve a free-text category guess to an exact Google taxonomy path.
 
-The model can't reliably emit 1 of 5,596 exact strings, so: lexically
-shortlist candidate paths, have the model pick one BY NUMBER from the list,
-and validate the result exists. No silent fallback: a valid-but-wrong
-category is worse than a loud failure.
+The model can't reliably emit 1 of 5,596 exact strings, so: shortlist
+candidate paths (lexical overlap unioned with embedding retrieval), have the
+model pick one BY NUMBER from the list, and validate the result exists.
+No silent fallback: a valid-but-wrong category is worse than a loud failure.
+
+Config choice is measured, not vibes (eval/taxonomy_bench.py, 50 pages with
+hand-judged accepted categories): lexical-only retrieval misses 6/50 pages
+outright (jeans never matches Pants, Chronograph never matches Watches), and
+embedding retrieval puts the right path at median rank 0. Union retrieval
+plus a gemini-3-flash picker scored 48/50 vs 44/50 for lexical + flash-lite;
+the picker call is small (~3K tokens) so the stronger model costs ~$0.002/page.
 """
 
 import logging
 import re
+from pathlib import Path
 
 from pydantic import BaseModel
 
@@ -19,8 +27,8 @@ logger = logging.getLogger(__name__)
 CATEGORIES: list[str] = sorted(VALID_CATEGORIES)
 TOP_LEVEL: list[str] = [c for c in CATEGORIES if ">" not in c]
 
-_SHORTLIST_MODEL = "google/gemini-2.5-flash-lite"
-_ESCALATION_MODEL = "google/gemini-3-flash-preview"
+_PICK_MODEL = "google/gemini-3-flash-preview"
+_EMB_CACHE = Path(__file__).parent / ".cache" / "taxonomy_embeddings.npy"
 
 
 class _Pick(BaseModel):
@@ -45,6 +53,33 @@ _PATH_TOKENS: list[tuple[str, set[str], set[str]]] = [
 ]
 
 
+_embedder = None
+_path_emb = None
+
+
+# embed all 5596 paths once (cached to disk), embed the query, cosine top-k
+# returns [] when fastembed isn't installed so the union degrades to lexical
+def _embed_shortlist(query: str, k: int = 50) -> list[str]:
+    global _embedder, _path_emb
+    try:
+        import numpy as np
+        from fastembed import TextEmbedding
+    except ImportError:
+        return []
+    if _path_emb is None:
+        _embedder = TextEmbedding("BAAI/bge-small-en-v1.5")
+        if _EMB_CACHE.exists():
+            _path_emb = np.load(_EMB_CACHE)
+        else:
+            _path_emb = np.array(list(_embedder.embed(CATEGORIES)))
+            _EMB_CACHE.parent.mkdir(exist_ok=True)
+            np.save(_EMB_CACHE, _path_emb)
+    import numpy as np
+    q = np.array(list(_embedder.embed([query])))[0]
+    sims = _path_emb @ q / (np.linalg.norm(_path_emb, axis=1) * np.linalg.norm(q) + 1e-9)
+    return [CATEGORIES[i] for i in np.argsort(-sims)[:k]]
+
+
 # narrow 5596 paths to the k closest by token overlap, leaf matches weighted
 def shortlist(query: str, k: int = 150) -> list[str]:
     q = _tokens(query)
@@ -62,14 +97,26 @@ def shortlist(query: str, k: int = 150) -> list[str]:
     return top + [t for t in TOP_LEVEL if t not in top]
 
 
+# union the two shortlists: lexical order first, then embedding finds, then
+# the top-level safety net
+def _union_shortlist(query: str, embed_query: str, k_lex: int, k_emb: int = 50) -> list[str]:
+    top_set = set(TOP_LEVEL)
+    lex = [p for p in shortlist(query, k=k_lex) if p not in top_set][:k_lex]
+    seen = set(lex)
+    extra = [p for p in _embed_shortlist(embed_query, k=k_emb) if p not in seen]
+    seen.update(extra)
+    return lex + extra + [t for t in TOP_LEVEL if t not in seen]
+
+
 # shortlist then have the model pick one path by index, validated to exist
 async def resolve(candidate: str, name: str, brand: str, description: str,
                   breadcrumb: str = "") -> Category:
     query = " ".join([candidate, candidate, name, brand, breadcrumb, description[:300]])
+    embed_query = f"{candidate} {name}"
 
     last_err = None
-    for attempt, (k, model) in enumerate([(150, _SHORTLIST_MODEL), (400, _ESCALATION_MODEL)]):
-        options = shortlist(query, k=k)
+    for attempt, (k, model) in enumerate([(100, _PICK_MODEL), (300, _PICK_MODEL)]):
+        options = _union_shortlist(query, embed_query, k_lex=k)
         numbered = "\n".join(f"{i}. {p}" for i, p in enumerate(options))
         prompt = [
             {"role": "system", "content":

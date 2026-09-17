@@ -1,0 +1,116 @@
+{
+  "name": "Ambery Vanilla",
+  "price": {
+    "price": 26.1,
+    "currency": "USD",
+    "compare_at_price": 29.0
+  },
+  "description": "Buy ➔ Ambery Vanilla Perfume Online ✔️ Inspired by Yves Saint Laurent's Black Opium ⚡ Free shipping ❤️ Vegan & Cruelty-free ⭐ Fragrance for the 99%",
+  "key_features": [
+    "Inspired by YSL's Black Opium",
+    "Vegan",
+    "Cruelty-free",
+    "Clean ingredients",
+    "Top Notes: Mandarin, Pear, Pink Pepper, Liquorice",
+    "Middle Notes: Jasmine, Orange Blossom",
+    "Base Notes: Cedarwood, Patchouli, Vanilla, Coffee",
+    "Concentration: 15%",
+    "Gender: Feminine",
+    "Scent Intensity: Statement"
+  ],
+  "image_urls": [
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Ambery-Vanilla-100ml-Warm-Warm-Ambery.png",
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Ambery-Vanilla-100ml-Warm-Warm-Ambery_x280.png?v=1768408369",
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Ambery_Vanilla_x280.jpg?v=1779187853",
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Ambery-Vanilla_917fe1a3-66b6-4daf-b8c9-a71ded070449.png",
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Impressions-Photoshoot-Ambery-Vanilla-100-ml.png",
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/100-ml-Next-to-Box-Ambery-Vanilla.jpg",
+    "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/100-ml-in-Box-Ambery-Vanilla.jpg"
+  ],
+  "video_url": "https://checkout.dossier.co/cdn/shop/videos/c/vp/e49b8c398aa8435c97290abccc498f2e/e49b8c398aa8435c97290abccc498f2e.HD-1080p-7.2Mbps-31884954.mp4",
+  "category": {
+    "name": "Health & Beauty > Personal Care > Cosmetics > Perfume & Cologne"
+  },
+  "brand": "Dossier Inspired by YSL's Black Opium",
+  "colors": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "Fragrance 50ml/1.7oz",
+        "100ml",
+        "200ml",
+        "2x50ml",
+        "3x50ml"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "Fragrance 50ml/1.7oz"
+        }
+      ],
+      "sku": "39733385232451",
+      "price": 26.1,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "100ml"
+        }
+      ],
+      "sku": "40758995517507",
+      "price": 44.1,
+      "available": true,
+      "image_urls": [
+        "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Ambery-Vanilla-100ml-Warm-Warm-Ambery.png",
+        "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Ambery-Vanilla-100ml-Warm-Warm-Ambery_x280.png?v=1768408369",
+        "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/Impressions-Photoshoot-Ambery-Vanilla-100-ml.png",
+        "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/100-ml-Next-to-Box-Ambery-Vanilla.jpg",
+        "https://cdn.shopify.com/s/files/1/0047/4067/7699/files/100-ml-in-Box-Ambery-Vanilla.jpg"
+      ]
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "200ml"
+        }
+      ],
+      "sku": "BF202525",
+      "price": 88.2,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "2x50ml"
+        }
+      ],
+      "sku": "BF202545",
+      "price": 52.2,
+      "available": true,
+      "image_urls": []
+    },
+    {
+      "selections": [
+        {
+          "name": "Size",
+          "value": "3x50ml"
+        }
+      ],
+      "sku": "TTSBDLAMBVUS3X50",
+      "price": 78.3,
+      "available": true,
+      "image_urls": []
+    }
+  ]
+}
