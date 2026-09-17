@@ -19,7 +19,7 @@ from models import Evidence, MediaCandidate, PromptContext
 _BUDGETS = {
     "json_ld": 20_000,
     "meta": 2_000,
-    "blobs": 45_000,
+    "blobs": 58_000,
     "scripts": 8_000,
     "text": 10_000,
 }
@@ -100,21 +100,31 @@ def _ld_nodes(block) -> list[dict]:
 # analytics configs. These are patterns of web frameworks, not of any site.
 _NOISE_KEY = re.compile(
     r"(?:^|_)(?:nav|menu|footer|header|i18n|translation|messages|locale|dictionary"
-    r"|analytics|tracking|gtm|experiment|featureflag|abtest|consent|cookie"
-    r"|router|routes|routing|webpack|chunks|assets|styles|warehouses?)(?:$|_)", re.I)
+    r"|analytics|tracking|gtm|experiment|featureflag|abtest|consent|cookies?"
+    r"|router|routes|routing|webpack|chunks|assets|styles|registry|warehouses?)(?:$|_)", re.I)
 
 
 # cut noise keys, shrink urls, and summarize related-product subtrees
 # summary mode keeps sibling products to shallow scalars (name color price
 # url) so one rail can't eat the whole blob budget
+# camelCase keys must be split before noise matching or consentPolicy,
+# cookiesManager etc. slip past the word-boundary regex
+def _key_norm(k: str) -> str:
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", str(k)).lower().replace("-", "_")
+
+
+# js or html stored as a json string value is never product data
+_CODE_STRING = re.compile(r"<script|<iframe|\bfunction\s*\(|window\.|gtag\(|=>|</\w+>")
+
+
 def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
     if depth > 25:
         return None
     if isinstance(node, dict):
         out = {}
         for k, v in node.items():
-            kl = str(k).lower()
-            if _NOISE_KEY.search(kl.replace("-", "_")):
+            kl = _key_norm(k)
+            if _NOISE_KEY.search(kl):
                 continue
             child_summary = summary or bool(_OTHER_PRODUCT_PATH.search(kl))
             if summary and isinstance(v, (dict, list)) and depth > 0:
@@ -138,6 +148,9 @@ def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
         # so labels stay joinable to media entries.
         if node.startswith(("http://", "https://", "//")) and len(node) > 60:
             return ".../" + node.split("?")[0].rstrip("/").rsplit("/", 1)[-1][-48:]
+        # Embedded code (tracking snippets, widget html) is never product data.
+        if len(node) > 80 and _CODE_STRING.search(node):
+            return "[code]"
         # Long opaque strings (base64, inlined CSS/JS) are token sinks.
         if len(node) > 500:
             return node[:500] + "…"
@@ -307,6 +320,41 @@ def _fit(text: str, budget: int) -> str:
     return text[:budget] + "\n…[truncated]"
 
 
+# long lists of same-shaped dicts (sku records, size runs) serialize with the
+# keys repeated per row; rendering them as one header plus value rows fits
+# ~2-3x more records in the same budget, which is what lets all 83 of a
+# page's sku records reach the model instead of 57
+def _tabulate(node, depth: int = 0):
+    if depth > 25:
+        return node
+    if isinstance(node, dict):
+        return {k: _tabulate(v, depth + 1) for k, v in node.items()}
+    if isinstance(node, list):
+        if (len(node) >= 6 and all(isinstance(i, dict) for i in node)):
+            keys = list(node[0].keys())
+            key_set = set(keys)
+            if all(set(i.keys()) <= key_set for i in node) and len(keys) <= 14:
+                rows = [[_cell(i.get(k, "")) for k in keys] for i in node]
+                if all(c is not None for r in rows for c in r):
+                    return {"_columns": keys, "_rows": rows}
+        return [_tabulate(i, depth + 1) for i in node]
+    return node
+
+
+# flatten a row value to a compact scalar; None means "too deep, don't tabulate"
+def _cell(v):
+    if isinstance(v, (str, int, float, bool)) or v is None and False:
+        return v
+    if v is None or v == [] or v == {}:
+        return ""
+    if isinstance(v, list) and all(isinstance(i, (str, int, float, bool)) for i in v):
+        return "|".join(str(i) for i in v[:12])
+    if isinstance(v, dict) and len(v) <= 4 and all(
+            isinstance(x, (str, int, float, bool, type(None))) for x in v.values()):
+        return ";".join(f"{k}={x}" for k, x in v.items())
+    return None
+
+
 # waterfall the blob budget: blobs arrive sorted by commerce score and the
 # best one gets what it needs before the next sees a byte (one joined fit
 # would let a low-value 300KB state dump truncate the product blob)
@@ -315,7 +363,7 @@ def _fit_blobs(blobs: list, budget: int) -> str:
     for b in blobs:
         if b is None or remaining < 2_000:
             break
-        text = json.dumps(b, ensure_ascii=False, default=str)
+        text = json.dumps(_tabulate(b), ensure_ascii=False, default=str)
         parts.append(_fit(text, remaining))
         remaining -= min(len(text), remaining)
     return "\n".join(parts)
