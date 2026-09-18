@@ -1,172 +1,308 @@
 # Backend design
 
-Raw PDP HTML in, validated `Product` out. Four stages: harvest grabs everything possibly useful, distill decides what the model gets to see, extract has the model choose values from that evidence, categorize resolves the taxonomy path. Everything except the two model calls is deterministic Python.
+The backend turns one product page's raw HTML into a validated `Product`. It does this in four steps: **harvest** possible facts, **distill** them into a compact evidence packet, **extract** a structured draft, then **categorize** it against Google's product taxonomy. Python handles collection and validation; model calls handle choices that require interpretation.
 
-```
-html -> [harvest] -> Evidence -> [distill] -> PromptContext -> [extract] -> Draft -> [categorize + validate] -> Product
-```
+The Ace Hardware drill page in [`data/ace.html`](../data/ace.html) is the running example. Its 663,704 bytes of HTML contain multiple prices and hundreds of media references. The desired output is one product with the current price, the crossed-out price, its own gallery, and an exact category.
 
-The best way to understand it is to follow one real page through: `data/ace.html`, a DeWalt drill kit on Ace Hardware (664KB of raw HTML).
+## The page's price puzzle
 
-## Stage 1: Harvest
+The same page expresses its prices in different places:
 
-Collect evidence from five generic channels. Nothing here knows about any specific site; blobs are found by shape (large JSON with commerce-looking keys), never by name.
+| Source | What it says | What it means |
+| --- | --- | --- |
+| JSON-LD `offers.price` | `129.00 USD` | Current price after instant savings |
+| Embedded product JSON `price.price` | `159.00` | Crossed-out price |
+| Embedded product JSON `price.msrp` | `179` | Manufacturer's suggested price; not the displayed compare-at price |
+| Embedded product JSON `priceAfterInstantSavings` | `129.00` | Confirms the current price |
 
-**Channel A: JSON-LD.** Ace ships two blocks. The Product one is rich but has a trap:
+If extraction stopped at JSON-LD, it would miss the sale presentation. If it treated the largest number as the compare-at price, it would show the wrong strikethrough. The final price is:
 
 ```json
-{"@type": "Product", "name": "DeWalt 20V MAX 1/2 in. Brushed Cordless Compact Drill Kit",
- "brand": {"name": "DEWALT"}, "sku": "2385458",
- "offers": {"price": "129.00", "priceCurrency": "USD", "availability": "InStock"}}
+{"price": {"price": 129.0, "currency": "USD", "compare_at_price": 159.0}}
 ```
 
-129.00 is the after-instant-savings price. The list price never appears in JSON-LD on this page, so trusting this channel alone gets the sale price with no strikethrough.
+## 1. Harvest: collect possible facts
 
-**Channel B: meta tags.** Ace has almost none (just `description`), but on `llbean.html` meta is the load-bearing channel because that page has zero JSON-LD:
+[`harvest.py`](../harvest.py) reads five generic evidence channels. It does not contain store-specific selectors or names.
+
+| Channel | What it contributes |
+| --- | --- |
+| JSON-LD | Structured product, offers, breadcrumbs |
+| Meta tags | Page title, description, hero image |
+| Embedded JSON | Product state, price fields, variants, media |
+| Raw script text | Product clues in scripts that do not parse as JSON |
+| Visible text and attributes | Displayed labels, prices, stock |
+
+Here is what each channel looks like in the saved HTML. Long records are shortened to the fields relevant to this example.
+
+**JSON-LD — Ace.** A `script` tag contains a structured `Product` object:
 
 ```html
-<meta property="og:title" content="Men's Carefree Unshrinkable Tee, Traditional Fit, Henley"/>
+<script type="application/ld+json">
+{"@type":"Product","name":"DeWalt 20V MAX 1/2 in. Brushed Cordless Compact Drill Kit (Battery &amp; Charger)",
+ "brand":{"name":"DeWalt"},"sku":"2385458",
+ "offers":{"price":"129.00","priceCurrency":"USD"}}
+</script>
+```
+
+**Meta tags — L.L.Bean.** These are HTML attributes, so the harvester reads their `property` and `content` values:
+
+```html
+<meta property="og:title" content="Men&#x27;s Carefree Unshrinkable Tee, Traditional Fit, Henley"/>
 <meta property="og:image" content="https://cdni.llbean.net/is/image/wim/224626_0_44"/>
 ```
 
-**Channel C: embedded JSON blobs.** Any script body that parses as a large JSON object, scored by density of commerce keys (price, sku, image, variant, stock). Ace's 73KB preload blob resolves the price trap:
+**Embedded JSON — Ace.** A product-state `script` contains ordinary JSON with price fields that are absent from JSON-LD:
 
 ```json
-{"price": {"msrp": 179, "price": 159}, "currentPrice": "159.00",
- "priceAfterInstantSavings": "129.00",
- "content": {"productImages": [{"src": "https://cdn-tp6.mozu.com/.../files/f7b42b30-..."}]}}
+{"price":{"onSale":false,"msrp":179,"price":159}}
 ```
 
-Parsing detail: `window.X = {...}; more js` needs `JSONDecoder.raw_decode`, not `json.loads`, and `JSON.parse("...")` arguments need unescaping first.
-
-**Channel D: raw inline-script text.** Scripts that refuse to parse as JSON, kept as text and ranked by keyword density:
-
-```js
-self.__next_f.push([1,"{\"product\":{\"name\":\"Nike Pegasus\",\"price\":110}}"])
+```json
+{"priceAfterInstantSavings":"129.00","currentPrice":"159.00"}
 ```
 
-Not clean JSON, so a blob miner sees nothing, but the model still reads `name = Nike Pegasus, price = 110` from the raw text. None of the 5 assignment pages need this channel; it exists for unseen sites on newer frameworks.
+Those are two shortened fragments from the same page, not a claim that all four fields are adjacent in one object.
 
-**Channel E: visible text with attributes inlined.** Strip script/style/nav/footer, then inline `aria-label`, `alt`, `title` into the text stream:
+**Raw script text — Made In.** This Next.js Flight payload is a JavaScript call containing escaped, serialized data. These are two excerpts from its long string:
+
+```text
+self.__next_f.push([1,"1:I[672985,[\"/_next/static/...
+24:[[\"$\",\"title\",\"0\",{\"children\":\"8\\\" Seasoned Carbon Steel Frying Pan - Made In\"}],...
+```
+
+**Visible text and attributes — Nike.** The source markup has two visible prices and an `aria-label` that identifies which is which:
 
 ```html
-<button aria-label="Size 10, sold out">10</button>
+<div id="price-container" aria-label="current price £76.99, original price £109.99">
+  <span>£76.99</span><span>£109.99</span>
+</div>
 ```
 
-Plain text scraping sees only `10`. Channel E keeps the attribute, so the model sees `10 [Size 10, sold out]`. Three real saves in our data: `article.html`'s price exists only as visible text (`$349`), `nike.html`'s `aria-label="current price £76.99, original price £109.99"` disambiguates price vs compare-at, and `llbean.html`'s variant labels exist only on buttons (`alt="Sale Color Option: Lake, $24.99"`).
+After HTML cleanup and attribute inlining, the relevant part of `visible_text` looks like:
 
-**Media collection** runs across all channels and keeps everything with its provenance:
-
-```
-main.jpg?w=300      (dom, srcset)
-main.jpg?w=1200     (dom, srcset)
-main.jpg            (blob, under selectedProduct)
-recommended.jpg     (blob, under relatedProducts)
+```text
+£76.99
+£109.99
+[current price £76.99, original price £109.99]
 ```
 
-Harvest collects all of them and remembers origin and JSON key path; distill later groups the three `main.jpg` renditions into one asset, keeps the cleanest URL, and demotes the recommendation image by its path. Tracking beacons are filtered here, and sized renditions get a query-stripped twin added.
+The harvester also records media URLs with their origin and, for embedded JSON, the key path where each URL appeared. A URL under `selectedProduct` is stronger evidence than one under `relatedProducts`. It keeps `false` and `0` in parsed data because those can be meaningful stock and price signals.
 
-## Stage 2: Distill
+## 2. Distill: make a usable evidence packet
 
-Harvest hands distill a messy `Evidence` object: 2 JSON-LD blocks, 6 blobs, ~230 media URLs, 5K of visible text. Distill does seven things in order.
+The following is a **small constructed example**, using the Ace drill's price story plus a related tape measure. It shows the actual behavior of three functions in [distill.py](../distill.py). The input and outputs below were checked against those functions; the small example lets us see every change without reading the full Ace HTML.
 
-**1. Build the page's identity fingerprint.** Tokenize h1 + og:title + title:
+### 1. Identify this page's product
 
-```python
-{"dewalt", "20v", "max", "brushed", "cordless", "compact", "drill", "kit", "battery", "charger"}
-```
+`_identity_tokens()` reads the page heading, Open Graph title, and document title:
 
-Every later step can now ask: is this evidence about *this* product?
+~~~json
+{
+  "h1": "DeWalt 20V Cordless Drill Kit",
+  "meta": {"og:title": "DeWalt Compact Drill"},
+  "title": "DeWalt Drill Kit"
+}
+~~~
 
-**2. Filter JSON-LD against it.** A Product block whose name shares under ~30% of its tokens with the fingerprint is a related item or bundle component and gets dropped. BreadcrumbLists always survive (they feed the category step). Several `data_unseen/` pages ship JSON-LD for recommended products; this is what keeps them out.
+It lowercases and tokenizes those strings, removing short words and stopwords:
 
-**3. Prune the blobs (top 3 by commerce score).** `_prune()` walks recursively:
+~~~json
+["20v", "compact", "cordless", "dewalt", "drill", "kit"]
+~~~
 
-- Keys matching framework noise vocabulary (`nav, menu, footer, i18n, analytics, tracking, router, webpack, warehouses...`) are dropped whole. On llbean/nike this is 60-90% of blob bytes.
-- A key matching `related|recommend|upsell|cross|similar` flips on **summary mode** for its subtree: sibling products keep shallow scalars (name, price, uri) and lose their nested media/variant/stock structures. Before this rule, A Day's March's `relatedProducts` was 89KB (each colorway embeds its full product record) and ate the entire budget, which is how "Light Khaki" never reached the model.
-- URLs longer than 60 chars become `.../f7b42b30-...` stubs. The media table already carries them in full; the stub stays joinable. Empty strings and empty containers vanish; `false` and `0` stay (`available: false` is evidence).
+These tokens are the reference for deciding whether a Product block describes **this** page. They are a set in Python; the array above is sorted for display.
 
-**4. Dedupe media by underlying asset.** `_asset_key()` normalizes away rendition noise: query params, `/2890x1500/` path segments, size words (`thumb, standard, full, square...`), and content-hash tokens (hex-with-letters). So these three group as one asset:
+### 2. Keep matching JSON-LD and breadcrumbs
 
-```
-.../files/f7b42b30-cf5a-4829-be02-76bf93727867?quality=60&max=480
-.../files/f7b42b30-cf5a-4829-be02-76bf93727867?max=100
-.../files/f7b42b30-cf5a-4829-be02-76bf93727867
-```
+Suppose harvest found this single JSON-LD graph:
 
-The hash rule needs at least one a-f letter, so llbean's numeric asset ids (`224626`) survive as identity. This also collapses Centra-style CDNs that give every rendition its own hash.
+~~~json
+{
+  "@graph": [
+    {"@type": "Product", "name": "DeWalt 20V Cordless Drill Kit",
+     "offers": {"price": "129.00"}},
+    {"@type": "Product", "name": "Stanley Tape Measure",
+     "offers": {"price": "12.00"}},
+    {"@type": "BreadcrumbList", "itemListElement": ["Tools", "Drills"]},
+    {"@type": "Organization", "name": "Ace Hardware"}
+  ]
+}
+~~~
 
-**5. Pick the best URL per group, then rank groups by "is this the product?".** Within a group, `_quality()` prefers blob/JSON-LD origin, then clean URLs over `?w=320` renditions, then srcset width. Across groups, relevance ranks by:
+`_filter_json_ld()` unwraps the graph. The drill's name matches the identity tokens, the tape measure's does not, and breadcrumbs are kept regardless of name. The Organization node is outside the kept types:
 
-- hero-stem hits: identifier tokens from the og:image URL (filename stem `2385458`, or a path segment like `/SKU25289/`), *counted* not boolean, so on a multi-colorway page the displayed colorway (which also matches its color tokens) outranks siblings that share only the product name
-- blob key path: found under `relatedProducts` demotes, under `selectedProduct` boosts (framework vocabulary, not site vocabulary)
-- channel spread: real product images appear in og + blob + DOM; chrome lives in one channel
+~~~json
+[
+  {"@type": "Product", "name": "DeWalt 20V Cordless Drill Kit",
+   "offers": {"price": "129.00"}},
+  {"@type": "BreadcrumbList", "itemListElement": ["Tools", "Drills"]}
+]
+~~~
 
-Then two hard exclusions, not just rankings: demoted groups are dropped entirely when enough clean ones exist, and when a page explicitly marks a selected product's media, blob-only media outside that marking (other colorways) is dropped. Both earned their place: Nike's 8 sibling colorways and L.L.Bean's fit-guide illustrations each poisoned the gallery before.
+### 3. Prune the embedded product blob
 
-**6. Number the survivors.** The model will answer with indices, so a hallucinated URL is unrepresentable:
+In this constructed example, the page also has a product-state blob. This is the compact input to `_prune()`:
 
-```
-IMG_0 https://cdn-tp6.mozu.com/.../files/f7b42b30-cf5a-4829-be02-76bf93727867
-IMG_1 https://cdn-tp6.mozu.com/.../files/b9e63a53-01c5-44c6-97e2-9c78a7ed2a10
-VID_0 https://adaysmarch.centracdn.net/.../miller_2x3.mp4
-```
+~~~json
+{
+  "product": {
+    "name": "DeWalt 20V Cordless Drill Kit",
+    "price": {"price": 159, "msrp": 179},
+    "stock": 0,
+    "available": false,
+    "imageUrl": "https://cdn.example.com/products/dewalt/dcd771c2/main-image-1200.jpg?width=400",
+    "description": "",
+    "widgetHtml": "<iframe src=\"https://widgets.example.com/checkout?campaign=fall-sale\" width=\"600\" height=\"400\"></iframe>"
+  },
+  "consentPolicy": {"enabled": true},
+  "cookiesManager": {"enabled": true},
+  "relatedProducts": [{
+    "name": "Stanley Tape Measure",
+    "price": 12,
+    "url": "https://shop.example.com/products/stanley-tape-measure-25ft?ref=related",
+    "images": [{"src": "https://cdn.example.com/other.jpg"}],
+    "variants": [{"sku": "TAPE-25"}]
+  }]
+}
+~~~
 
-**7. Render budgeted sections.** Each channel gets guaranteed room so a 300KB state dump can't evict the meta tags:
+The exact output is:
 
-```
-JSON-LD 20K   META 2K   EMBEDDED JSON 45K   SCRIPT TEXT 8K   VISIBLE TEXT 10K
-```
+~~~json
+{
+  "product": {
+    "name": "DeWalt 20V Cordless Drill Kit",
+    "price": {"price": 159, "msrp": 179},
+    "stock": 0,
+    "available": false,
+    "imageUrl": ".../main-image-1200.jpg",
+    "widgetHtml": "[code]"
+  },
+  "relatedProducts": [{
+    "name": "Stanley Tape Measure",
+    "price": 12,
+    "url": ".../stanley-tape-measure-25ft"
+  }]
+}
+~~~
 
-Blobs get a waterfall: the best-scoring blob takes what it needs first, the next sees what remains. Before that rule, llbean's junk `__INITIAL_STATE__` truncated the real `__SERVER_DATA__` mid-sku-list, and the model could only see 11 of 83 skus.
+Here, camelCase normalization makes `consentPolicy` and `cookiesManager` match the noise-key filter. The empty description disappears; `false` and `0` stay because they may describe stock. Long URLs become short, joinable tails because the separate media table keeps full URLs. The long iframe string becomes `[code]`. Under `relatedProducts`, summary mode keeps shallow name, price, and URL but drops nested images and variants, so another product cannot consume the evidence budget.
 
-The result for ace: 664KB of HTML becomes a ~50K-char sectioned context (~92% reduction) where every load-bearing fact survived. `eval/reachability.py` proves that survival per page, so budget tuning is safe instead of hopeful.
+After these steps, `distill()` groups and ranks media, numbers the survivors as `IMG_0`, `IMG_1`, and so on, and renders labeled text sections with separate character budgets. The result is a `PromptContext`: the text sent to the model, the full media lookup table, and the identity tokens. The embedded-JSON budget is currently 58,000 characters; [`eval/reachability.py`](../eval/reachability.py) checks whether expected facts survive the cuts on the five assignment pages.
 
-## Stage 3: Extract
+## 3. Extract: choose values from the packet
 
-One structured-output call. The model interprets, it never invents:
-
-- Media by index only (`"image_ids": [0, 1, 4]`), resolved back to URLs in code.
-- Prices are provenance-gated in code: a price the harvester never saw on the page fails the draft.
-- The system prompt is a 12-rule spec of site-agnostic patterns: price field-name pairs (`currentPrice` vs `priceAfterInstantSavings`), a source-priority ladder for descriptions, exact color names, currency from explicit codes with tax-inclusive prices kept as displayed, catalog flags (`status: ACTIVE`) explicitly not counting as stock, and a two-step variant test (option changes a query param = variant; option navigates to another URL = sibling product, record the color only).
-
-Expected draft for the drill:
+[`extract.py`](../extract.py) asks for a structured `Draft`. It selects image **indices**, not URLs, and returns category phrases rather than trying to spell an exact taxonomy path. A shortened Ace draft looks like this:
 
 ```json
-{"name": "DeWalt 20V MAX 1/2 in. Brushed Cordless Compact Drill Kit (Battery & Charger)",
- "price": 129.0, "currency": "USD", "compare_at_price": 159.0,
- "image_ids": [0, 1, 2, 3, 4, 5, 6, 7], "video_id": null,
- "candidate_category": "cordless drill power tools",
- "brand": "DeWalt", "colors": [], "options": [], "variants": []}
+{
+  "name": "DeWalt 20V MAX 1/2 in. Brushed Cordless Compact Drill Kit (Battery & Charger)",
+  "price": 129.0,
+  "currency": "USD",
+  "compare_at_price": 159.0,
+  "image_ids": [0, 1, 2, 3, 4, 5, 6, 7],
+  "video_id": null,
+  "candidate_categories": ["cordless drill", "handheld power drill"],
+  "brand": "DeWalt",
+  "colors": [],
+  "options": [],
+  "variants": []
+}
 ```
 
-`variants: []` is correct: the blob's options array is empty, and a single-configuration product has no variants. Empty beats invented.
+The category hints are illustrative. Ace has no selectable options, so `variants` is empty.
 
-**Failure path.** After every draft, `_provenance_problems()` fact-checks the model in plain Python: each claimed price must literally appear in the context (checked as `128`, `128.00`, `128,00`, `12800`), each image_id must be a real index, and picking zero images when candidates exist is rejected too. Failures drive a cascade. Say a boots page shows "Now $119.99, was $150" with images IMG_0..IMG_5:
+[`pipeline.py`](../pipeline.py) rejects prices absent from the evidence, invalid image IDs, or an empty image selection when candidates exist. It retries with feedback, escalates to a stronger model, then fails if necessary. Gemini 2.5 Flash-Lite is the default extractor; `EXTRACT_MODEL` and `ESCALATION_MODEL` override the models. These checks verify provenance, not meaning: both `159` and `179` appear on Ace's page, so the prompt rules distinguish the displayed compare-at price from MSRP.
 
-1. **Cheap model, first try** returns `{"price": 149.99, "image_ids": [0, 2, 9]}`. Rejected: `price 149.99 does not appear anywhere in the page evidence; image_ids [9] out of range (0..5)`.
-2. **Same cheap model, errors appended** ("Produce a corrected answer. Do not change fields that were valid."). Told exactly what's wrong, it rereads the evidence, finds 119.99, drops the phantom index. Most failures die here for the cost of one extra cheap call.
-3. **Stronger model, fresh try**, paid for only on the pages that defeated the cheap one twice. The expensive model is an exception handler, not the default.
-4. Still failing: raise with the page name and reason. A missing product is visible and debuggable; a product with an invented price in a customer-facing catalog is silent poison. Fail loud, never fabricate.
+## 4. Categorize and assemble
 
-## Stage 4: Categorize
+[`taxonomy.py`](../taxonomy.py) narrows the 5,596 paths in [`categories.txt`](../categories.txt) before asking the model to choose. **Lexical** retrieval ranks paths by shared words, weighting matches in the final category name more heavily. The default **union** mode keeps the first 100 lexical paths, adds up to 50 embedding matches that were not already present, then appends top-level categories as a fallback. Setting `TAXONOMY_RETRIEVAL=lexical` skips the embedding step.
 
-`"cordless drill power tools"` can't be trusted to match `categories.txt` byte-for-byte. So: stemmed lexical scoring over all 5,596 paths (leaf tokens weighted; the extractor's hint includes synonyms like "trousers pants" because stemming can't bridge those), top ~150 plus every top-level as a safety net, second small call picks one by index, pydantic validates it exists. Expected: `Hardware > Tools > Drills > Handheld Power Drills`. On failure: retry with a wider list on the stronger model, then fail the product. A drill silently filed under Apparel is worse than an error.
-
-## Variant model
+For the shortened Ace hints above (`cordless drill`, `handheld power drill`), the current code produces this excerpt using Ace's name and description but no breadcrumb:
 
 ```json
-{"options": [{"name": "Size", "values": ["44", "46", "48", "50", "52", "54"]}],
- "variants": [{"selections": [{"name": "Size", "value": "46"}],
-               "sku": "1028055046S", "price": 170.0, "available": true, "image_urls": []}]}
+{
+  "lexical": {
+    "0": "Hardware > Tools > Drills > Handheld Power Drills",
+    "1": "Electronics > Electronics Accessories > Power > Battery Accessories > General Purpose Battery Chargers",
+    "total": 100
+  },
+  "embedding_only_in_union": {
+    "100": "Hardware > Tool Accessories > Power Tool Batteries",
+    "101": "Hardware > Tool Accessories > Drill & Screwdriver Accessories > Drill Chucks",
+    "total_added": 34
+  },
+  "top_level_fallback_starts_at": 134
+}
 ```
 
-Axes (`options`) and combinations (`variants`) are stored separately. A page showing 8 colors and 6 sizes without tying them together yields two axes and no invented cartesian product. A variant exists only where the page asserts a sku/price/stock for that combination, and availability is null without an explicit stock signal.
+Ace's correct path is already first in the lexical results. Union matters more when page wording and taxonomy wording differ, such as "Barrel Jeans" versus "Pants".
 
-## Proving it works
+The model sees the numbered union list and returns an index. For example, a pick of `{"index": 0}` selects the handheld-drill path above. `Category` checks that the path exists in the taxonomy, producing:
 
-`eval/` holds ground truth with per-value evidence notes, a per-field scorer, a no-LLM baseline, and the reachability check. Current numbers: pipeline 0.977 (gemini-3-flash) / ~0.95 (flash-lite) vs deterministic baseline 0.442. The harness caught every distill bug above; none were visible by eyeballing outputs. Known limits are documented, not hidden: llbean ties 83 variant combos through sku records whose labels aren't statically joinable, so conservative enumeration scores 0.53 there.
+```json
+{"category": {"name": "Hardware > Tools > Drills > Handheld Power Drills"}}
+```
 
-## Cost
+The index is an illustration, not a saved model response; the committed Ace output contains the category shown. An invalid index triggers one retry with a wider shortlist, then an explicit failure. `resolve_draft()` maps the draft's `image_ids: [0, 1, 2, 3, 4, 5, 6, 7]` to full media URLs and assembles the final [`Product`](../models.py):
 
-Two calls per page on cheap models, escalation only on failure. Flash-lite lands ~$0.003/page, gemini-3-flash ~$0.015-0.025/page on the heaviest pages; measured numbers per configuration go in the README table. A deterministic fast path (skip the extraction call when structured data already covers the schema) is the next cost lever.
+```json
+{
+  "name": "DeWalt 20V MAX 1/2 in. Brushed Cordless Compact Drill Kit (Battery & Charger)",
+  "price": {
+    "price": 129.0,
+    "currency": "USD",
+    "compare_at_price": 159.0
+  },
+  "description": "The DCD771C2 20V MAX Lithium Ion Compact Drill/Driver Kit is lightweight and compact for working in tight spaces for long periods of time. High-speed transmission delivers 2-Speed variations allowing users to choose the level of performance needed for various applications.",
+  "key_features": [
+    "Compact, lightweight design fits into tight areas",
+    "High performance motor delivers 300 unit watts out (UWO) of power ability completing a wide range of applications",
+    "1/2 in. single sleeve ratcheting chuck provides tight bit gripping strength",
+    "Ergonomic handle delivers comfort and control"
+  ],
+  "image_urls": [
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/f7b42b30-cf5a-4829-be02-76bf93727867?_mzcb=_1767877756410",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/b9e63a53-01c5-44c6-97e2-9c78a7ed2a10",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/373f3cb5-5ecf-4a57-b7d6-510d8698e977",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/9e7c188d-d2b8-4217-b5f8-48b29fd445b1",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/f27d0a21-766f-4f84-9927-30cf76b27188",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/1b434a2e-7528-42cc-a489-83177395594b",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/bb222bcf-a069-4d02-b9d9-f23410f64138",
+    "https://cdn-tp6.mozu.com/24645-37138/cms/37138/files/028f1d30-dca3-4b44-84ef-40a6f3b149e8"
+  ],
+  "video_url": null,
+  "category": {
+    "name": "Hardware > Tools > Drills > Handheld Power Drills"
+  },
+  "brand": "DeWalt",
+  "colors": [],
+  "options": [],
+  "variants": []
+}
+```
+
+## What variants mean
+
+`options` lists the axes a page offers; `variants` lists only combinations the page ties to a SKU, price, or stock signal. The two stay separate because seeing six sizes and eight colors does not prove all 48 combinations exist.
+
+```json
+{
+  "options": [{"name": "Size", "values": ["44", "46", "48"]}],
+  "variants": [{
+    "selections": [{"name": "Size", "value": "46"}],
+    "sku": "1028055046S",
+    "price": 170.0,
+    "available": true
+  }]
+}
+```
+
+Availability stays `null` when the page gives no explicit stock signal. Color links to separate product URLs can be listed as colors or options without inventing purchasable combinations on the current page. L.L.Bean's 83 SKU records are a known hard case: some combinations cannot be joined confidently to their labels from static HTML, so the extractor leaves them out.
+
+## How to verify the design
+
+- **Quality:** [`eval/score.py`](../eval/score.py) compares the five assignment pages with [hand-written ground truth](../eval/ground_truth/): **0.972** overall versus **0.442** for the [no-model baseline](../eval/baseline.py). All 50 collected pages produced output.
+- **Evidence:** [`eval/reachability.py`](../eval/reachability.py) checks that expected facts survive distillation.
+- **Cost:** The normal path uses two model calls per page; failures can trigger retries. The [README](../README.md) has measured extraction costs and exact category accuracy. A deterministic fast path remains future work.

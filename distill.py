@@ -13,9 +13,8 @@ import re
 from harvest import _COMMERCE_KEYS
 from models import Evidence, MediaCandidate, PromptContext
 
-# Character budgets per prompt section. JSON gets the most: it is the densest
-# signal per token. Tuned against eval/reachability.py, which fails loudly if
-# a budget cut drops a ground-truth value.
+# character budgets keep one evidence channel from crowding out the others;
+# eval/reachability.py checks that expected facts survive these limits.
 _BUDGETS = {
     "json_ld": 20_000,
     "meta": 2_000,
@@ -29,7 +28,7 @@ _MAX_VIDEOS = 5
 _STOPWORDS = {"the", "and", "for", "with", "men", "mens", "women", "womens", "s"}
 
 
-# turn raw evidence into the budgeted prompt context the model will see
+# turn raw evidence into budgeted text and a numbered media lookup table
 def distill(ev: Evidence) -> PromptContext:
     identity = _identity_tokens(ev)
 
@@ -37,6 +36,7 @@ def distill(ev: Evidence) -> PromptContext:
     blobs = [_prune(b.data, identity) for b in ev.json_blobs[:3]]
     media = _resolve_media(ev)
 
+    # give each evidence channel its own section and character budget
     sections = [
         ("IDENTITY", _render_identity(ev)),
         ("JSON-LD", _fit(json.dumps(json_ld, ensure_ascii=False, default=str), _BUDGETS["json_ld"])),
@@ -69,14 +69,14 @@ def _name_matches_identity(name: str, identity: set[str]) -> bool:
     return len(toks & identity) / len(toks) >= 0.3
 
 
-# keep product blocks about this page plus breadcrumbs, drop related items
-# (pages ship json-ld for recommendations and bundle components too)
+# keep this page's Product blocks and breadcrumbs; drop related products
 def _filter_json_ld(ev: Evidence, identity: set[str]) -> list:
     kept = []
     for block in ev.json_ld:
         for node in _ld_nodes(block):
             t = node.get("@type", "")
             types = t if isinstance(t, list) else [t]
+            # keep products matching this page; breadcrumbs always survive
             if any(x in ("Product", "ProductGroup") for x in types):
                 if _name_matches_identity(str(node.get("name", "")), identity):
                     kept.append(node)
@@ -96,39 +96,41 @@ def _ld_nodes(block) -> list[dict]:
     return []
 
 
-# Framework-generic noise keys: navigation trees, translation bundles,
-# analytics configs. These are patterns of web frameworks, not of any site.
+# framework noise such as navigation, translations, and analytics
 _NOISE_KEY = re.compile(
     r"(?:^|_)(?:nav|menu|footer|header|i18n|translation|messages|locale|dictionary"
     r"|analytics|tracking|gtm|experiment|featureflag|abtest|consent|cookies?"
     r"|router|routes|routing|webpack|chunks|assets|styles|registry|warehouses?)(?:$|_)", re.I)
 
 
-# cut noise keys, shrink urls, and summarize related-product subtrees
-# summary mode keeps sibling products to shallow scalars (name color price
-# url) so one rail can't eat the whole blob budget
-# camelCase keys must be split before noise matching or consentPolicy,
-# cookiesManager etc. slip past the word-boundary regex
+# split camelCase so keys such as consentPolicy match the noise filter
 def _key_norm(k: str) -> str:
     return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", str(k)).lower().replace("-", "_")
 
 
-# js or html stored as a json string value is never product data
+# recognize embedded code stored as a JSON string
 _CODE_STRING = re.compile(r"<script|<iframe|\bfunction\s*\(|window\.|gtag\(|=>|</\w+>")
 
 
+# shrink embedded JSON to the facts needed for product extraction
+# before: {"consentPolicy":{"enabled":true},"description":"","relatedProducts":[{"name":"Tape","images":[{}]}]}
+# after:  {"relatedProducts":[{"name":"Tape"}]}  (noise, empty text, and nested related media removed)
 def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
+    # stop runaway recursion in deeply nested state
     if depth > 25:
         return None
+    # prune named fields and discard empty results
     if isinstance(node, dict):
         out = {}
         for k, v in node.items():
             kl = _key_norm(k)
+            # skip framework fields before descending into them
             if _NOISE_KEY.search(kl):
                 continue
+            # related-product branches use shallow summaries from here onward
             child_summary = summary or bool(_OTHER_PRODUCT_PATH.search(kl))
+            # nested media and variant objects are too large for a sibling summary
             if summary and isinstance(v, (dict, list)) and depth > 0:
-                # In summary mode keep scalars only, one level of nesting.
                 if not (isinstance(v, list) and all(not isinstance(i, (dict, list)) for i in v)):
                     continue
             pruned = _prune(v, identity, depth + 1, child_summary)
@@ -137,15 +139,15 @@ def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
             if pruned is not None and pruned != {} and pruned != [] and pruned != "":
                 out[k] = pruned
         return out or None
+    # cap large arrays, then prune each retained item
     if isinstance(node, list):
         limit = 30 if summary else 100
         out = [p for item in node[:limit]
                if (p := _prune(item, identity, depth + 1, summary)) is not None]
         return out or None
+    # compact long URLs, embedded code, and opaque strings
     if isinstance(node, str):
-        # URLs inside blobs are the biggest token sink, and the media table
-        # already carries them in full. Keep just the tail as an identifier
-        # so labels stay joinable to media entries.
+        # media keeps full URLs; a short tail is enough to join blob labels to them
         if node.startswith(("http://", "https://", "//")) and len(node) > 60:
             return ".../" + node.split("?")[0].rstrip("/").rsplit("/", 1)[-1][-48:]
         # Embedded code (tracking snippets, widget html) is never product data.
@@ -158,9 +160,7 @@ def _prune(node, identity: set[str], depth: int = 0, summary: bool = False):
     return node
 
 
-# ---------------------------------------------------------------------------
-# Media resolution
-# ---------------------------------------------------------------------------
+# media resolution
 
 # Path segments that encode a rendition size, e.g. /2890x1500/ or _400x.jpg
 _SIZE_SEGMENT = re.compile(r"/\d{2,4}x\d{0,4}/|_\d{2,4}x\d{0,4}(?=\.)|w_\d+|h_\d+")
@@ -175,11 +175,8 @@ _OTHER_PRODUCT_PATH = re.compile(
 _SELECTED_PATH = re.compile(r"selected|current|active", re.I)
 
 
-# identity of the underlying asset ignoring rendition and size differences
-# uses the full path because some cdns (puma-style) keep a constant filename
-# and encode the view code several directories up; per segment it drops
-# transform dsl (segments with , : =), WxH sizes, rendition words, and
-# hash-looking tokens (hex with letters), keeping everything else
+# derive asset identity from the full path, ignoring size, rendition, and hash noise
+# while keeping path segments that distinguish product views
 def _asset_key(url: str) -> str:
     base = url.split("?")[0].split("#")[0]
     base = _SIZE_SEGMENT.sub("/", base)
@@ -214,10 +211,8 @@ _GENERIC_PATH_WORDS = {"image", "images", "product", "products", "media", "photo
                        "photos", "files", "default", "thumb", "large", "small", "assets"}
 
 
-# identifier tokens from the page's own hero image url (og and twitter image)
-# product galleries share an asset id or sku token with the hero, either in
-# the filename (224626_0_44 -> 224626) or a path segment (/SKU25289/), which
-# separates them from same-cdn content like size guides and cross-sells
+# take identifiers from the page's hero URL to rank its gallery above
+# same-CDN guides and related products
 def _hero_stems(ev: Evidence) -> set[str]:
     stems = set()
     for key in ("og:image", "og:image:secure_url", "twitter:image"):
@@ -232,7 +227,8 @@ def _hero_stems(ev: Evidence) -> set[str]:
     return stems
 
 
-# dedupe media by asset, rank by relevance to this product, number survivors
+# select this product's media: merge renditions, rank, filter, and cap candidates
+# e.g. selected [front?w=320, front, side, back] + related [tape] -> [front, side, back]
 def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
     groups: dict[str, list[MediaCandidate]] = {}
     for m in ev.media:
@@ -242,26 +238,20 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
 
     def relevance(key: str, group: list[MediaCandidate]) -> tuple:
         asset = key.split(":", 1)[1]
-        # Count matching hero tokens, don't just test membership: on a page
-        # with sibling colorways every colorway shares the product-name
-        # tokens, but only the displayed one also matches its color tokens.
+        # count hero-token matches so the displayed colorway can outrank siblings
         stem_hits = sum(1 for s in stems if s in asset)
-        # Blob key paths are framework vocabulary, not site vocabulary:
-        # "selected"-ish paths mean the displayed product, "related"-ish
-        # paths mean some other product.
+        # selected paths boost a group; related-product paths demote it
         hints = " ".join(m.path_hint.lower() for m in group)
         demoted = bool(_OTHER_PRODUCT_PATH.search(hints)) and not _SELECTED_PATH.search(hints)
         boosted = bool(_SELECTED_PATH.search(hints))
-        # Appearing in several channels (og + blob + DOM) is a product-image
-        # signal; chrome and guides usually live in exactly one.
+        # images repeated across channels are more likely to be product media
         spread = min(len({m.origin for m in group}), 3)
         return (not demoted, boosted, stem_hits, spread, _quality(max(group, key=_quality)))
 
     scored = [(relevance(k, g), k, g) for k, g in groups.items()]
 
-    # Hard exclusions, not just ranking. Related-rail media is never this
-    # product's; and when the blob explicitly marks a selected product's
-    # media, everything outside that marking is another colorway/product.
+    # drop related-rail media when clean images exist, and unselected structured media
+    # when the page identifies enough selected-product images
     image_scores = [s for s, k, _ in scored if k.startswith("image:")]
     n_clean = sum(1 for s in image_scores if s[0])
     n_boosted = sum(1 for s in image_scores if s[1])
@@ -281,9 +271,7 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
     return images + videos
 
 
-# print the numbered IMG_n and VID_n table the model picks from, with a
-# provenance tag so selection is grounded in where the url was found, not
-# just what it looks like
+# label media candidates by provenance for the model's numbered selection
 def _media_tag(m: MediaCandidate) -> str:
     hint = m.path_hint.lower()
     if _SELECTED_PATH.search(hint):
@@ -297,6 +285,7 @@ def _media_tag(m: MediaCandidate) -> str:
     return ""
 
 
+# render separate IMG_n and VID_n indices that resolve through media_by_index()
 def _render_media(media: list[MediaCandidate]) -> str:
     lines = []
     img_i = vid_i = 0
@@ -335,10 +324,8 @@ def _fit(text: str, budget: int) -> str:
     return text[:budget] + "\n…[truncated]"
 
 
-# long lists of same-shaped dicts (sku records, size runs) serialize with the
-# keys repeated per row; rendering them as one header plus value rows fits
-# ~2-3x more records in the same budget, which is what lets all 83 of a
-# page's sku records reach the model instead of 57
+# compact same-shaped record lists into one column header and value rows
+# so more SKU or size records fit in the blob budget
 def _tabulate(node, depth: int = 0):
     if depth > 25:
         return node
@@ -370,9 +357,8 @@ def _cell(v):
     return None
 
 
-# waterfall the blob budget: blobs arrive sorted by commerce score and the
-# best one gets what it needs before the next sees a byte (one joined fit
-# would let a low-value 300KB state dump truncate the product blob)
+# spend the blob budget in commerce-score order so lower-ranked state
+# cannot truncate the best product blob
 def _fit_blobs(blobs: list, budget: int) -> str:
     parts, remaining = [], budget
     for b in blobs:

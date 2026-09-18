@@ -1,6 +1,6 @@
 # Backend implementation
 
-(Current as of the taxonomy upgrade; the original design snapshot is in BACKEND_IMPLEMENTATION_OLD.md (same folder).)
+(Kept in sync with the code as it evolved.)
 
 ## Goal and how it works
 
@@ -9,7 +9,7 @@ Turn raw PDP HTML from any store into a validated `Product`, cheaply, with no si
 - Deterministic code harvests evidence from five generic channels (JSON-LD, meta tags, embedded JSON blobs, raw script text, visible text with attributes inlined), tracking where each media URL was found.
 - Distillation cuts that to a budgeted prompt context: identity anchoring drops other products, blob pruning summarizes related-product subtrees and stubs URLs, media is deduped by full-path asset identity and ranked by hero-stem hits, blob key path (selected boosts, related demotes), and channel spread, with hard exclusions for related-rail and unselected-colorway media.
 - One structured-output call on a cheap model fills the schema. Media by IMG_n/VID_n index, prices provenance-gated in code, category hints forced to be an English list of synonyms by the schema itself.
-- Category resolution is a measured config (eval/taxonomy_bench.py, 50 pages): union retrieval (stemmed lexical top-100 unioned with local-embedding top-50) plus a gemini-3-flash pick call, 48/50 vs 44/50 for the old lexical + flash-lite. Result validated against categories.txt, no silent fallback.
+- Category resolution uses union retrieval (stemmed lexical top-100 plus local-embedding top-50) and a gemini-3-flash pick call. The saved category choices score 48/50 against accepted paths in eval/taxonomy_bench.py; the result is validated against categories.txt with no silent fallback.
 - Failure path: repair retry with the validation error, model escalation, then a loud raise. 50/50 corpus pages currently extract.
 
 ## Call trace
@@ -39,37 +39,29 @@ main()                                          run_extract.py
       │  │                                      # related-product subtrees, URLs stubbed to
       │  │                                      # .../tail, embedded js/html strings -> [code],
       │  │                                      # empty strings dropped
-      │  ├─ _resolve_media()
-      │  │  ├─ _asset_key()                     # FULL normalized path: transform segments
-      │  │  │                                   # (, : =) out, sizes/hashes/rendition words out
-      │  │  ├─ _hero_stems() + path hints       # rank: stem-hit COUNT, selected-path boost,
-      │  │  │                                   # related-path demote, channel spread, _quality
-      │  │  └─ hard exclusions                  # demoted groups dropped when clean ones exist;
-      │  │                                      # unselected blob-only media dropped when the
-      │  │                                      # page marks a selected product
-      │  └─ render sections                     # per-section budgets; _fit_blobs() waterfalls
-      │                                         # the blob budget best-blob-first and
-      │                                         # _tabulate() renders lists of same-shaped
-      │                                         # records as header+rows (~2-3x more records
-      │                                         # per budget); media table carries provenance
-      │                                         # tags ([selected product] / [related items
-      │                                         # rail] / [page hero] / [product data])
+      │  ├─ _resolve_media()                    # group/rank media, then filter related
+      │  │                                      # or unselected product images
+      │  │  ├─ _asset_key()                     # group renditions of the same asset
+      │  │  ├─ _hero_stems()                    # hero URL identifiers for ranking
+      │  │  └─ _quality()                       # choose the best URL per asset
+      │  ├─ _render_identity()                 # h1/title/canonical section
+      │  ├─ _fit_blobs()                       # spend blob budget in score order
+      │  │  └─ _tabulate()                     # compact same-shaped record lists
+      │  ├─ _render_media()                    # numbered IMG_n/VID_n table
+      │  └─ _fit()                             # cap each section at its budget
       ├─ _draft_with_retries(ctx) -> Draft      pipeline.py
       │  ├─ extract_draft(ctx, model)           extract.py    # 13-rule sectioned prompt
       │  │  └─ ai.responses(text_format=Draft)  ai.py
       │  └─ _provenance_problems(draft, ctx)    pipeline.py   # prices on page, indices in range
       │     # fail -> repair retry -> escalate model -> raise
+      ├─ _breadcrumb_hint(ctx)                  pipeline.py   # BreadcrumbList names for the query
       ├─ taxonomy.resolve(hints, name, ...)     taxonomy.py
-      │  ├─ _breadcrumb_hint(ctx)               pipeline.py   # BreadcrumbList names for the query
-      │  ├─ _union_shortlist(query, embed_q)    # stemmed lexical top-100 (leaf-weighted)
-      │  │  └─ _embed_shortlist()               # ∪ bge-small cosine top-50 (local, cached,
-      │  │                                      # optional dep; degrades to lexical-only)
-      │  │                                      # + all top-levels as safety net
-      │  └─ ai.responses(text_format=_Pick)     ai.py         # gemini-3-flash picks by index;
-      │                                                       # retry widens lexical to 300
-      └─ resolve_draft(draft, ctx, category)    extract.py
-         └─ media_by_index()                    distill.py    # IMG_n/VID_n indices -> URLs,
-                                                              # drops selection-less variants
+      │  ├─ _union_shortlist(query, embed_q)    # lexical + embedding + top-level paths
+      │  │  ├─ shortlist()                      # stemmed lexical top-100; top-300 on retry
+      │  │  └─ _embed_shortlist()               # cached bge-small cosine top-50
+      │  └─ ai.responses(text_format=_Pick)     ai.py         # Gemini 3 Flash picks by index
+      └─ resolve_draft(draft, ctx, category)    extract.py    # assemble Product; drop selection-less variants
+         └─ media_by_index()                    distill.py    # separate image/video URL lists
 ```
 
 ### Files
@@ -89,7 +81,7 @@ main()                                          run_extract.py
 | `eval/baseline.py` | No-LLM floor (JSON-LD + meta only): 0.44 vs pipeline 0.97 |
 | `eval/reachability.py` | Asserts every ground-truth value survives distillation |
 | `eval/expected_categories.json` | Hand-judged accepted category sets for all 50 corpus pages |
-| `eval/taxonomy_bench.py` | Retrieval + pick benchmark (lexical / bm25 / embeddings / union / tree walk) |
+| `eval/taxonomy_bench.py` | Exact accuracy of saved category choices across all 50 pages |
 | `server.py` | (planned) FastAPI serving extracted products |
 
 ## Core data structures
@@ -153,8 +145,8 @@ The invariant across all four shapes: every URL, price, and label in a later str
 
 ## Measured state
 
-- Graded pages (eval/score.py): 0.976 overall, 3 of 5 at 1.00; no-LLM baseline 0.44. The two imperfect cells are documented judgment limits (llbean's 83 sku combos have no statically joinable labels; multi-colorway image boundaries).
-- Extraction model sweep (same pipeline): gemini-3-flash 0.976, gpt-5-mini 0.905, flash-lite 0.884. The premium model earns its cost on variant scoping and colorway judgment; flash-lite remains the budget config via `EXTRACT_MODEL`.
-- Category bench (50 pages, README table): shipped union + 3-flash picker 48/50 at $0.0015/page; old lexical + flash-lite 44/50.
+- Graded pages (eval/score.py): 0.972 overall, 3 of 5 at 1.00; no-LLM baseline 0.442. The imperfect fields are llbean and nike images/variants (llbean's 83 sku combos have no statically joinable labels; multi-colorway image boundaries).
+- Historical extraction model sweep: gemini-3-flash 0.976, gpt-5-mini 0.905, flash-lite 0.884. The premium model earns its cost on variant scoping and colorway judgment; flash-lite remains the budget config via `EXTRACT_MODEL`.
+- Category outputs (eval/taxonomy_bench.py): 48/50 accepted paths overall and 5/5 graded pages; Aerosoft and Peak Design are the two misses.
 - Corpus: 50/50 pages extract (5 graded + 45 unseen across ~15 platforms, 7 currencies, 3 languages).
 - Cost: ~$0.003/page flash-lite config, ~$0.02/page gemini-3-flash config on the heaviest pages, + ~$0.002 category pick.

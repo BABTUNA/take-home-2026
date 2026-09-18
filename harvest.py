@@ -25,9 +25,7 @@ _COMMERCE_KEYS = {
 
 _IMAGE_EXT = re.compile(r"\.(?:jpe?g|png|webp|avif|gif)(?:\?|$)", re.I)
 _VIDEO_EXT = re.compile(r"\.(?:mp4|webm|m3u8)(?:\?|$)", re.I)
-# Generic "this is an image CDN path" signal for extensionless URLs
-# (Scene7 / imgix / DAM style), e.g. cdni.llbean.net/is/image/wim/224626_0_44
-# or cdn-tp6.mozu.com/.../files/<uuid>
+# Recognize extensionless image CDN paths such as /is/image/... and /files/<uuid>.
 _IMAGE_PATH_HINT = re.compile(r"/(?:is/image|images?|media|photos?|files?)/", re.I)
 # Tracking beacons render as <img> tags too; these tokens identify analytics
 # vendors/endpoints, not any particular store.
@@ -51,7 +49,8 @@ def harvest(raw_html: str) -> Evidence:
     return ev
 
 
-# grab title h1 and canonical url
+# Read title, h1, and canonical URL into ev; e.g. title="DeWalt ...", h1="DeWalt ...",
+# canonical_url="https://www.acehardware.com/.../2385458".
 def _extract_page_identity(soup: BeautifulSoup, ev: Evidence) -> None:
     if soup.title and soup.title.string:
         ev.title = soup.title.string.strip()
@@ -63,7 +62,8 @@ def _extract_page_identity(soup: BeautifulSoup, ev: Evidence) -> None:
         ev.canonical_url = canonical["href"].strip()
 
 
-# parse every ld+json block with a retry ladder for cdata and escaped bodies
+# Parse JSON-LD with raw/CDATA/unescaped retries; e.g. ev.json_ld[0] =
+# {"@type": "Product", "offers": {"price": "129.00", "priceCurrency": "USD"}, ...}.
 def _extract_json_ld(soup: BeautifulSoup, ev: Evidence) -> None:
     for tag in soup.find_all("script", type="application/ld+json"):
         body = tag.string or tag.get_text()
@@ -80,7 +80,8 @@ def _extract_json_ld(soup: BeautifulSoup, ev: Evidence) -> None:
                 continue
 
 
-# collect og twitter product and description meta tags
+# Collect product and social meta tags; e.g. ev.meta["og:title"]="Men's Carefree ...",
+# ev.meta["og:image"]="https://cdni.llbean.net/is/image/wim/224626_0_44".
 def _extract_meta(soup: BeautifulSoup, ev: Evidence) -> None:
     for tag in soup.find_all("meta"):
         key = tag.get("property") or tag.get("name")
@@ -94,16 +95,20 @@ def _extract_meta(soup: BeautifulSoup, ev: Evidence) -> None:
             ev.meta.setdefault(key, content.strip())
 
 
-# channels c and d in one pass over every script tag
+# Extract commerce JSON or keyword-rich raw text from scripts.
+# e.g. ev.json_blobs[0].source="data-mz-preload-product" or ev.script_texts[0].text="window.NAV_INITIAL_DATA=..."
 def _extract_scripts(soup: BeautifulSoup, ev: Evidence) -> None:
     for tag in soup.find_all("script"):
         stype = (tag.get("type") or "").lower()
         if stype == "application/ld+json":
             continue
         body = tag.string or tag.get_text()
+        # Tiny scripts are unlikely to contain product state.
         if not body or len(body) < 200:
             continue
 
+        # One script can contain several JSON objects. Keep the ones with
+        # commerce-related keys and record which script supplied them.
         blobs = _json_objects_in_script(body, stype)
         kept_any = False
         for data in blobs:
@@ -113,9 +118,8 @@ def _extract_scripts(soup: BeautifulSoup, ev: Evidence) -> None:
                 ev.json_blobs.append(JsonBlob(source=source, score=score, data=data))
                 kept_any = True
 
+        # Fall back to raw text when no commerce JSON qualified.
         if not kept_any:
-            # No usable JSON: keep the raw text if it smells like product
-            # data (Flight payloads, JSON.parse strings we failed to decode).
             density = _keyword_density(body)
             if density > 0.5:
                 ev.script_texts.append(ScriptText(score=density, text=body))
@@ -124,14 +128,13 @@ def _extract_scripts(soup: BeautifulSoup, ev: Evidence) -> None:
     ev.script_texts.sort(key=lambda s: s.score, reverse=True)
 
 
-# find json in a script body without knowing the site's naming
-# handles the three shapes seen in the wild: a whole-body json script,
-# `window.X = {...};` assignments (raw_decode, the statement continues after
-# the object), and JSON.parse("...") with an escaped string argument
+# Parse whole-script JSON, assignments, and JSON.parse payloads without site keys.
+# e.g. '{"product":{"price":159}}' -> [{"product": {"price": 159}}].
 def _json_objects_in_script(body: str, stype: str) -> list:
     stripped = body.strip()
     results = []
 
+    # Try the whole body before searching for JSON embedded in JavaScript.
     if stype in ("application/json", "text/json") or stripped.startswith(("{", "[")):
         try:
             results.append(json.loads(stripped))
@@ -147,6 +150,7 @@ def _json_objects_in_script(body: str, stype: str) -> list:
             obj, _ = decoder.raw_decode(body, start)
         except json.JSONDecodeError:
             continue
+        # Small assignment objects are usually UI or configuration fragments.
         if isinstance(obj, dict) and len(str(obj)) > 500:
             results.append(obj)
     # JSON.parse-style: the argument is a JS string literal containing JSON.
@@ -162,16 +166,19 @@ def _json_objects_in_script(body: str, stype: str) -> list:
 
 
 # score how product-like a json object's keys are, keeps blobs and drops config
+# Example: {"product": {"price": 159, "sku": "DCD771C2"}} -> 1.73.
 def _commerce_score(data, _depth: int = 0) -> float:
     keys = set()
     _walk_keys(data, keys, 0)
     if not keys:
         return 0.0
     hits = sum(1 for k in keys if any(c in k.lower() for c in _COMMERCE_KEYS))
+    # Penalize config-heavy objects without suppressing large product records.
     return hits / math.sqrt(len(keys))
 
 
 def _walk_keys(node, out: set, depth: int) -> None:
+    # Bound nested and repeated state so one blob cannot dominate scoring.
     if depth > 8 or len(out) > 2000:
         return
     if isinstance(node, dict):
@@ -184,9 +191,11 @@ def _walk_keys(node, out: set, depth: int) -> None:
 
 
 # rough product-keyword density, decides if unparseable script text is kept
+# Example: "product price sku image" -> 1.14 (kept when above 0.5).
 def _keyword_density(text: str) -> float:
     sample = text[:100_000].lower()
     hits = sum(sample.count(k) for k in ("price", "sku", "variant", "image", "product", "currency"))
+    # The logarithm dampens the effect of script length.
     return hits / math.log(len(sample) + 10)
 
 
@@ -196,6 +205,7 @@ _INLINE_ATTRS = ("aria-label", "alt", "title")
 
 
 # strip chrome then flatten to text with aria-label alt and title inlined
+# Example return: "£76.99\n£109.99\n[current price £76.99, original price £109.99]".
 def _extract_visible_text(soup: BeautifulSoup) -> str:
     for role in ("navigation", "banner", "contentinfo", "complementary"):
         for el in soup.find_all(attrs={"role": role}):
@@ -223,10 +233,13 @@ def _extract_visible_text(soup: BeautifulSoup) -> str:
     return "\n".join(lines)
 
 
-# gather every image and video url from dom meta and blobs with provenance
+# Gather DOM, meta, and blob media with provenance; e.g. ev.media[0] =
+# MediaCandidate(url="https://.../main.jpg", kind="image", origin="dom", width=1200).
 def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
     seen: dict[str, MediaCandidate] = {}
 
+    # Normalize and filter a URL, then merge repeat sightings, sized images
+    # also get a query-free candidate that may serve full resolution.
     def add(url: str, kind: str, origin: str, width: int | None = None, path_hint: str = ""):
         url = url.strip()
         if not url.startswith(("http://", "https://", "//")):
@@ -238,9 +251,8 @@ def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
             return
         existing = seen.get(url)
         if existing is not None:
-            # Same URL sighted again: keep the best width and accumulate the
-            # key paths (an asset can appear under both a product-group path
-            # and a selectedProduct path, and ranking needs to see both).
+            # Merge key paths and keep the widest rendition when a URL repeats.
+            # The same asset may appear under both selected and related products.
             if path_hint and path_hint not in existing.path_hint:
                 existing.path_hint = f"{existing.path_hint} {path_hint}".strip()
             if (width or 0) > (existing.width or 0):
@@ -248,17 +260,14 @@ def _collect_media(soup: BeautifulSoup, ev: Evidence) -> None:
         else:
             seen[url] = MediaCandidate(url=url, kind=kind, origin=origin, width=width,
                                        path_hint=path_hint)
-        # For sized renditions (?w=320 style) also offer the bare asset URL,
-        # which CDNs serve at original resolution. It joins the same dedupe
-        # group and wins only if nothing else is cleaner.
+        # Offer the query-free asset alongside a sized URL; it may serve full resolution.
         if kind == "image" and re.search(r"[?&](?:w|wid|width|h|hei|sw|size|q|quality|max)=\d", url):
             base = url.split("?")[0]
             if base not in seen and _IMAGE_EXT.search(base + "?"):
                 seen[base] = MediaCandidate(url=base, kind=kind, origin=origin, width=None)
 
+    # Collect rendered, lazy-loaded, and srcset URLs before meta and state URLs.
     for img in soup.find_all("img"):
-        # data-src / data-image are the standard lazy-loading attributes
-        # (Squarespace and most lightbox galleries put the real URL there).
         for attr in ("src", "data-src", "data-image"):
             if img.get(attr):
                 add(img[attr], "image", "dom")

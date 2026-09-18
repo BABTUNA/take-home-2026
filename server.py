@@ -36,10 +36,11 @@ def _source(stem: str) -> str:
     return "assignment" if (ROOT / "data" / f"{stem}.html").exists() else "unseen"
 
 
-# id + source folded into the full record; summary carries only what the grid renders
+# load saved products into compact catalog cards and full records by id
 def load_catalog() -> tuple[list[ProductSummary], dict[str, dict]]:
     summaries, details = [], {}
     for f in sorted(OUTPUT_DIR.glob("*.json")):
+        # skip unreadable or invalid JSON without hiding the other products
         try:
             product = json.loads(f.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as e:
@@ -47,6 +48,7 @@ def load_catalog() -> tuple[list[ProductSummary], dict[str, dict]]:
             continue
         stem = f.stem
         images = product.get("image_urls") or []
+        # the grid needs only the first two images and a few product fields
         summaries.append(ProductSummary(
             id=stem,
             name=product["name"],
@@ -57,6 +59,7 @@ def load_catalog() -> tuple[list[ProductSummary], dict[str, dict]]:
             category=product["category"]["name"],
             source=_source(stem),
         ))
+        # the detail page gets the whole product, keyed by its filename stem
         details[stem] = {**product, "id": stem, "source": _source(stem)}
     logger.info("loaded %d products", len(summaries))
     return summaries, details
@@ -73,11 +76,13 @@ app.add_middleware(
 )
 
 
+# send the compact cards used by the catalog grid
 @app.get("/products")
 def list_products() -> list[ProductSummary]:
     return SUMMARIES
 
 
+# look up one full product by id; unknown ids return 404
 @app.get("/products/{product_id}")
 def get_product(product_id: str) -> dict:
     detail = DETAILS.get(product_id)

@@ -20,6 +20,7 @@ from taxonomy import shortlist  # noqa: E402
 from models import VALID_CATEGORIES  # noqa: E402
 
 
+# find Product nodes in JSON-LD lists and @graph wrappers
 def _ld_products(json_ld: list) -> list[dict]:
     out = []
 
@@ -39,16 +40,20 @@ def _ld_products(json_ld: list) -> list[dict]:
     return out
 
 
+# build a simple product from JSON-LD and meta tags, with no model call
 def baseline_extract(raw_html: str) -> dict:
     ev = harvest(raw_html)
     prods = _ld_products(ev.json_ld)
+    # use the first product block without resolving competing page identities
     ld = prods[0] if prods else {}
     meta = ev.meta
 
+    # when JSON-LD lists several offers, use only the first
     offers = ld.get("offers") or {}
     if isinstance(offers, list):
         offers = offers[0] if offers else {}
 
+    # prefer JSON-LD fields, then fall back to page metadata
     name = ld.get("name") or meta.get("og:title") or ev.title or ""
     description = ld.get("description") or meta.get("og:description") or meta.get("description") or ""
     brand = ld.get("brand") or {}
@@ -57,23 +62,28 @@ def baseline_extract(raw_html: str) -> dict:
     images = ld.get("images") or ld.get("image") or []
     if isinstance(images, str):
         images = [images]
+    # use the meta hero only when JSON-LD provides no image
     if not images and meta.get("og:image"):
         images = [meta["og:image"]]
 
+    # leave an absent or unparseable price at zero so scoring shows the miss
     price = offers.get("price")
     try:
         price = float(price)
     except (TypeError, ValueError):
         price = 0.0
 
+    # choose the top lexical taxonomy match; no embedding or model judges it
     hint = " ".join(filter(None, [name, brand_name, description[:200]]))
     candidates = shortlist(hint, k=5)
     category = next((c for c in candidates if c in VALID_CATEGORIES), "")
 
+    # take structured feature notes as-is; do not infer missing details
     features = ld.get("positiveNotes") or []
     if isinstance(features, dict):
         features = [str(v) for v in features.values()]
 
+    # keep the full Product shape even when this baseline has no evidence
     return {
         "name": str(name),
         "price": {"price": price,
@@ -91,10 +101,12 @@ def baseline_extract(raw_html: str) -> dict:
     }
 
 
+# write one baseline result per graded page for score.py --baseline
 def main() -> None:
     root = Path(__file__).parent.parent
     out_dir = root / "output_baseline"
     out_dir.mkdir(exist_ok=True)
+    # data/ has the five graded pages; data_unseen/ is not part of this baseline
     for f in sorted((root / "data").glob("*.html")):
         result = baseline_extract(f.read_text(encoding="utf-8", errors="ignore"))
         (out_dir / f"{f.stem}.json").write_text(json.dumps(result, indent=2, ensure_ascii=False))

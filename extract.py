@@ -132,6 +132,7 @@ async def extract_draft(ctx: PromptContext, model: str = EXTRACT_MODEL,
 
 
 # map the draft's media indices back to urls and assemble the final product
+# e.g. image_ids=[0, 2] with IMG_0=a.jpg, IMG_2=b.jpg -> image_urls=[a.jpg, b.jpg]
 def resolve_draft(draft: Draft, ctx: PromptContext, category) -> Product:
     image_urls, video_urls = media_by_index(ctx.media)
 

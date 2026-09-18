@@ -6,7 +6,13 @@ The core idea: **code does the finding, the model does the choosing.** Determini
 
 ## Running it
 
-Setup (needs the OpenRouter key in `.env` as `OPEN_ROUTER_API_KEY=...`):
+Copy the example config:
+
+```bash
+cp .env.example .env
+```
+
+Set `OPEN_ROUTER_API_KEY` in `.env`, then install dependencies:
 
 ```bash
 uv sync
@@ -18,7 +24,7 @@ Extract the 5 assignment pages (writes `output/*.json`, logs per-call cost):
 uv run python run_extract.py
 ```
 
-Add `--unseen` for all 50 pages, or pass explicit paths. Env knobs: `EXTRACT_MODEL` (default flash-lite; the committed outputs used `google/gemini-3-flash-preview`), `PICK_MODEL`, `TAXONOMY_RETRIEVAL=union|lexical`, `OUTPUT_DIR`.
+Add `--unseen` for all 50 pages, or pass explicit paths. Optional settings are listed in `.env.example`. The default extraction model is flash-lite; the committed outputs used `google/gemini-3-flash-preview`. If you change `OUTPUT_DIR`, the server still reads `output/`.
 
 Server + frontend (two terminals):
 
@@ -38,7 +44,7 @@ Evaluation:
 uv run python eval/score.py          # per-field scoreboard vs hand-written ground truth
 uv run python eval/baseline.py       # no-LLM floor, then: eval/score.py --baseline
 uv run python eval/reachability.py   # does ground truth survive distillation?
-uv run python eval/taxonomy_bench.py --recall   # category retrieval benchmark
+uv run python eval/taxonomy_bench.py            # exact category accuracy across all 50 outputs
 cd frontend && npx vitest run        # variant-resolution unit tests
 ```
 
@@ -53,41 +59,43 @@ Four stages per page (full walkthrough with real data in [BACKEND.md](docs/BACKE
 
 ## Results
 
-Per-field scoring against hand-written ground truth for the 5 assignment pages (`eval/ground_truth/`, every value carries a note on where it came from):
+Per-field scoring against hand-written ground truth for the 5 assignment pages (`eval/ground_truth/`, with evidence notes for key judgments):
 
 | | name | price | desc | features | images | video | category | colors | variants | overall |
 |---|---|---|---|---|---|---|---|---|---|---|
-| pipeline | 1.00 | 1.00 | 1.00 | 1.00 | 0.88 | 1.00 | 1.00 | 1.00 | 0.89 | **0.976** |
+| pipeline | 1.00 | 1.00 | 1.00 | 1.00 | 0.86 | 1.00 | 1.00 | 1.00 | 0.89 | **0.972** |
 | no-LLM baseline | 0.80 | 0.45 | 0.85 | 0.20 | 0.28 | 0.80 | 0.00 | 0.20 | 0.40 | 0.442 |
 
 The delta is the measured value of the blob/DOM channels plus the model. All 50 corpus pages extract successfully.
 
-Extraction model sweep (same pipeline, same ground truth):
+Historical extraction model sweep (same pipeline and ground truth; the committed outputs currently score 0.972):
 
 | extraction model | score | ~cost/page |
 |---|---|---|
-| google/gemini-3-flash-preview (used for committed outputs) | 0.976 | $0.015-0.023 |
+| google/gemini-3-flash-preview | 0.976 | $0.015-0.023 |
 | openai/gpt-5-mini | 0.905 | ~$0.01 |
 | google/gemini-2.5-flash-lite | 0.884 | ~$0.003 |
 
 The premium model earns its cost specifically on variant scoping and colorway judgment; flash-lite is the documented budget config via `EXTRACT_MODEL`.
 
-## Category resolution benchmark
+## Category accuracy
 
-The category field must exactly match 1 of 5,596 Google taxonomy paths. Resolution is two steps: retrieve a candidate shortlist, then an LLM picks one by index (validated to exist). Both steps were benchmarked on all 50 pages against hand-judged accepted categories (`eval/expected_categories.json`; multiple accepted paths where the taxonomy is genuinely ambiguous). Cost and latency measured over 5 representative pages.
+[`eval/taxonomy_bench.py`](eval/taxonomy_bench.py) compares the category already saved in each of the 50 `output/*.json` files with the accepted paths in [`eval/expected_categories.json`](eval/expected_categories.json). A page is correct only when `category.name` exactly matches an accepted path. The evaluator reads files only; it makes no model calls.
 
-| config | all 50 pages | assignment 5 only | calls/page | cost/page | latency/page |
-|---|---|---|---|---|---|
+The committed outputs score **48/50 (96%)** overall and **5/5** on the assignment pages. The two misses are Aerosoft (`Software` instead of a specific software category) and Peak Design (Camera Bags & Cases instead of Backpacks). Run the command above to see the full paths. `--json` prints per-page results; `--strict` exits non-zero if any page is wrong.
+
+| configuration | all 50 pages | assignment 5 | calls/page | cost/page | latency/page |
+|---|---:|---:|---:|---:|---:|
 | lexical + flash-lite (initial default) | 44/50 | 5/5 | 1 | $0.00034 | 1.2s |
 | lexical + flash-lite 3-vote | 44/50 | 5/5 | 3 (parallel) | $0.00102 | 1.1s |
 | lexical + 3-flash picker | 43/50 | 5/5 | 1 | $0.00172 | 1.7s |
 | union + flash-lite 3-vote | 45/50 | 4/5 | 3 (parallel) | $0.00090 | 1.4s |
-| **union + 3-flash picker (shipped)** | **48/50** | 5/5 | 1 | $0.00153 | 1.6s |
+| **union + 3-flash picker (shipped)** | **48/50** | **5/5** | 1 | $0.00153 | 1.6s |
 | LLM tree walk (no retrieval) | 35/50 | 4/5 | 3.4 (sequential) | ~$0.0004 | ~4s |
 
-Latency note: the per-page differences between configs are entirely the API pick call. Embedding retrieval adds ~10ms per page (query embedding, included in the union rows above) plus two one-time startup costs that production amortizes: the fastembed model load (a second or two per process) and embedding the 5,596 taxonomy paths (~30s once ever, then loaded from the `.cache/` file).
+The shipped row's accuracy is reproducible from the committed outputs with `eval/taxonomy_bench.py`. The other rows and the cost/latency columns are historical experiment results; their per-config outputs and usage logs are not committed, so the current evaluator cannot regenerate them.
 
-What the numbers decomposed: every miss of the initial config was a retrieval miss (the right answer never made the lexical shortlist: "Barrel Jeans" shares no tokens with "Pants", "Chronograph" none with "Watches"), while flash-lite's residual errors were judgment (it filed a Gore-Tex jacket under Rain Suits with the right answer on the list). Union retrieval fixes the first; the stronger picker on its small ~3K-token prompt fixes the second for ~$0.0012/page extra. Majority voting a weak model is strictly worse: it converges on the model's consistent mistakes at 3x the calls. The assignment-5 column is why the unseen corpus exists: every config aces the 5 graded pages, and the differences only show on unseen sites.
+Shortlist recall is a separate diagnostic: it says whether the correct path was offered to the picker, not whether the final product chose it. The category accuracy above measures the final choice.
 
 ## Design choices
 

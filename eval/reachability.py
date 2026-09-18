@@ -1,9 +1,8 @@
-"""Reachability: does every ground-truth value survive distillation?
+"""Check whether key ground-truth facts survive distillation.
 
-Re-runs harvest + distill with the section budgets raised and asserts each
-ground-truth value is findable in the prompt context. A miss here is a
-distiller bug (the model never had a chance); a miss only in score.py is a
-model bug. Keeping those separable is the point of this file.
+Re-runs harvest + distill with raised budgets, then checks text and media
+clues without calling a model. A pass shows the evidence can survive these
+larger limits, not that the normal prompt or final product is correct.
 
 Usage:
     uv run python eval/reachability.py
@@ -24,6 +23,8 @@ RAISED = {"json_ld": 200_000, "meta": 10_000, "blobs": 400_000,
           "scripts": 50_000, "text": 60_000}
 
 
+# accept common display forms of a price, including decimal commas and cents
+# e.g. 129 -> 129, 129.00, 129,00, 12900
 def _price_forms(value: float) -> set[str]:
     forms = {f"{value:g}", f"{value:.2f}", f"{value:.2f}".replace(".", ","),
              str(int(round(value * 100)))}
@@ -32,6 +33,7 @@ def _price_forms(value: float) -> set[str]:
     return forms
 
 
+# list expected facts missing from the distilled text or media candidates
 def check_page(gt: dict, ctx_text: str, media_keys: set[str]) -> list[str]:
     text = ctx_text.lower()
     missing = []
@@ -40,16 +42,19 @@ def check_page(gt: dict, ctx_text: str, media_keys: set[str]) -> list[str]:
         if not ok:
             missing.append(label)
 
+    # allow minor title differences but require most name tokens and the brand
     name_toks = [t for t in re.findall(r"[a-z0-9]+", gt["name"].lower()) if len(t) > 2]
     need("name", sum(t in text for t in name_toks) >= len(name_toks) * 0.8)
     need("brand", gt["brand"].lower() in text)
 
+    # find each expected price in any common page encoding
     p = gt["price"]
     need(f"price {p['price']}", any(f in ctx_text for f in _price_forms(p["price"])))
     if p.get("compare_at_price"):
         need(f"compare_at {p['compare_at_price']}",
              any(f in ctx_text for f in _price_forms(p["compare_at_price"])))
 
+    # use the longest word as a compact reachability check for each feature
     for feat in gt["key_features"]:
         words = sorted(re.findall(r"[a-z]{4,}", feat.lower()), key=len, reverse=True)
         if words:
@@ -58,12 +63,14 @@ def check_page(gt: dict, ctx_text: str, media_keys: set[str]) -> list[str]:
     for color in gt["colors"]:
         need(f"color {color!r}", color.lower() in text)
 
+    # shape-only variant truth has no individual selection labels to check
     variants = gt["variants"]
     if isinstance(variants, list):
         for v in variants:
             for sel in v["selections"]:
                 need(f"variant value {sel['value']!r}", sel["value"].lower() in text)
 
+    # compare normalized asset ids so image renditions can still match
     for url in gt["image_urls"]:
         key = _asset_key(url)
         need(f"image {key}", key in media_keys)
@@ -73,14 +80,17 @@ def check_page(gt: dict, ctx_text: str, media_keys: set[str]) -> list[str]:
     return missing
 
 
+# rerun graded pages with larger limits and report missing evidence
 def main() -> None:
     root = Path(__file__).parent.parent
+    # restore the shared distill settings even if a check fails
     original = dict(distill._BUDGETS)
     distill._BUDGETS.update(RAISED)
     distill._MAX_IMAGES, original_max = 400, distill._MAX_IMAGES
     try:
         failed = False
         for gt_file in sorted((root / "eval" / "ground_truth").glob("*.json")):
+            # ground truth points to the original HTML for this page
             gt = json.loads(gt_file.read_text())
             html = (root / gt["_source_file"]).read_text(encoding="utf-8", errors="ignore")
             ctx = distill.distill(harvest(html))

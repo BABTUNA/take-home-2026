@@ -1,16 +1,7 @@
-"""Resolve a free-text category guess to an exact Google taxonomy path.
+"""Resolve product hints to an exact Google taxonomy path.
 
-The model can't reliably emit 1 of 5,596 exact strings, so: shortlist
-candidate paths (lexical overlap unioned with embedding retrieval), have the
-model pick one BY NUMBER from the list, and validate the result exists.
-No silent fallback: a valid-but-wrong category is worse than a loud failure.
-
-Config choice is measured, not vibes (eval/taxonomy_bench.py, 50 pages with
-hand-judged accepted categories): lexical-only retrieval misses 6/50 pages
-outright (jeans never matches Pants, Chronograph never matches Watches), and
-embedding retrieval puts the right path at median rank 0. Union retrieval
-plus a gemini-3-flash picker scored 48/50 vs 44/50 for lexical + flash-lite;
-the picker call is small (~3K tokens) so the stronger model costs ~$0.002/page.
+Combine lexical and embedding shortlists, have the model pick by index,
+then validate the path or fail.
 """
 
 import logging
@@ -101,13 +92,13 @@ def shortlist(query: str, k: int = 150) -> list[str]:
     return top + [t for t in TOP_LEVEL if t not in top]
 
 
-# union the two shortlists: lexical order first, then embedding finds, then
-# the top-level safety net
+# return lexical matches, optional embedding matches, then top-level paths
 def _union_shortlist(query: str, embed_query: str, k_lex: int, k_emb: int = 50) -> list[str]:
     top_set = set(TOP_LEVEL)
     lex = [p for p in shortlist(query, k=k_lex) if p not in top_set][:k_lex]
     seen = set(lex)
     extra = []
+    # lexical mode skips embeddings; union mode adds semantic matches
     if _RETRIEVAL == "union":
         extra = [p for p in _embed_shortlist(embed_query, k=k_emb) if p not in seen]
         seen.update(extra)
