@@ -31,14 +31,19 @@ export function Gallery({ images, videoUrl, name, brand }: Props) {
   }
 
   return (
-    <div className="flex gap-3">
+    // mobile: main pane on top, horizontal thumb strip underneath.
+    // desktop: vertical rail beside the pane, with the scroller absolutely
+    // positioned so a 40-thumb rail can never stretch the row taller than
+    // the pane; it scrolls instead.
+    <div className="flex flex-col-reverse gap-3 sm:flex-row">
       {alive.length > 1 && (
-        <div className="flex w-16 shrink-0 flex-col gap-2 overflow-y-auto">
+        <div className="sm:relative sm:w-16 sm:shrink-0">
+          <div className="flex gap-2 overflow-x-auto sm:absolute sm:inset-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto">
           {alive.map(([slide, i]) => (
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`relative aspect-square overflow-hidden bg-surface transition-opacity ${
+              className={`relative aspect-square w-14 shrink-0 overflow-hidden bg-surface transition-opacity sm:w-full ${
                 i === active ? "outline-1 outline-ink" : "opacity-60 hover:opacity-100"
               }`}
               aria-label={slide.kind === "video" ? "Play video" : `View image ${i + 1}`}
@@ -56,6 +61,7 @@ export function Gallery({ images, videoUrl, name, brand }: Props) {
               )}
             </button>
           ))}
+          </div>
         </div>
       )}
 

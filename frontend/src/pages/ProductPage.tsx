@@ -25,6 +25,7 @@ export function ProductPage() {
   );
 
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [showAllFeatures, setShowAllFeatures] = useState(false);
 
   // when the selection matches variants that carry their own images, the
   // gallery shows only those (real-store behavior), with a "show all"
@@ -63,10 +64,23 @@ export function ProductPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-24">
+      {/* deep taxonomy paths wrap to three lines on phones, so middle
+          segments collapse to an ellipsis below sm */}
       <nav className="flex flex-wrap items-center gap-1.5 py-6 text-xs text-muted">
         <Link to="/" className="hover:text-ink">Catalog</Link>
+        {crumbs.length > 2 && (
+          <span className="flex items-center gap-1.5 sm:hidden">
+            <span className="text-faint">/</span>
+            <span>…</span>
+          </span>
+        )}
         {crumbs.map((c, i) => (
-          <span key={i} className="flex items-center gap-1.5">
+          <span
+            key={i}
+            className={`items-center gap-1.5 ${
+              i < crumbs.length - 1 && crumbs.length > 2 ? "hidden sm:flex" : "flex"
+            }`}
+          >
             <span className="text-faint">/</span>
             <span className={i === crumbs.length - 1 ? "text-ink" : ""}>{c}</span>
           </span>
@@ -74,7 +88,9 @@ export function ProductPage() {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <div>
+        {/* min-w-0 stops the thumb strip's content width from widening this
+            grid item (grid items default to min-width:auto) */}
+        <div className="min-w-0">
           <Gallery
             // remount when the image set changes so the gallery snaps to slide 0
             key={`${filtered}-${galleryImages[0] ?? "empty"}`}
@@ -86,7 +102,7 @@ export function ProductPage() {
           {variantOnly.length > 0 && (
             <button
               onClick={() => setShowAllPhotos((s) => !s)}
-              className="mt-2 text-xs text-muted underline-offset-2 hover:underline"
+              className="mt-3 px-1 text-xs text-muted underline-offset-2 hover:underline"
             >
               {filtered
                 ? `Showing ${galleryImages.length} photo${galleryImages.length === 1 ? "" : "s"} for this selection · Show all`
@@ -95,7 +111,7 @@ export function ProductPage() {
           )}
         </div>
 
-        <div className="max-w-lg">
+        <div className="max-w-lg lg:sticky lg:top-8 lg:self-start">
           <p className="eyebrow">{product.brand}</p>
           <h1 className="font-display mt-1 text-2xl font-medium tracking-tight text-balance">
             {product.name}
@@ -153,13 +169,25 @@ export function ProductPage() {
             <section className="mt-8">
               <h2 className="eyebrow mb-3">Details</h2>
               <ul className="space-y-1.5 text-sm">
-                {product.key_features.map((f, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-faint">—</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
+                {(showAllFeatures ? product.key_features : product.key_features.slice(0, 8)).map(
+                  (f, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="text-faint">—</span>
+                      <span>{f}</span>
+                    </li>
+                  ),
+                )}
               </ul>
+              {product.key_features.length > 8 && (
+                <button
+                  onClick={() => setShowAllFeatures((s) => !s)}
+                  className="mt-2 text-xs text-muted underline-offset-2 hover:underline"
+                >
+                  {showAllFeatures
+                    ? "Show fewer details"
+                    : `Show all ${product.key_features.length} details`}
+                </button>
+              )}
             </section>
           )}
 
