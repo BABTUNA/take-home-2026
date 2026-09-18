@@ -134,24 +134,16 @@ export function ProductPage() {
             />
           </div>
 
-          {/* only statements the page itself made: explicit stock signals and
-              the resolved sku. No inferences from an incomplete variant list. */}
+          {/* the resolved sku proves the variant model holds real data;
+              availability is deliberately not shown (extraction captures it,
+              but a partially wrong stock claim reads worse than none) */}
           {product.options.length > 0 && (
-            <p className="mt-4 min-h-5 text-sm text-muted">
-              {resolved && (
-                <>
-                  {resolved.available === true && <span className="text-ink">In stock</span>}
-                  {resolved.available === false && <span className="text-sale">Out of stock</span>}
-                  {resolved.sku && <span className="mr-0 ml-0 text-faint">
-                    {resolved.available !== null ? " · " : ""}SKU {resolved.sku}
-                  </span>}
-                </>
-              )}
+            <p className="mt-4 min-h-5 text-sm text-faint">
+              {resolved?.sku && <>SKU {resolved.sku}</>}
             </p>
           )}
 
           <button
-            disabled={resolved?.available === false}
             className="mt-6 w-full bg-ink py-3 text-sm font-medium tracking-wide text-white transition-opacity enabled:hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-30"
           >
             Add to bag
