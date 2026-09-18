@@ -60,7 +60,6 @@ export function ProductPage() {
     );
 
   const crumbs = product.category.name.split(" > ");
-  const allChosen = product.options.every((o) => selections[o.name]);
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-24">
@@ -135,25 +134,24 @@ export function ProductPage() {
             />
           </div>
 
+          {/* only statements the page itself made: explicit stock signals and
+              the resolved sku. No inferences from an incomplete variant list. */}
           {product.options.length > 0 && (
             <p className="mt-4 min-h-5 text-sm text-muted">
-              {resolved ? (
+              {resolved && (
                 <>
                   {resolved.available === true && <span className="text-ink">In stock</span>}
                   {resolved.available === false && <span className="text-sale">Out of stock</span>}
-                  {resolved.available === null && "Availability not listed"}
-                  {resolved.sku && <span className="ml-2 text-faint">SKU {resolved.sku}</span>}
+                  {resolved.sku && <span className="mr-0 ml-0 text-faint">
+                    {resolved.available !== null ? " · " : ""}SKU {resolved.sku}
+                  </span>}
                 </>
-              ) : product.variants.length > 0 ? (
-                allChosen ? "This combination isn't offered." : "Select options to check availability."
-              ) : (
-                "Configuration details on the brand's site."
               )}
             </p>
           )}
 
           <button
-            disabled={product.variants.length > 0 && (!resolved || resolved.available === false)}
+            disabled={resolved?.available === false}
             className="mt-6 w-full bg-ink py-3 text-sm font-medium tracking-wide text-white transition-opacity enabled:hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-30"
           >
             Add to bag
