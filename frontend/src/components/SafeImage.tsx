@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   src: string | null;
@@ -12,6 +12,10 @@ interface Props {
 // placeholder with the brand initial instead of a browser error glyph
 export function SafeImage({ src, alt, brand, className = "", onBroken }: Props) {
   const [broken, setBroken] = useState(false);
+
+  // a failure applies to one url only; a new src deserves a fresh attempt
+  // (otherwise a dead hover image leaves the card stuck on the placeholder)
+  useEffect(() => setBroken(false), [src]);
 
   if (!src || broken) {
     return (

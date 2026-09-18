@@ -9,14 +9,27 @@ import { resolveVariant, variantImages, type Selections } from "../lib/resolveVa
 
 export function ProductPage() {
   const { id } = useParams();
+  return <ProductContent key={id} id={id} />;
+}
+
+function ProductContent({ id }: { id: string | undefined }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selections, setSelections] = useState<Selections>({});
 
   useEffect(() => {
-    setProduct(null);
-    setSelections({});
-    if (id) fetchProduct(id).then(setProduct).catch((e) => setError(String(e)));
+    if (!id) return;
+    let active = true;
+    fetchProduct(id)
+      .then((value) => {
+        if (active) setProduct(value);
+      })
+      .catch((e) => {
+        if (active) setError(String(e));
+      });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   const resolved = useMemo(
@@ -142,12 +155,6 @@ export function ProductPage() {
               {resolved?.sku && <>SKU {resolved.sku}</>}
             </p>
           )}
-
-          <button
-            className="mt-6 w-full bg-ink py-3 text-sm font-medium tracking-wide text-white transition-opacity enabled:hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            Add to bag
-          </button>
 
           {product.description && (
             <p className="mt-8 text-sm leading-relaxed whitespace-pre-line text-muted">

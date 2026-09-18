@@ -1,7 +1,7 @@
 [project]
 name = "take-home-2026"
 version = "0.1.0"
-description = "Add your description here"
+description = "Extract product data from raw HTML and serve a catalog demo"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

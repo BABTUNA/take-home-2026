@@ -6,10 +6,16 @@ import { PriceBlock } from "./PriceBlock";
 
 export function ProductCard({ product }: { product: ProductSummary }) {
   const [hover, setHover] = useState(false);
+  // extracted urls come from the wild; once the hover image 404s, stop
+  // swapping to it instead of flashing the placeholder on every hover
+  const [hoverBroken, setHoverBroken] = useState(false);
   const onSale =
     product.price.compare_at_price !== null &&
     product.price.compare_at_price > product.price.price;
-  const src = hover && product.hover_image_url ? product.hover_image_url : product.image_url;
+  const src =
+    hover && !hoverBroken && product.hover_image_url
+      ? product.hover_image_url
+      : product.image_url;
 
   return (
     <Link
@@ -24,6 +30,9 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           alt={product.name}
           brand={product.brand}
           className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+          onBroken={() => {
+            if (src === product.hover_image_url) setHoverBroken(true);
+          }}
         />
         {onSale && (
           <span className="absolute top-3 left-3 bg-ink px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em] text-white">
