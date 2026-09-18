@@ -27,7 +27,7 @@ export function VariantPicker({ options, variants, selections, onSelect }: Props
           <div className="flex flex-wrap gap-2">
             {opt.values.map((value) => {
               const selected = selections[opt.name] === value;
-              const disabled = !selected && valueDisabled(variants, selections, opt.name, value);
+              const disabled = !selected && valueDisabled(variants, selections, opt.name, value, options);
               return (
                 <button
                   key={value}

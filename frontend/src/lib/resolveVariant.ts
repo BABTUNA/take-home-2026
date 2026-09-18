@@ -1,4 +1,4 @@
-import type { Variant } from "../types";
+import type { Option, Variant } from "../types";
 
 export type Selections = Record<string, string>;
 
@@ -45,15 +45,25 @@ export function variantImages(variants: Variant[], selections: Selections): stri
   return out;
 }
 
+// the variants list can only rule combinations OUT if it plausibly
+// enumerates the matrix; an extraction that verified 3 of 96 combos says
+// nothing about the other 93 (llbean-class pages), so nothing disables
+export function variantsAreDense(variants: Variant[], options: Option[]): boolean {
+  if (variants.length === 0 || options.length === 0) return false;
+  const combos = options.reduce((n, o) => n * Math.max(o.values.length, 1), 1);
+  return variants.length / combos >= 0.6;
+}
+
 // a value is disabled when picking it (keeping the other axes) leaves no
-// compatible variant at all
+// compatible variant at all; only meaningful for dense variant lists
 export function valueDisabled(
   variants: Variant[],
   selections: Selections,
   axis: string,
   value: string,
+  options: Option[] = [],
 ): boolean {
-  if (variants.length === 0) return false; // axes without variants never disable
+  if (!variantsAreDense(variants, options)) return false;
   const test = { ...selections, [axis]: value };
   return !variants.some((v) => variantMatches(v, test));
 }

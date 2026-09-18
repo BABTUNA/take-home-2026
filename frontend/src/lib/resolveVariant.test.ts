@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveVariant, valueDisabled, variantImages, variantMatches } from "./resolveVariant";
+import { resolveVariant, valueDisabled, variantImages, variantMatches, variantsAreDense } from "./resolveVariant";
 import type { Variant } from "../types";
 
 const v = (sel: Record<string, string>, extra: Partial<Variant> = {}): Variant => ({
@@ -60,17 +60,30 @@ describe("variantImages", () => {
 });
 
 describe("valueDisabled", () => {
-  it("disables combinations no variant supports", () => {
+  // 3 variants over a 2x2 matrix = dense, the list is trusted to exclude
+  const denseOptions = [
+    { name: "Color", values: ["Navy", "Lake"] },
+    { name: "Size", values: ["M", "L"] },
+  ];
+  it("disables combinations no variant supports when the list is dense", () => {
     // no Lake + L variant exists
-    expect(valueDisabled(catalog, { Color: "Lake" }, "Size", "L")).toBe(true);
+    expect(valueDisabled(catalog, { Color: "Lake" }, "Size", "L", denseOptions)).toBe(true);
   });
   it("keeps supported combinations enabled", () => {
-    expect(valueDisabled(catalog, { Color: "Navy" }, "Size", "L")).toBe(false);
+    expect(valueDisabled(catalog, { Color: "Navy" }, "Size", "L", denseOptions)).toBe(false);
   });
   it("re-picking the same axis is never a dead end", () => {
-    expect(valueDisabled(catalog, { Color: "Lake", Size: "M" }, "Color", "Navy")).toBe(false);
+    expect(valueDisabled(catalog, { Color: "Lake", Size: "M" }, "Color", "Navy", denseOptions)).toBe(false);
   });
   it("never disables when the page asserted no variants", () => {
-    expect(valueDisabled([], { Color: "Iron" }, "Size", "44")).toBe(false);
+    expect(valueDisabled([], { Color: "Iron" }, "Size", "44", denseOptions)).toBe(false);
+  });
+  it("never disables when the list is sparse (3 verified of a big matrix)", () => {
+    const sparseOptions = [
+      { name: "Color", values: ["Navy", "Lake", "Black", "White", "Spruce", "Heather", "Blue", "Gray"] },
+      { name: "Size", values: ["XS", "S", "M", "L", "XL", "XXL"] },
+    ];
+    expect(valueDisabled(catalog, { Color: "Lake" }, "Size", "L", sparseOptions)).toBe(false);
+    expect(variantsAreDense(catalog, sparseOptions)).toBe(false);
   });
 });
