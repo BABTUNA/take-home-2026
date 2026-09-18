@@ -4,6 +4,12 @@
 
 This project turns raw product-page HTML into validated `Product` records and serves them in a catalog and product-detail UI. It was built for the five assignment pages and exercised on 45 additional pages. Extraction uses page evidence rather than store-specific selectors.
 
+## Demo
+
+[![Demo video](https://img.youtube.com/vi/X5n7xyM2d8I/hqdefault.jpg)](https://www.youtube.com/watch?v=X5n7xyM2d8I)
+
+*Click to watch the walkthrough on YouTube.*
+
 ## Backend
 
 Copy the config template and add your OpenRouter key as `OPEN_ROUTER_API_KEY` in `.env`:
@@ -118,23 +124,17 @@ After changing `.env`, rerun `uv run python run_extract.py --unseen` to produce 
 
 ## Design choices
 
-- **Code and model responsibilities:** Python collects possible facts from the page, and the model decides which ones describe the product. Code then checks the result. This leaves routine parsing to Python and uses the model for ambiguous choices.
-- **Evidence distillation:** The HTML is reduced to a small, product-focused evidence packet before extraction. Removing unrelated products and page noise keeps model calls cheaper.
-- **Generic extraction rules:** Extraction uses no retailer-specific selectors. JSON is found by its structure and commerce fields, while generic noise rules and prompts without assignment-page examples let the same code handle unseen sites.
-- **Model and retrieval evaluation:** Ground truth, a no-model baseline, reachability checks, and category benchmarks guided the model and retrieval settings. The reachability check also shows whether a missing fact was lost before the model saw it.
-- **Output validation:** The model picks media by index, prices must appear in the page evidence, and categories must be valid taxonomy paths. These checks stop invented URLs and prices absent from the page.
-- **Variants and failure handling:** Variants are returned only when the page supports a specific option combination, and availability stays unknown without an explicit signal. Invalid drafts get repair and escalation attempts before failing; the UI resolves only variants that were actually extracted.
+- **Evidence-first extraction:** Python collects and distills product evidence before the model chooses fields. Budgets reduce model cost; code verifies prices, media indices, and taxonomy paths afterward.
+- **Generic rules:** JSON is found by structure and commerce fields, without retailer-specific selectors or assignment-page examples in prompts.
+- **Measured settings:** Ground truth, a no-model baseline, reachability checks, and the 50-page category benchmark guided model and retrieval choices.
+- **Conservative output:** Variants need supported option combinations, and availability stays unknown without an explicit signal. Invalid drafts get repair and escalation attempts before failing.
 
 ## Limits
 
-- **Evaluation ownership:** The same author built the pipeline and wrote its ground truth. Evidence notes record key labeling decisions, the category benchmark accepts multiple defensible paths, and both scorers print misses for others to re-judge.
-- **Single-run results:** Model output can vary, especially on complex pages such as L.L.Bean. Each reported score comes from one run of its configuration, not repeated trials with a mean and variance.
-- **Availability display:** Availability is extracted but deliberately omitted from the UI. Raw HTML stock signals may describe catalog status rather than live inventory, and a wrong stock claim would mislead shoppers.
-- **HTML coverage:** Raw HTML can omit client-rendered product data, and some stores block collection altogether.
-- **Product boundaries:** Complex variant joins and multi-color galleries remain difficult. L.L.Bean scores 0.52 on variants; L.L.Bean and Nike image F1 scores are 0.60 and 0.70.
-- **Category precision:** The taxonomy can be ambiguous or lack a precise path; two of the 50 saved category picks miss the accepted set.
-- **English category hints:** The embedding index is English, so the model writes English hints even for Japanese or German pages. That implicit translation has not been tested separately.
-- **Embedding setup:** Without `fastembed`, union retrieval quietly falls back to lexical matches. On a fresh machine, it downloads roughly 100 MB of model files and builds the cached category index (about 30 seconds).
+- **Evaluation scope:** The same author wrote the pipeline and ground truth, and scores come from single runs. Evidence notes, accepted category paths, and printed misses make judgments reviewable.
+- **HTML coverage:** Raw HTML can miss client-rendered data or be blocked; complex variants and galleries also remain difficult. L.L.Bean scores 0.52 on variants, while its image F1 is 0.60 and Nike's is 0.70.
+- **Availability:** Extracted stock signals are not displayed because raw HTML may show catalog status rather than live inventory.
+- **Categories:** Two of 50 saved picks miss accepted paths. Embeddings use English; the model's translation of non-English hints has not been tested separately.
 
 ## System Design at Scale
 
