@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveVariant, valueDisabled, variantMatches } from "./resolveVariant";
+import { resolveVariant, valueDisabled, variantImages, variantMatches } from "./resolveVariant";
 import type { Variant } from "../types";
 
 const v = (sel: Record<string, string>, extra: Partial<Variant> = {}): Variant => ({
@@ -39,6 +39,23 @@ describe("resolveVariant", () => {
   it("prefers the most specific match", () => {
     const withSizeOnly = [...catalog, v({ Size: "M" }, { sku: "SIZE-ONLY" })];
     expect(resolveVariant(withSizeOnly, { Color: "Navy", Size: "M" })?.sku).toBe("N-M");
+  });
+});
+
+describe("variantImages", () => {
+  const withImgs = [
+    v({ Color: "Navy", Size: "M" }, { image_urls: ["navy-1.jpg", "navy-2.jpg"] }),
+    v({ Color: "Navy", Size: "L" }, { image_urls: ["navy-1.jpg"] }),
+    v({ Color: "Lake", Size: "M" }, { image_urls: ["lake-1.jpg"] }),
+  ];
+  it("collects deduped images from variants compatible with a partial selection", () => {
+    expect(variantImages(withImgs, { Color: "Navy" })).toEqual(["navy-1.jpg", "navy-2.jpg"]);
+  });
+  it("returns nothing for an empty selection (default gallery order)", () => {
+    expect(variantImages(withImgs, {})).toEqual([]);
+  });
+  it("returns nothing when variants carry no images", () => {
+    expect(variantImages(catalog, { Color: "Navy" })).toEqual([]);
   });
 });
 

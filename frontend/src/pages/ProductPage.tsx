@@ -5,7 +5,7 @@ import { fetchProduct } from "../api";
 import { Gallery } from "../components/Gallery";
 import { PriceBlock } from "../components/PriceBlock";
 import { VariantPicker } from "../components/VariantPicker";
-import { resolveVariant, type Selections } from "../lib/resolveVariant";
+import { resolveVariant, variantImages, type Selections } from "../lib/resolveVariant";
 
 export function ProductPage() {
   const { id } = useParams();
@@ -23,6 +23,19 @@ export function ProductPage() {
     () => (product ? resolveVariant(product.variants, selections) : null),
     [product, selections],
   );
+
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
+
+  // when the selection matches variants that carry their own images, the
+  // gallery shows only those (real-store behavior), with a "show all"
+  // escape hatch; selections without image data fall back to the full
+  // gallery so sparse products never strand on an empty one
+  const variantOnly = useMemo(
+    () => (product ? variantImages(product.variants, selections) : []),
+    [product, selections],
+  );
+  const filtered = !showAllPhotos && variantOnly.length > 0;
+  const galleryImages = !product ? [] : filtered ? variantOnly : product.image_urls;
 
   if (error)
     return (
@@ -61,12 +74,26 @@ export function ProductPage() {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <Gallery
-          images={product.image_urls}
-          videoUrl={product.video_url}
-          name={product.name}
-          brand={product.brand}
-        />
+        <div>
+          <Gallery
+            // remount when the image set changes so the gallery snaps to slide 0
+            key={`${filtered}-${galleryImages[0] ?? "empty"}`}
+            images={galleryImages}
+            videoUrl={product.video_url}
+            name={product.name}
+            brand={product.brand}
+          />
+          {variantOnly.length > 0 && (
+            <button
+              onClick={() => setShowAllPhotos((s) => !s)}
+              className="mt-2 text-xs text-muted underline-offset-2 hover:underline"
+            >
+              {filtered
+                ? `Showing ${galleryImages.length} photo${galleryImages.length === 1 ? "" : "s"} for this selection · Show all`
+                : "Show selection photos only"}
+            </button>
+          )}
+        </div>
 
         <div className="max-w-lg">
           <p className="eyebrow">{product.brand}</p>

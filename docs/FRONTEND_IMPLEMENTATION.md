@@ -29,6 +29,11 @@ main.tsx -> App                                 App.tsx        router: / and /pr
    ├─ useProduct(id)                            api.ts         # GET /products/{id}
    ├─ <Breadcrumb>                              # category path split on " > "
    ├─ <Gallery>                                 components/Gallery.tsx
+   │  ├─ variantImages(variants, selections)    lib/resolveVariant.ts  # when compatible
+   │  │                                         # variants carry image_urls, the gallery
+   │  │                                         # shows ONLY those ("show all" toggle
+   │  │                                         # underneath); selections without image
+   │  │                                         # data fall back to the full gallery
    │  ├─ thumb rail                             # <SafeImage>; broken thumbs drop from rail
    │  └─ main pane                              # 4:5; video as last slide, poster +
    │                                            # "open original" link on error
