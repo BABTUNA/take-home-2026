@@ -8,9 +8,8 @@ interface Props {
   onSelect: (axis: string, value: string) => void;
 }
 
-// one button group per axis; values no variant supports (given the other
-// chosen axes) disable, out-of-stock resolved values strike through on the
-// availability line rather than here
+// one button group per axis; only dense variant lists can rule out a value
+// given the other chosen axes. Stock status does not change the buttons.
 export function VariantPicker({ options, variants, selections, onSelect }: Props) {
   if (options.length === 0) return null;
 

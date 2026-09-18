@@ -29,13 +29,13 @@
   },
   "brand": "A Day's March",
   "colors": [
-    "Iron",
-    "Navy",
-    "Oyster",
     "Black",
-    "Olive",
     "Dark Brown",
-    "Light Khaki"
+    "Iron",
+    "Light Khaki",
+    "Navy",
+    "Olive",
+    "Oyster"
   ],
   "options": [
     {

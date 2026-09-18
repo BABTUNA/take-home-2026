@@ -21,14 +21,14 @@
     "Imported."
   ],
   "image_urls": [
+    "https://cdni.llbean.net/is/image/wim/224626_36814_41",
+    "https://cdni.llbean.net/is/image/wim/224626_38221_41",
     "https://cdni.llbean.net/is/image/wim/224626_1176_41",
     "https://cdni.llbean.net/is/image/wim/224626_1207_41",
-    "https://cdni.llbean.net/is/image/wim/224626_464_41",
-    "https://cdni.llbean.net/is/image/wim/224626_1_41",
-    "https://cdni.llbean.net/is/image/wim/224626_38221_41",
-    "https://cdni.llbean.net/is/image/wim/224626_36814_41",
     "https://cdni.llbean.net/is/image/wim/224626_292_41",
+    "https://cdni.llbean.net/is/image/wim/224626_464_41",
     "https://cdni.llbean.net/is/image/wim/224626_55_41",
+    "https://cdni.llbean.net/is/image/wim/224626_1_41",
     "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
     "https://cdni.llbean.net/is/image/wim/224626_0_45",
     "https://cdni.llbean.net/is/image/wim/224626_0_46",
@@ -88,7 +88,7 @@
       "selections": [
         {
           "name": "Color",
-          "value": "Charcoal Heather"
+          "value": "Delta Blue"
         },
         {
           "name": "Item",
@@ -99,11 +99,11 @@
           "value": "Small"
         }
       ],
-      "sku": "0ATH290002",
+      "sku": "0ATH201002",
       "price": 29.95,
       "available": true,
       "image_urls": [
-        "https://cdni.llbean.net/is/image/wim/224626_1176_41",
+        "https://cdni.llbean.net/is/image/wim/224626_36814_41",
         "https://cdni.llbean.net/is/image/wim/224626_0_44?hei=1379&wid=1200&resMode=sharp2&defaultImage=llbprod/224626_0_44",
         "https://cdni.llbean.net/is/image/wim/224626_0_45",
         "https://cdni.llbean.net/is/image/wim/224626_0_46",
@@ -123,10 +123,10 @@
         },
         {
           "name": "Size",
-          "value": "Medium"
+          "value": "Small"
         }
       ],
-      "sku": "1000264615",
+      "sku": "1000264614",
       "price": 24.99,
       "available": true,
       "image_urls": [
@@ -150,10 +150,10 @@
         },
         {
           "name": "Size",
-          "value": "Large"
+          "value": "Medium"
         }
       ],
-      "sku": "0ATG410006",
+      "sku": "0ATG410004",
       "price": 29.95,
       "available": true,
       "image_urls": [

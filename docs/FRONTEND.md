@@ -22,7 +22,7 @@ App                                    router: / and /product/:id
    ├─ BuyBox
    │  ├─ PriceBlock                    # current, compare-at strikethrough, %-off badge
    │  ├─ VariantPicker                 # one group per option axis
-   │  └─ AvailabilityLine              # from the resolved variant
+   │  └─ Resolved SKU                  # shown when a variant matches
    ├─ Description
    ├─ KeyFeatures                      # bullet list
    └─ MetaGrid                         # brand, category, sku of resolved variant
@@ -33,11 +33,11 @@ App                                    router: / and /product/:id
 Renders one button group per `options` axis. Selection state is `{axisName: value}`. Resolution against `variants`:
 
 - A variant matches when every one of its `selections` agrees with the current choices.
-- Full match -> the buy box shows that variant's sku, price (falling back to product price), and availability. This is the schema demo: pick "Color: Delta Blue, Size: Medium, Fit: Regular" on the L.L.Bean tee and a concrete sku with its own sale price appears.
-- A value is disabled when no variant is compatible with it given the other current choices; out-of-stock variants render struck-through but selectable.
+- Full match -> the buy box shows that variant's sku and price (falling back to product price). For example, Lake / Medium / Regular on the saved L.L.Bean tee selects a concrete sale-priced SKU. Availability stays in the extracted data but is not displayed as a stock claim.
+- A value is disabled only when the extracted variants cover enough combinations to rule that value out. Sparse variant lists leave the other options selectable.
 - Products with options but no variants (axes the page never tied together) show the axes without resolution, and single-configuration products show no picker at all. The UI states degrade exactly as the extraction semantics do.
 
-Stress tests that must feel good: llbean (3 axes, 83 variants), nike (17 sizes), reebok (size x width), ace (no variants at all).
+Stress tests that must feel good: llbean (3 axes, sparse extracted variants), nike (17 sizes), reebok (size x width), ace (no variants at all).
 
 ## Robustness (the memorable touch)
 

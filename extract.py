@@ -34,9 +34,9 @@ _SYSTEM = """You extract structured product data from the distilled contents of 
 
 3. `price` is what a buyer pays right now. `compare_at_price` is the crossed-out
    original, null when not on sale.
-   - Structured data often carries several price fields. Pairs like
-     currentPrice/initialPrice, price/priceBeforeDiscount, or a price next to an
-     "instant savings" amount mean: lower value -> `price`, higher -> `compare_at_price`.
+   - Structured data often carries several price fields under names like
+     current/original, sale/list, or a price next to a promo-discount amount:
+     the lower value -> `price`, the higher -> `compare_at_price`.
    - Never compute a price from a percentage-off callout.
    - Never swap the two, and never use a different sku's sale price.
 
@@ -109,7 +109,7 @@ _SYSTEM = """You extract structured product data from the distilled contents of 
 
 13. candidate_categories: 2-4 short phrases for what this product IS, written as
     alternatives: the page's own wording first, then common synonyms, then the
-    US retail term when it differs (["trousers", "pants"], ["floor lamp", "lighting"]).
+    US retail term when it differs (["jumper", "sweater"], ["cot", "crib", "baby bed"]).
     Prefer the page's breadcrumb or type wording for the first entry.
     Always write these phrases in English, even when the page is in another
     language (they feed an English-language category index). This is the one

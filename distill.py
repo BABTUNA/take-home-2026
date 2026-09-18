@@ -240,9 +240,11 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
         asset = key.split(":", 1)[1]
         # count hero-token matches so the displayed colorway can outrank siblings
         stem_hits = sum(1 for s in stems if s in asset)
-        # selected paths boost a group; related-product paths demote it
+        # selected paths boost a group; related-product paths demote it only
+        # when EVERY sighting is under one (an asset seen under both the
+        # product and a related rail is the product's, e.g. a shared video)
         hints = " ".join(m.path_hint.lower() for m in group)
-        demoted = bool(_OTHER_PRODUCT_PATH.search(hints)) and not _SELECTED_PATH.search(hints)
+        demoted = _only_related(hints)
         boosted = bool(_SELECTED_PATH.search(hints))
         # images repeated across channels are more likely to be product media
         spread = min(len({m.origin for m in group}), 3)
@@ -271,12 +273,21 @@ def _resolve_media(ev: Evidence) -> list[MediaCandidate]:
     return images + videos
 
 
+# true only when every recorded path sighting is under a related-items key
+# and none is a selected-product key
+def _only_related(hints: str) -> bool:
+    paths = [p for p in hints.split() if p]
+    return bool(paths) and all(
+        _OTHER_PRODUCT_PATH.search(p) and not _SELECTED_PATH.search(p) for p in paths
+    )
+
+
 # label media candidates by provenance for the model's numbered selection
 def _media_tag(m: MediaCandidate) -> str:
     hint = m.path_hint.lower()
     if _SELECTED_PATH.search(hint):
         return " [selected product]"
-    if _OTHER_PRODUCT_PATH.search(hint):
+    if _only_related(hint):
         return " [related items rail]"
     if m.origin == "meta":
         return " [page hero]"

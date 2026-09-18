@@ -6,7 +6,7 @@ Catalog grid and PDP, rendered straight from the server's JSON, polished enough 
 
 - The catalog fetches summaries once, filters and searches client-side (50 products, no server round-trips).
 - The PDP fetches one full product and drives everything off it: gallery, buy box, variant resolution.
-- The variant picker resolves the user's axis choices to a concrete variant (sku, price, availability), which is the visible proof the extraction schema holds real data.
+- The variant picker resolves the user's axis choices to a concrete variant (sku and price). Availability remains in the data but is deliberately omitted from the UI.
 - Media failure is handled, not assumed away: every image goes through SafeImage, the video slide survives CDN referrer-blocking.
 
 ## Call trace (component/render flow)
@@ -45,7 +45,7 @@ main.tsx -> App                                 App.tsx        router: / and /pr
    │  │  ├─ selection state {axis: value}
    │  │  ├─ resolveVariant(selections, variants)   lib/resolveVariant.ts
    │  │  └─ valueDisabled(axis, value, ...)        lib/resolveVariant.ts
-   │  └─ availability line                      # from the resolved variant
+   │  └─ resolved SKU                           # shown when a variant matches
    ├─ <Description> + <KeyFeatures>
    └─ <MetaGrid>                                # brand, category, resolved sku
 ```
@@ -74,28 +74,27 @@ main.tsx -> App                                 App.tsx        router: / and /pr
 
 ```ts
 // user has chosen:
-selections = { Color: "Delta Blue", Size: "Medium", Item: "Regular" }
+selections = { Color: "Lake", Size: "Medium", Item: "Regular" }
 
 // resolveVariant: a variant matches when EVERY one of its own selections
 // agrees with the user's current choices
-variant = { selections: [{name: "Color", value: "Delta Blue"},
+variant = { selections: [{name: "Color", value: "Lake"},
                          {name: "Size", value: "Medium"},
                          {name: "Item", value: "Regular"}],
-            sku: "0ATH201002", price: 29.95, available: true }
+            sku: "1000264615", price: 24.99, available: true }
 
-// buy box then renders: $29.95 · In stock · SKU 0ATH201002
+// buy box then renders: $24.99 · SKU 1000264615 (no stock label)
 ```
 
-**`valueDisabled(axis, value)`**: true when no variant is compatible with `{...selections, [axis]: value}` ignoring the axis's own current choice. Out-of-stock variants render struck-through but stay selectable; impossible combinations disable.
+**`valueDisabled(axis, value)`**: only disables a value when the extracted variants cover at least 60% of possible combinations and none is compatible with `{...selections, [axis]: value}`. Sparse lists do not rule out unextracted combinations.
 
 **Degradation states** (mirror extraction semantics on purpose):
 
 ```
-variants populated        -> full resolution (llbean: 3 axes, 83 variants)
-options but no variants   -> axes render, buy box shows product-level price, a quiet
-                             "configuration details on the brand's site" line
+variants populated        -> matching selections can resolve to SKU and price
+options but no variants   -> axes render; buy box keeps product-level price
 no options, no variants   -> no picker at all (ace drill)
-available: null           -> availability line omitted, never claimed
+availability present/null -> no stock label shown in either case
 ```
 
 ## Build order
