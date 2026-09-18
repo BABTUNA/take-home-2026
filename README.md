@@ -6,7 +6,7 @@ This project turns raw product-page HTML into validated `Product` records and se
 
 ## Demo
 
-[![Demo video](https://img.youtube.com/vi/X5n7xyM2d8I/hqdefault.jpg)](https://www.youtube.com/watch?v=X5n7xyM2d8I)
+[![Demo video](docs/demo-thumbnail.jpg)](https://www.youtube.com/watch?v=X5n7xyM2d8I)
 
 *Click to watch the walkthrough on YouTube.*
 
