@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SafeImage } from "./SafeImage";
 
 interface Props {
@@ -6,14 +6,23 @@ interface Props {
   videoUrl: string | null;
   name: string;
   brand: string;
+  // when set (and present among the slides), the main pane switches to this
+  // url: the variant picker "jumps" the gallery instead of filtering it
+  jumpToUrl?: string | null;
 }
 
 // thumb rail + main pane; the video rides as the final slide. Broken thumbs
 // drop out of the rail after their first error instead of showing dead boxes.
-export function Gallery({ images, videoUrl, name, brand }: Props) {
+export function Gallery({ images, videoUrl, name, brand, jumpToUrl }: Props) {
   const [active, setActive] = useState(0);
   const [dead, setDead] = useState<Set<number>>(new Set());
   const [videoFailed, setVideoFailed] = useState(false);
+
+  useEffect(() => {
+    if (!jumpToUrl) return;
+    const i = images.indexOf(jumpToUrl);
+    if (i >= 0) setActive(i);
+  }, [jumpToUrl, images]);
 
   const slides: Array<{ kind: "image" | "video"; url: string }> = [
     ...images.map((url) => ({ kind: "image" as const, url })),

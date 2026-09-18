@@ -37,19 +37,20 @@ function ProductContent({ id }: { id: string | undefined }) {
     [product, selections],
   );
 
-  const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [showAllFeatures, setShowAllFeatures] = useState(false);
 
-  // when the selection matches variants that carry their own images, the
-  // gallery shows only those (real-store behavior), with a "show all"
-  // escape hatch; selections without image data fall back to the full
-  // gallery so sparse products never strand on an empty one
-  const variantOnly = useMemo(
-    () => (product ? variantImages(product.variants, selections) : []),
-    [product, selections],
-  );
-  const filtered = !showAllPhotos && variantOnly.length > 0;
-  const galleryImages = !product ? [] : filtered ? variantOnly : product.image_urls;
+  // the gallery always shows every photo; a selection only JUMPS the main
+  // pane to the first matching variant image when one exists in the gallery.
+  // sparse or odd variant-image data degrades to "no jump", never to a
+  // hidden or collapsed gallery
+  const jumpToUrl = useMemo(() => {
+    if (!product || Object.keys(selections).length === 0) return null;
+    return (
+      variantImages(product.variants, selections).find((u) =>
+        product.image_urls.includes(u),
+      ) ?? null
+    );
+  }, [product, selections]);
 
   if (error)
     return (
@@ -104,23 +105,12 @@ function ProductContent({ id }: { id: string | undefined }) {
             grid item (grid items default to min-width:auto) */}
         <div className="min-w-0">
           <Gallery
-            // remount when the image set changes so the gallery snaps to slide 0
-            key={`${filtered}-${galleryImages[0] ?? "empty"}`}
-            images={galleryImages}
+            images={product.image_urls}
             videoUrl={product.video_url}
             name={product.name}
             brand={product.brand}
+            jumpToUrl={jumpToUrl}
           />
-          {variantOnly.length > 0 && (
-            <button
-              onClick={() => setShowAllPhotos((s) => !s)}
-              className="mt-3 px-1 text-xs text-muted underline-offset-2 hover:underline"
-            >
-              {filtered
-                ? `Showing ${galleryImages.length} photo${galleryImages.length === 1 ? "" : "s"} for this selection · Show all`
-                : "Show selection photos only"}
-            </button>
-          )}
         </div>
 
         <div className="max-w-lg lg:sticky lg:top-8 lg:self-start">

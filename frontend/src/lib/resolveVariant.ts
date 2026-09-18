@@ -36,6 +36,8 @@ export function variantImages(variants: Variant[], selections: Selections): stri
   for (const v of variants) {
     if (!variantMatches(v, selections)) continue;
     for (const url of v.image_urls) {
+      // some extractions carry unsubstituted url templates ("{:size}")
+      if (url.includes("{")) continue;
       if (!seen.has(url)) {
         seen.add(url);
         out.push(url);
