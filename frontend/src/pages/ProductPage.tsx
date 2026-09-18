@@ -111,6 +111,13 @@ function ProductContent({ id }: { id: string | undefined }) {
             brand={product.brand}
             jumpToUrl={jumpToUrl}
           />
+          {/* the jump only fires when the source page tied a photo to the
+              selection; say so instead of leaving a silently inert click */}
+          {Object.keys(selections).length > 0 && !jumpToUrl && (
+            <p className="mt-3 px-1 text-xs text-faint">
+              No photo is linked to this selection; browse the gallery above.
+            </p>
+          )}
         </div>
 
         <div className="max-w-lg lg:sticky lg:top-8 lg:self-start">
