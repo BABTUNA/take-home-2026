@@ -35,7 +35,7 @@ cd frontend && npm install && npm run dev
 
 Open [localhost:5173](http://localhost:5173). `GET /products` returns catalog cards; `GET /products/{id}` returns the full product. The UI filters assignment and unseen pages and resolves variant selections on the product page. Restart the API after changing `output/` because it loads the catalog at startup.
 
-## How it works
+## System Design
 
 ### Backend
 
@@ -45,8 +45,6 @@ Open [localhost:5173](http://localhost:5173). `GET /products` returns catalog ca
 4. **Categorize and assemble:** Word matching and, by default, local embeddings shortlist Google taxonomy paths. A model picks a numbered path, which `Category` validates. Finally, the selected media indices become URLs in the validated `Product` output.
 
 ![Backend pipeline from raw HTML to validated Product JSON](docs/backend-pipeline.drawio.png)
-
-The diagram is [editable in draw.io](docs/backend-pipeline.drawio).
 
 Docs: [Backend design](docs/BACKEND.md) (Ace example) · [Backend implementation](docs/BACKEND_IMPLEMENTATION.md) (function trace).
 
@@ -138,7 +136,9 @@ After changing `.env`, rerun `uv run python run_extract.py --unseen` to produce 
 - **English category hints:** The embedding index is English, so the model writes English hints even for Japanese or German pages. That implicit translation has not been tested separately.
 - **Embedding setup:** Without `fastembed`, union retrieval quietly falls back to lexical matches. On a fresh machine, it downloads roughly 100 MB of model files and builds the cached category index (about 30 seconds).
 
-## System design
+## System Design at Scale
+
+![Proposed distributed architecture for 50 million products](docs/system-design.drawio.png)
 
 To scale to 50M products, we would need distributed data processing. A good way to do this would be to add a scheduler that places URLs into a queue. Concurrent distributed workers would claim pages from the queue with a lease, fetch them, and run our extraction pipeline. These workers could also discover more pages to add to the queue. For each processed page, we should store a keyed value using the link and timestamp to record when it was last processed, since we will need to process it again for product updates. Each page should have a set number of retries with exponential backoff if processing fails, perhaps due to rate limiting. After the final failure, the job can move to a dead-letter queue. In our implementation, phase-based extraction should scale (if a single extraction doesn’t have major latency bottlenecks in our queue system). A cost analysis of how much budget we have for LLM calls should be made, and we should do more trade-off analyses of product extraction performance vs. cost (embedding latency should also be analyzed). We should also take a look at whether our pruning works well for more diverse websites and ensure we aren’t removing any vital info (we might need to add dynamic pruning to allocate different character limits for different website categories). Additionally, as we scrape global websites, we will probably find that there might be edge cases in our extraction ruleset for older or foreign websites. We would also now need a durable database to hold all this data (likely with replication, partitions, and sharding for end-user distribution).
 
